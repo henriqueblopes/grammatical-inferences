@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/henrique/CLionProjects/grammatical-inferences/InputWords.cpp
+InputWords.h
+/home/henrique/CLionProjects/grammatical-inferences/InputWords.h
+string
+-
+iostream
+-
+sstream
+-
+experimental/filesystem
+-
+iostream
+-
+fstream
+-
+algorithm
+-
+
+/home/henrique/CLionProjects/grammatical-inferences/InputWords.h
+vector
+-
+Symbol.h
+/home/henrique/CLionProjects/grammatical-inferences/Symbol.h
+experimental/filesystem
+-
+iostream
+-
+fstream
+-
+unordered_map
+-
+
+/home/henrique/CLionProjects/grammatical-inferences/Symbol.h
+string
+-
+
