@@ -13,7 +13,7 @@ class Grammar
 {
 
 public:
-    const double ALFA = 0.0001;
+    const double ALFA = 0.1;
     std::vector<Symbol> terminals;
     std::vector<Symbol> nonterminals;
     std::vector<Rule> rules;
@@ -40,11 +40,12 @@ public:
             int nTerminals, int nNonTerminals);
 
     void printGrammar();
+    std::string grammarToStr();
     void printRules();
     std::string rulesToString();
     void train(int algorithm, int iterations);
-    double perplexity(std::vector<std::vector<Symbol>> testData, bool normalized);
-    double perplexityKL(std::vector<std::vector<Symbol>> testData, bool normalized);
+    std::pair<double,double> perplexity(std::vector<std::vector<Symbol>> testData, bool normalized);
+    std::pair<double,double> perplexityKL(std::vector<std::vector<Symbol>> testData, bool normalized);
 
 private:
     void generateNonTermnals();
@@ -58,6 +59,7 @@ private:
     double *** CYKProb(std::string w);
     double **** CYKProbKL(std::string w);
     double **** CYKProbKLVec(std::vector<Symbol> w);
+    double **** CYKProbKLVecOpt(std::vector<Symbol> w);
     double **** CYKProbKLNVec(std::vector<Symbol> w);
     static inline void free(Grammar& G);
     void printInsideTable(double ***p, int wSize);
@@ -66,7 +68,10 @@ private:
     void sampleParseTree(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, Rule r, std::string w, double ***insideTable, int i, int k);
     void sampleParseTreeKL(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, Rule r, std::string w, double ****insideTable, int i, int k);
     void sampleParseTreeKLVec(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, Rule r, std::vector<Symbol> w, double ****insideTable, int i, int k);
+    void sampleParseTreeKLVecOpt(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, Rule r, std::vector<Symbol> w, double ****insideTable, int i, int k);
+
     void calculateNewTheta(std::string w);
+    void calculateNewThetaVecOpt(std::vector<Symbol> w, int i);
     int calculateProductonCounts (std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>> production, std::string w);
     std::vector<std::pair<double, int>> calculateRuleFrequence(Rule r, std::string w);
     double cConstant(std::vector<std::pair<double, int>> ruleFrequence);
@@ -103,8 +108,13 @@ private:
     bool equalWord(std::vector<Symbol> w1, std::vector<Symbol> w2);
 
     double pTiTiMinus1Vec(std::vector<Symbol> w);
+    double pTiTiMinus1VecOpt(std::vector<Symbol> w, int i) ;
 
     std::vector<std::pair<double, int>> calculateRuleFrequenceVec(Rule &rule, std::vector<Symbol> w);
+    void pTiMinus1Frequence(std::vector<Symbol> w, int i);
+    void pTiMinus1PlusFrequence(std::vector<Symbol> w, int i);
+    void freeInsideTable(double ***p, int wSize);
+    void freeInsideTableKL(double ****p, int wSize);
 
 public:
     virtual ~Grammar();

@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/grammatical-inferences.dir/main.cpp.o"
   "CMakeFiles/grammatical-inferences.dir/Rule.cpp.o"
   "CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o"
+  "CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o"
   "grammatical-inferences.pdb"
   "grammatical-inferences"
 )

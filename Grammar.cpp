@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <tuple>
 #include <cmath>
+#include <chrono>
 #include "Grammar.h"
 
 Grammar::Grammar(const std::vector<Symbol> &terminals, const std::vector<Symbol> &nonterminals,
@@ -26,8 +27,6 @@ Grammar::Grammar(const std::vector<Symbol> &terminals, std::pair<int, int> conte
     generateNonTermnals();
     generateRulesCNF();
     start = rules[0].left.front();
-
-
 }
 
 void Grammar::printGrammar() {
@@ -56,6 +55,39 @@ void Grammar::printGrammar() {
     }
 
     std::cout << std::endl;
+}
+
+std::string Grammar::grammarToStr() {
+    std::string g;
+    g.append("Terminals: ");
+    g.append("\n");
+    std::vector<Symbol>::iterator it;
+    for(it = terminals.begin(); it != terminals.end(); it++) {
+        g.append("\t");
+        g.append((*it).name);
+        g.append("\n");
+    }
+
+    g.append("\n");
+
+    g.append("NonTerminals: ");
+    g.append("\n");
+    for(it = nonterminals.begin(); it != nonterminals.end(); it++) {
+        g.append("\t");
+        g.append((*it).name);
+        g.append("\n");
+    }
+    g.append("\n");
+
+    std::vector<Rule>::iterator itr;
+    g.append("Rules: ");
+    g.append("\n");
+    for(itr = rules.begin(); itr != rules.end(); itr++) {
+        g.append("\t");
+        g.append((*itr).ruleToStrLALR());
+    }
+    g.append("\n");
+    return g;
 }
 
 void Grammar::printRules() {
@@ -118,7 +150,7 @@ void Grammar::train(int algorithm, int iterations) {
     }
     else
         metropolisHastingsPCSG(iterations);
-    printGrammar();
+    //printGrammar();
 }
 
 
@@ -290,7 +322,7 @@ void Grammar::sampleParseTree(std::vector<std::pair<std::vector<Symbol>,std::pai
             if (p < jbc[l])
                 break;
         int j = 0;
-
+        delete[]jbc;
         //std::vector<Symbol> rightProduction;
         std::pair<std::vector<Symbol>,std::pair<double, double>> rightProduction;
         for (itRight = r.right.begin(); itRight != r.right.end(); itRight ++) {
@@ -346,7 +378,24 @@ void Grammar::sampleParseTree(std::vector<std::pair<std::vector<Symbol>,std::pai
     }
 
 }
-
+void Grammar::calculateNewThetaVecOpt(std::vector<Symbol> w, int i) {
+    pTiMinus1Frequence(w, i);
+    std::vector<Rule>::iterator itRule;
+    for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+        double nonterminalTotal = 0;
+        std::vector<std::pair<double, int>>::iterator iTrFrequence;
+        for (iTrFrequence = (*itRule).ruleFrequence.begin(); iTrFrequence != (*itRule).ruleFrequence.end(); iTrFrequence++) {
+            nonterminalTotal += iTrFrequence->second + iTrFrequence->first;
+        }
+        iTrFrequence = itRule->ruleFrequence.begin();
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+        for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+            (*itRight).second.first = ((*iTrFrequence).second + (*itRight).second.second )/nonterminalTotal;
+            iTrFrequence++;
+        }
+    }
+    pTiMinus1PlusFrequence(w, i);
+}
 
 
 void Grammar::calculateNewTheta(std::string w) {
@@ -541,6 +590,7 @@ void Grammar::metropolisHastingsPCFG(int iterations) {
         double ***insideTable;
         insideTable = CYKProbVec(words[i]);
         sampleParseTreeVec(vProds, rules[0], words[i], insideTable, 0, words[i].size()-1);
+        freeInsideTable(insideTable, words[i].size());
         std::pair<std::vector<Symbol>, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>> pairTree;
         pairTree.first = words[i];
         pairTree.second = vProds;
@@ -551,10 +601,12 @@ void Grammar::metropolisHastingsPCFG(int iterations) {
     for (int j = 0; j < iterations; j++) {
         double ***insideTable;
         int i = rand()%sentencesLength;
-        insideTable = CYKProbVec(words[i]);
         //printInsideTable(insideTable, sentences[i].size());
-        if (j%100 == 0)
-            std::cout << "iteration: " << j << " Tree " << i <<" Perplexity: "<< perplexity(words, true) << " Accepted Tress: " << countAcceptedTress << std::endl;
+        if (j%(iterations/10) == 0) {
+            //std::pair<double,  double> pMpP = perplexity(words, true);
+            std::cout << "iteration: " << j << " Tree " << i <<" Accepted Tress: " << countAcceptedTress << std::endl;
+        }
+
         std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>> vProds;
         //std::cout << "FREE" << std::endl;
         //if (acceptTree) {
@@ -562,7 +614,6 @@ void Grammar::metropolisHastingsPCFG(int iterations) {
             updateParseTressTheta();
             acceptTree = false;
         //}
-
         insideTable = CYKProbVec(words[i]);
         //printInsideTable(insideTable, sentences[i].size());
         vProds = parseTreesVec[i].second;
@@ -581,57 +632,92 @@ void Grammar::metropolisHastingsPCFG(int iterations) {
         double pTiLineTiMinis1 = pTiTiMinus1Vec(words[i]);
         double funcA = std::min(1.0,(pTiLineTiMinis1*pTiWi)/(pTiTiMinis1*pTiLineWi));
         double r = (double) rand()/RAND_MAX;
+        freeInsideTable(insideTable, words[i].size());
 
         if (!(funcA < r))
             parseTreesVec[i] = tpaux;
         else {
             acceptTree = true;
             countAcceptedTress++;
-            std::cout << "Accepted tree in iteration: " << j << " Perplexity: " << perplexity(words, true) << std::endl;
-            std::cout << " Pti'ti-1 = " << pTiLineTiMinis1 << " Ptiti-1 = "  << pTiTiMinis1<< " Ptiwi = " <<  pTiWi  << " Pti'wi = " << pTiLineWi << std::endl;
-            std::cout << " ratio = " << (pTiLineTiMinis1*pTiWi)/(pTiTiMinis1*pTiLineWi) << ", funcA = " << funcA << ", r = " << r << std::endl;
+            /*std::pair<double,  double> pMpP = perplexity(words, true);
+            std::cout << "  Accepted tree in iteration: " << j << " - PerplexityM: " << pMpP.first << " = PerplexityP: " << pMpP.second<< std::endl;
+            std::cout << "    Pti'ti-1 = " << pTiLineTiMinis1 << " Ptiti-1 = "  << pTiTiMinis1<< " Ptiwi = " <<  pTiWi  << " Pti'wi = " << pTiLineWi << std::endl;
+            std::cout << "    ratio = " << (pTiLineTiMinis1*pTiWi)/(pTiTiMinis1*pTiLineWi) << ", funcA = " << funcA << ", r = " << r << std::endl;*/
         }
     }
-    printGrammar();
+    //printGrammar();
 }
 
 void Grammar::metropolisHastingsPCSG(int iterations) {
+    std::chrono::duration<double> totalTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    std::chrono::duration<double> insideTTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    std::chrono::duration<double> insideTTimeMet = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    std::chrono::duration<double> iterationTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    std::chrono::duration<double> newThetaTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    std::chrono::duration<double> updateThetaTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    std::chrono::duration<double> perplexityTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    std::chrono::duration<double> remainingTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
     srand((unsigned) time(NULL));
     int sentencesLength = words.size();
     for (int i = 0; i< sentencesLength; i++) {
+        if (i%(sentencesLength/10) ==0)
+            std::cout << 100*(i/(1.0*sentencesLength))<< "% of trees parsed" << std::endl;
+        auto startIt = std::chrono::system_clock::now();
         actualProduction.clear();
         actualProduction.push_back(nonterminals[0]);
         std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>> vProds;
-        double ****insideTableKL;
+        double ****insideTableKL ;
+        auto startInsideTable = std::chrono::system_clock::now();
         insideTableKL = CYKProbKLVec(words[i]);
+        insideTTime += std::chrono::system_clock::now() - startInsideTable;
         sampleParseTreeKLVec(vProds, rules[0], words[i], insideTableKL, 0, words[i].size()-1);
+        freeInsideTableKL(insideTableKL, words[i].size());
         std::pair<std::vector<Symbol>, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>> pairTreeVec;
         pairTreeVec.first = words[i];
         pairTreeVec.second = vProds;
         parseTreesVec.push_back(pairTreeVec);
+        iterationTime += std::chrono::system_clock::now() - startIt;
     }
+    int countAcceptedTress = 0;
+    iterationTime = std::chrono::system_clock::now() - std::chrono::system_clock::now();
     for (int j = 0; j < iterations; j++) {
-        int i = (int) ((rand()/RAND_MAX) * (sentencesLength-1));
+        auto startIt = std::chrono::system_clock::now();
+        int i = rand()% sentencesLength;
         double ****insideTableKL;
-        insideTableKL = CYKProbKLVec(words[i]);
-        //printInsideTableKL(insideTableKL,sentences[i].size());
+        double ****iTableN;
         actualProduction.clear();
         actualProduction.push_back(nonterminals[0]);
-        if (j%1 == 0)
-            std::cout << "iteration: " << j << " Tree " << i << " Perplexity: "<< perplexityKL(words, true) <<std::endl;
+        if (j%(iterations/5) == 0) {
+            //auto startPerplexityTime = std::chrono::system_clock::now();
+            //std::pair<double,  double> pMpP = perplexityKL(words, true);
+            //perplexityTime += std::chrono::system_clock::now() - startPerplexityTime;
+            //std::cout << "   iteration: " << j << " Tree " << i <<" - Perplexity: "<< pMpP.first << " - PerplexityN: "<< pMpP.second <<" Accepted Tress: " << countAcceptedTress << " PTime: "<< perplexityTime.count() <<std::endl;
+            std::cout << "   iteration: " << j << " Tree " << i << " Accepted Tress: " << countAcceptedTress << std::endl;
+        }
         std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>> vProds;
 
         //std::cout << "SENSITIVE" << std::endl;
-        calculateNewThetaVec(words[i]);
+        auto startNewTheta = std::chrono::system_clock::now();
+        calculateNewThetaVecOpt(words[i], i);
+        newThetaTime += std::chrono::system_clock::now() - startNewTheta;
+
         updateParseTressTheta();
 
+        auto startInsideTable = std::chrono::system_clock::now();
         insideTableKL = CYKProbKLVec(words[i]);
-        //printInsideTableKL(insideTableKL,sentences[i].size());
+        insideTTimeMet += std::chrono::system_clock::now() - startInsideTable;
 
+        auto startRemaining = std::chrono::system_clock::now();
         vProds = parseTreesVec[i].second;
-        double pTiWi = probTree(vProds)/insideTableKL[0][0][words[i].size()-1][0] ;
-        double pTiTiMinis1 = pTiTiMinus1Vec(words[i]);
+
+        double pTiWi = probTree(vProds)/ insideTableKL[0][0][words[i].size()-1][0] ;
+
+        auto startUpdateTheta = std::chrono::system_clock::now();
+        double pTiTiMinis1 = pTiTiMinus1VecOpt(words[i], i);
+
+        updateThetaTime += std::chrono::system_clock::now() - startUpdateTheta;
         vProds.clear();
+
 
         sampleParseTreeKLVec(vProds, rules[0], words[i], insideTableKL, 0, words[i].size()-1);
         std::pair<std::vector<Symbol>, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>> tp;
@@ -640,16 +726,23 @@ void Grammar::metropolisHastingsPCSG(int iterations) {
         tp.first = parseTreesVec[i].first,
         tp.second = vProds;
         parseTreesVec[i] = tp;
-        double pTiLineWi =  probTree(vProds) / insideTableKL[0][0][words[i].size()-1][0];
-        double pTiLineTiMinis1 = pTiTiMinus1Vec(words[i]);
+        double pTiLineWi =  probTree(vProds) / insideTableKL[0][0][words[i].size()-1][0] ;
+
+        double pTiLineTiMinis1 = pTiTiMinus1VecOpt(words[i], i);
         double funcA = std::min(1.0,(pTiLineTiMinis1*pTiWi)/(pTiTiMinis1*pTiLineWi));
+        freeInsideTableKL(insideTableKL, words[i].size());
         if (!(funcA < (double) rand()/RAND_MAX)) {
             parseTreesVec[i] = tpaux;
+            pTiMinus1PlusFrequence(words[i],i);
         }
-        else
-            std::cout << "Accepted tree in iteration: " << j << " Perplexity: " << perplexityKL(words, true) << std::endl;
+        else{
+            countAcceptedTress++;
+        }
+        remainingTime += std::chrono::system_clock::now() - startRemaining;
+        totalTime += std::chrono::system_clock::now() - startIt;
     }
-    printGrammar();
+    std::cout << "   iteration: " << iterations  << " Accepted Tress: " << countAcceptedTress << std::endl;
+    //printGrammar();
 }
 
 void Grammar::generateRulesCNF() {
@@ -701,11 +794,22 @@ void Grammar::generateRulesCNF() {
                         Rule r = Rule(leftHandSide, rulesByLeft);
                         r.generatePiorDirichlet(ALFA,0);
                         r.updateProbDirichletTheta();
+                        r.leftContext.insert(r.leftContext.end(), (*itPermutationsTerminals).begin(), (*itPermutationsTerminals).end());
+                        r.rightContext.insert(r.rightContext.end(),(*itPermutationsAll).begin(), (*itPermutationsAll).end());
+                        r.index1stNonContext = r.leftContext.size();
                         rules.push_back(r);
                     }
                 }
             }
         }
+    }
+    std::vector<Rule>::iterator itRule;
+    int j = 0;
+    for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+        (*itRule).index = j;
+        for (int i =0; i < (*itRule).right.size(); i++)
+            (*itRule).ruleFrequence.push_back(std::make_pair(ALFA, 0));
+        j++;
     }
 
 
@@ -960,7 +1064,7 @@ void Grammar::sampleParseTreeKL(
                 break;
         int j = 0;
 
-
+        delete[]jbc;
         Symbol rightB = Symbol("", 0,false);;
         Symbol rightC = Symbol("", 0,false);;
 
@@ -1103,12 +1207,16 @@ void Grammar::applyProduction(
                         if (itRight->terminal == false && itRight->context == false) {
                             newProd.push_back(*itRight);
                             itRight++;
+                            if (itRight->context == true)
+                                std::cout << "Maybe Error" << std::endl;
                             newProd.push_back(*(itRight));
                             appliedProd = true;
+                            break;
                         }
                         if (itRight->terminal == true && itRight->context == false) {
                             newProd.push_back(*itRight);
                             appliedProd = true;
+                            break;
                         }
                     }
                 } else {
@@ -1208,7 +1316,7 @@ void Grammar::sampleParseTreeVec(
             if (p < jbc[l])
                 break;
         int j = 0;
-
+        delete[]jbc;
         //std::vector<Symbol> rightProduction;
         std::pair<std::vector<Symbol>,std::pair<double, double>> rightProduction;
         for (itRight = r.right.begin(); itRight != r.right.end(); itRight ++) {
@@ -1417,7 +1525,7 @@ bool Grammar::equalWord(std::vector<Symbol> w1, std::vector<Symbol> w2) {
 
 double Grammar::pTiTiMinus1Vec(std::vector<Symbol> w) {
     std::vector<Rule>::iterator itRule;
-    double result = 1;
+    double result = 1.0;
     for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
         std::vector<Symbol> a;
         result *=  cConstant(calculateRuleFrequenceVec((*itRule),  a))/cConstant(calculateRuleFrequenceVec((*itRule), w));
@@ -1426,6 +1534,52 @@ double Grammar::pTiTiMinus1Vec(std::vector<Symbol> w) {
 
     }
 }
+
+double Grammar::pTiTiMinus1VecOpt(std::vector<Symbol> w, int i) {
+    std::vector<Rule>::iterator itRule;
+    std::vector<std::vector<std::pair<double, int>>> vecPairs;
+    vecPairs.reserve(rules.size());
+    for (itRule = rules.begin();itRule < rules.end(); itRule++) {
+        vecPairs.push_back(itRule->ruleFrequence);
+    }
+    pTiMinus1Frequence(w,i);
+    double result = 1.0;
+    std::vector<std::vector<std::pair<double, int>>>::iterator vecPairsIt = vecPairs.begin();
+    for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+        std::vector<Symbol> a;
+        result *=  cConstant(*vecPairsIt)/cConstant(itRule->ruleFrequence);
+        vecPairsIt++;
+    }
+}
+
+void Grammar::pTiMinus1Frequence(std::vector<Symbol> w, int i) {
+    if (i = -1)
+        return;
+    std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>::iterator pTreeIt;
+    for (pTreeIt = parseTreesVec[i].second.begin(); pTreeIt != parseTreesVec[i].second.end(); pTreeIt++) {
+        Rule r = findRuleByLHS(pTreeIt->first);
+        if (!(*pTreeIt).second.first[r.index1stNonContext].terminal)
+            rules[r.index].ruleFrequence[(*pTreeIt).second.first[r.index1stNonContext].id*nNonTerminals +
+                (*pTreeIt).second.first[r.index1stNonContext+1].id].second--;
+        else
+            rules[r.index].ruleFrequence[nNonTerminals*nNonTerminals+ (*pTreeIt).second.first[r.index1stNonContext].id].second--;
+    }
+}
+
+void Grammar::pTiMinus1PlusFrequence(std::vector<Symbol> w, int i) {
+    if (i == -1)
+        return;
+    std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>::iterator pTreeIt;
+    for (pTreeIt = parseTreesVec[i].second.begin(); pTreeIt != parseTreesVec[i].second.end(); pTreeIt++) {
+        Rule r = findRuleByLHS(pTreeIt->first);
+        if (!(*pTreeIt).second.first[r.index1stNonContext].terminal)
+            rules[r.index].ruleFrequence[(*pTreeIt).second.first[r.index1stNonContext].id*nNonTerminals +
+                                         (*pTreeIt).second.first[r.index1stNonContext+1].id].second++;
+        else
+            rules[r.index].ruleFrequence[nNonTerminals*nNonTerminals+ (*pTreeIt).second.first[r.index1stNonContext].id].second++;
+    }
+}
+
 std::vector<std::pair<double, int>> Grammar::calculateRuleFrequenceVec(Rule &r, std::vector<Symbol> w) {
     std::vector<std::pair<double, int>> ruleFrequence;
     std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
@@ -1440,6 +1594,8 @@ std::vector<std::pair<double, int>> Grammar::calculateRuleFrequenceVec(Rule &r, 
     }
     return ruleFrequence;
 }
+
+
 
 double ****Grammar::CYKProbKLVec(std::vector<Symbol> w) {
     int sizeLeftContext = 0;
@@ -1551,15 +1707,17 @@ double ****Grammar::CYKProbKLVec(std::vector<Symbol> w) {
                                     rightContextLine.front().context = true;
                                     if (!rightContext.empty()) {
                                         rightContextLine.insert(rightContextLine.end(), rightContext.begin(), rightContext.end());
-                                        rightContext.pop_back();
+                                        rightContextLine.pop_back();
                                     }
                                 }
+                                int leftContextId = convertContextToID(0,leftContext);
+                                int rightContextID = convertContextToID(1,rightContext);
                                 itRightS--;
-                                double bInside = p[sizeLeftContext*(*itRightS).id + convertContextToID(0,leftContext)][j][j+k][convertContextToID(1,rightContextLine)];
+                                double bInside = p[sizeLeftContext*(*itRightS).id + leftContextId][j][j+k][convertContextToID(1,rightContextLine)];
                                 itRightS++;
-                                double cInside = p[sizeLeftContext*(*itRightS).id + convertContextToID(0,leftContext)][j+k+1][j+i][convertContextToID(1,rightContext)];
-                                p[sizeLeftContext*nonterminal.id+ convertContextToID(0,leftContext)][j][i+j][convertContextToID(1,rightContext)] =
-                                        p[sizeLeftContext*nonterminal.id+ convertContextToID(0,leftContext)][j][i+j][convertContextToID(1,rightContext)] + bInside*cInside*(*itRight).second.first;
+                                double cInside = p[sizeLeftContext*(*itRightS).id + leftContextId][j+k+1][j+i][rightContextID];
+                                p[sizeLeftContext*nonterminal.id+ leftContextId][j][i+j][rightContextID] =
+                                        p[sizeLeftContext*nonterminal.id+ leftContextId][j][i+j][rightContextID] + bInside*cInside*(*itRight).second.first;
 
                                 /*std::cout<< "IT["<<sizeLeftContext*nonterminal.id + convertContextToID(0,leftContext)<<"]["<<j<<"]["<<i+j<<"]["<< convertContextToID(1,rightContext)<<"] = "
                                          << "IT["<<sizeLeftContext*nonterminal.id + convertContextToID(0,leftContext)<<"]["<<j<<"]["<<i+j<<"]["<< convertContextToID(1,rightContext)<<
@@ -1619,7 +1777,7 @@ void Grammar::sampleParseTreeKLVec(
                         rightContextLine.front().context = true;
                         if (!rightContext.empty()) {
                             rightContextLine.insert(rightContextLine.end(), rightContext.begin(), rightContext.end());
-                            rightContext.pop_back();
+                            rightContextLine.pop_back();
                         }
                     }
                     itSymbol--;
@@ -1669,7 +1827,7 @@ void Grammar::sampleParseTreeKLVec(
                 break;
         int j = 0;
 
-
+        delete[]jbc;
         Symbol rightB = Symbol("", 0,false);;
         Symbol rightC = Symbol("", 0,false);;
 
@@ -1681,7 +1839,7 @@ void Grammar::sampleParseTreeKLVec(
                 if (!(*itSymbol).terminal && !(*itSymbol).context) {
                     if ((*itSymbol).id == l / (nNonTerminals*jRange)) {
                         itSymbol++;
-                        if(itSymbol == (*itRight).first.end())
+                        if(itSymbol == (*itRight).first.end() || (*itSymbol).context)
                             break;
                         if((*itSymbol).id == (l%(nNonTerminals*jRange)) / jRange) {
                             itSymbol--;
@@ -1689,7 +1847,7 @@ void Grammar::sampleParseTreeKLVec(
                             rightB = (*itSymbol).clone();
                             j = l - nNonTerminals*jRange* (*itSymbol).id;
                             itSymbol++;
-                            if (itSymbol == (*itRight).first.end())
+                            if (itSymbol->context)
                                 std::cout << "Error\n";
                             rightProduction.first.push_back((*itSymbol));
                             rightC = (*itSymbol).clone();
@@ -1707,6 +1865,7 @@ void Grammar::sampleParseTreeKLVec(
             }
         }
 
+        rules[r.index].ruleFrequence[rightB.id*nNonTerminals + rightC.id].second++;
         rightProduction.first.insert(rightProduction.first.end(), rightContext.begin(), rightContext.end());
         std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>> production = std::make_pair(r.left, rightProduction);
         vr.push_back(production);
@@ -1750,7 +1909,7 @@ void Grammar::sampleParseTreeKLVec(
         lhs.clear();
         lhs.insert(lhs.begin(), leftContext2.begin(), leftContext2.end());
         lhs.push_back(rightC);
-        lhs.insert(lhs.begin(), rightContext2.begin(), rightContext2.end());
+        lhs.insert(lhs.end(), rightContext2.begin(), rightContext2.end());
         sampleParseTreeKLVec(vr, findRuleByLHS(lhs), w, insideTable, i+j+1, k);
 
     } else {
@@ -1782,6 +1941,7 @@ void Grammar::sampleParseTreeKLVec(
                     rightProduction.second.first = (*itRight).second.first;
                     rightProduction.second.second = (*itRight).second.second;
                     flagContext = true;
+                    rules[r.index].ruleFrequence[nNonTerminals*nNonTerminals + (*itSymbol).id].second++;
                 } else if (flagContext)
                     rightProduction.first.push_back((*itSymbol));
             }
@@ -1794,32 +1954,38 @@ void Grammar::sampleParseTreeKLVec(
     }
 }
 
-double Grammar::perplexity(std::vector<std::vector<Symbol>> testData, bool normalized) {
-    double pXTheta = 1.0;
+std::pair<double,double> Grammar::perplexity(std::vector<std::vector<Symbol>> testData, bool normalized) {
+    std::pair<double,double> pXTheta = std::make_pair(1.0, 0.0);
     for (auto w: testData) {
         double ***iTable  = CYKProbVec(w);
         double pX = iTable[0][0][w.size()-1] ;
-        if (normalized) {
-            double ***pN = CYKProbNVec(w);
-            pX /= pN[0][0][w.size()-1];
-        }
-        pXTheta *= pX ;
+        double pXN = pX;
+        double ***pN = CYKProbNVec(w);
+        pXN /= pN[0][0][w.size()-1];
+        freeInsideTable(pN, w.size());
+        freeInsideTable(iTable, w.size());
+        pXTheta.first += log(pX);
+        pXTheta.second += log(pXN);
+
     }
-    return exp(-((1.0/testData.size()) * log(pXTheta)));
+    return std::make_pair(exp(-(pXTheta.first/testData.size())), exp(-(pXTheta.second/testData.size())));
 }
 
-double Grammar::perplexityKL(std::vector<std::vector<Symbol>> testData, bool normalized) {
-    double pXTheta = 1.0;
+std::pair<double,double> Grammar::perplexityKL(std::vector<std::vector<Symbol>> testData, bool normalized) {
+    std::pair<double,double> pXTheta = std::make_pair(1.0, 0.0);
     for (auto w: testData) {
         double ****iTable  = CYKProbKLVec(w);
-        double pX = iTable[0][0][w.size()-1][0] ;
-        if (normalized) {
-            double ****pN = CYKProbKLNVec(w);
-            pX /= pN[0][0][w.size()-1][0];
-        }
-        pXTheta *= pX;
+        double pX = iTable[0][0][w.size()-1][0];
+        double pXN = pX;
+        double ****pN = CYKProbKLNVec(w);
+        pXN /= pN[0][0][w.size()-1][0];
+        freeInsideTableKL(pN, w.size());
+        freeInsideTableKL(iTable, w.size());
+        pXTheta.first += log(pX);
+        pXTheta.second += log(pXN);
+
     }
-    return exp(-((1.0/testData.size()) * log(pXTheta)));
+    return std::make_pair(exp(-(pXTheta.first/testData.size())), exp(-(pXTheta.second/testData.size())));
 }
 
 double ***Grammar::CYKProbNVec(std::vector<Symbol> w) {
@@ -2010,11 +2176,13 @@ double ****Grammar::CYKProbKLNVec(std::vector<Symbol> w) {
                                     }
                                 }
                                 itRightS--;
-                                double bInside = p[sizeLeftContext*(*itRightS).id + convertContextToID(0,leftContext)][j][j+k][convertContextToID(1,rightContextLine)];
+                                int leftContextID = convertContextToID(0,leftContext);
+                                int rightContextID = convertContextToID(1,rightContext);
+                                double bInside = p[sizeLeftContext*(*itRightS).id + leftContextID][j][j+k][convertContextToID(1,rightContextLine)];
                                 itRightS++;
-                                double cInside = p[sizeLeftContext*(*itRightS).id + convertContextToID(0,leftContext)][j+k+1][j+i][convertContextToID(1,rightContext)];
-                                p[sizeLeftContext*nonterminal.id+ convertContextToID(0,leftContext)][j][i+j][convertContextToID(1,rightContext)] =
-                                        p[sizeLeftContext*nonterminal.id+ convertContextToID(0,leftContext)][j][i+j][convertContextToID(1,rightContext)] + bInside*cInside*(*itRight).second.first;
+                                double cInside = p[sizeLeftContext*(*itRightS).id + leftContextID][j+k+1][j+i][rightContextID];
+                                p[sizeLeftContext*nonterminal.id+ leftContextID][j][i+j][rightContextID] =
+                                        p[sizeLeftContext*nonterminal.id+ leftContextID][j][i+j][rightContextID] + bInside*cInside*(*itRight).second.first;
 
                                 /*std::cout<< "IT["<<sizeLeftContext*nonterminal.id + convertContextToID(0,leftContext)<<"]["<<j<<"]["<<i+j<<"]["<< convertContextToID(1,rightContext)<<"] = "
                                          << "IT["<<sizeLeftContext*nonterminal.id + convertContextToID(0,leftContext)<<"]["<<j<<"]["<<i+j<<"]["<< convertContextToID(1,rightContext)<<
@@ -2047,40 +2215,415 @@ void Grammar::gibbsSamplingPCFG(int iterations) {
             double ***insideTable;
             insideTable = CYKProbVec(words[i]);
             sampleParseTreeVec(vProds, rules[0], words[i], insideTable, 0, words[i].size()-1);
+            freeInsideTable(insideTable, words[i].size());
             std::pair<std::vector<Symbol>, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>> pairTree;
             pairTree.first = words[i];
             pairTree.second = vProds;
             parseTreesVec.push_back(pairTree);
         }
         std::vector<Symbol> a;
-        calculateNewThetaVec(a);
+        calculateNewThetaVecOpt(a, -1);
         updateParseTressTheta();
-        if (j%5 == 0)
-            std::cout << "iteration: " << j <<" Perplexity: "<< perplexity(words, true) << std::endl;
+        if (j%(iterations/10) == 0) {
+            std::pair<double,  double> pMpP = perplexity(words, true);
+            std::cout << "iteration: " << j <<" - PerplexityM: "<< pMpP.first << " - PerplexityP: "<< pMpP.second << std::endl;
+        }
     }
 }
 
 void Grammar::gibbsSamplingPCSG(int iterations) {
+    auto totalTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    auto insideTTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    auto iterationTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    auto newThetaTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    auto updateThetaTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
+    auto perplexityTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
     srand((unsigned) time(NULL));
     int sentencesLength = words.size();
+    auto startMetropolis = std::chrono::system_clock::now();
     for (int j = 0; j < iterations; j++) {
         parseTreesVec.clear();
         for (int i = 0; i< sentencesLength; i++) {
+            auto startIt = std::chrono::system_clock::now();
             actualProduction.clear();
             actualProduction.push_back(nonterminals[0]);
             std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>> vProds;
+            auto startInsideTable = std::chrono::system_clock::now();
             double ****insideTableKL;
             insideTableKL = CYKProbKLVec(words[i]);
+            insideTTime += std::chrono::system_clock::now() - startInsideTable;
             sampleParseTreeKLVec(vProds, rules[0], words[i], insideTableKL, 0, words[i].size()-1);
+            freeInsideTableKL(insideTableKL, words[i].size());
             std::pair<std::vector<Symbol>, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>> pairTreeVec;
             pairTreeVec.first = words[i];
             pairTreeVec.second = vProds;
             parseTreesVec.push_back(pairTreeVec);
+
+            iterationTime = std::chrono::system_clock::now() - startIt;
+            //std::cout << "   insideT: " << insideTTime.count() << " iterationT: " << iterationTime.count() << std::endl;
         }
         std::vector<Symbol> a;
-        calculateNewThetaVec(a);
+        auto startNewTheta = std::chrono::system_clock::now();
+        calculateNewThetaVecOpt(a, -1);
+        newThetaTime += std::chrono::system_clock::now() - startNewTheta;
+        auto startUpdateTheta = std::chrono::system_clock::now();
         updateParseTressTheta();
-        if (j%5 == 0)
-            std::cout << "iteration: " << j <<" Perplexity: "<< perplexity(words, true) << std::endl;
+        updateThetaTime += std::chrono::system_clock::now() - startUpdateTheta;
+
+        //std::cout << "   newTheta: " << newThetaTime.count() << " updateTheta: " << updateThetaTime.count() << std::endl;
+
+        if (j%(iterations/5) == 0) {
+            //auto startPerplexityTime = std::chrono::system_clock::now();
+            //std::pair<double,  double> pMpP = perplexityKL(words, true);
+            //perplexityTime += std::chrono::system_clock::now() - startPerplexityTime;
+            //std::cout << "      iteration: " << j <<" - Perplexity: "<< pMpP.first << " - PerplexityN: "<< pMpP.second <<std::endl;
+            std::cout << "      iteration: " << j  << std::endl;
+        }
     }
+}
+
+void Grammar::freeInsideTable(double ***p, int wSize) {
+    for (int i = 0; i < nonterminals.size(); i++) {
+        for (int j = 0; j < wSize; j++)
+            delete[] p[i][j];
+        delete[] p[i];
+    }
+    delete[] p;
+}
+
+void Grammar::freeInsideTableKL(double ****p, int wSize) {
+    for (int i = 0; i < nonterminals.size()*contextAmount.first; i++) {
+        for (int j = 0; j < wSize; j++) {
+            for (int k = 0; k < wSize; k++)
+                delete[] p[i][j][k];
+            delete[] p[i][j];
+        }
+        delete[] p[i];
+    }
+    delete p;
+}
+
+void Grammar::sampleParseTreeKLVecOpt(
+        std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>, std::pair<double, double>>>> &vr,
+        Rule r, std::vector<Symbol> w, double ****insideTable, int i, int k) {
+    int jRange = k - i;
+    int rightRange = nNonTerminals*nNonTerminals;
+
+    Symbol nonterminal =  Symbol("", 0,false);
+    std::vector<Symbol>::iterator itLeft;
+    std::vector<Symbol> leftContext;
+    for (itLeft = r.left.begin(); itLeft != r.left.end(); itLeft++) {
+        if (itLeft->terminal == false && itLeft->context == false) {
+            nonterminal = (*itLeft).clone();
+            itLeft++;
+            break;
+        }
+        else {
+            leftContext.push_back((*itLeft));
+        }
+    }
+    std::vector<Symbol> rightContext;
+    while (itLeft != r.left.end() ) {
+        rightContext.push_back((*itLeft));
+        itLeft++;
+    }
+    double sumJBC = 0.0;
+    if (jRange > 0) {
+        //std::cout << w << std::endl;
+        double *jbc = new double[(jRange+1) * rightRange];
+
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+        for (itRight = r.right.begin(); itRight != r.right.end(); itRight ++) {
+            std::vector<Symbol>::iterator itSymbol;
+            for (itSymbol = (*itRight).first.begin(); itSymbol != (*itRight).first.end(); itSymbol++) {
+                if ((*itSymbol).terminal == false && (*itSymbol).context == false) {
+                    std::vector<Symbol> rightContextLine;
+                    itSymbol++;
+                    if ( contextSize.second > 0) {
+                        rightContextLine.push_back((*itSymbol));
+                        rightContextLine.front().context = true;
+                        if (!rightContext.empty()) {
+                            rightContextLine.insert(rightContextLine.end(), rightContext.begin(), rightContext.end());
+                            rightContext.pop_back();
+                        }
+                    }
+                    itSymbol--;
+                    for (int l = 0; l < jRange; l++) {
+                        int indexB = (*itSymbol).id * nNonTerminals * jRange;
+                        double pBij = insideTable[contextAmount.first*(*itSymbol).id+ convertContextToID(0,leftContext)]
+                        [i][i + l][convertContextToID(1,rightContextLine)];
+                        itSymbol++;
+                        double pCjk = insideTable[contextAmount.first*(*itSymbol).id+ convertContextToID(0,leftContext)]
+                        [i + l + 1][k][convertContextToID(1,rightContext)];
+                        int indexC = (*itSymbol).id * jRange;
+                        jbc[indexB + indexC + l] = ((*itRight).second.first * pBij * pCjk) /insideTable
+                        [contextAmount.first*nonterminal.id+ convertContextToID(0,leftContext)]
+                        [i][k][convertContextToID(1,rightContext)];
+                        itSymbol--;
+                        /*std::cout << "SumJBC = " <<sumJBC << " ";
+
+                        std::cout << "jbc[" <<indexB+indexC+l<<"] = " << (*itRight).second.first <<
+                        " * " << pBij << " ("<< "IT["<<
+                                      leftContext.size()*(*itSymbol).id+ convertContextToID(0,leftContext)<<"]["<<i<<"]["<<i+l<<"]["<<
+                                      convertContextToID(1,rightContext)<<"])"
+                        << " * " << pCjk
+                                << " ("<< "IT["<<
+                                leftContext.size()*(*itSymbol).id+ convertContextToID(0,leftContext)<<"]["<<i+l+1<<"]["<<k<<"]["<<
+                                convertContextToID(1,rightContext)<<"])"
+                        << " / " << insideTable
+                        [leftContext.size()*nonterminal.id+ convertContextToID(0,leftContext)]
+                        [i][k][convertContextToID(1,rightContext)] << " IT["<<
+                        leftContext.size()*nonterminal.id+ convertContextToID(0,leftContext)<<"]["<<i<<"]["<<k<<"]["<<
+                        convertContextToID(1,rightContext)<<"]"<<std::endl;*/
+
+
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        int l = 0;
+        for (l = 1; l < rightRange*jRange; l++)
+            jbc[l] = jbc[l] + jbc[l-1];
+        double p = (double) rand()/RAND_MAX;
+        //std::cout << "Sensitive: " << jbc[l-1] << std::endl;
+        for (l = 0; l < rightRange*jRange; l++)
+            if (p < jbc[l])
+                break;
+        int j = 0;
+
+        delete[]jbc;
+        Symbol rightB = Symbol("", 0,false);;
+        Symbol rightC = Symbol("", 0,false);;
+
+        std::pair<std::vector<Symbol>,std::pair<double, double>> rightProduction;
+        rightProduction = r.getRightSidebyId(l / (nNonTerminals*jRange), (l%(nNonTerminals*jRange)) / jRange, false, nNonTerminals);
+        std::vector<Symbol>::iterator itSymbol;
+        for (itSymbol = rightProduction.first.begin(); itSymbol != rightProduction.first.end(); itSymbol++) {
+            if (!(*itSymbol).terminal && !(*itSymbol).context) {
+                rightB = (*itSymbol).clone();
+                j = l - nNonTerminals*jRange* (*itSymbol).id;
+                itSymbol++;
+                rightC = (*itSymbol).clone();
+                if ((*itSymbol).id > 0)
+                    j = j % (*itSymbol).id;
+                break;
+            }
+        }
+        std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>> production = std::make_pair(r.left, rightProduction);
+
+        vr.push_back(production);
+        applyProduction(production);
+        std::vector<Symbol> leftContext2;
+        std::vector<Symbol> rightContext2;
+        getActualContext(leftContext2,rightContext2 );
+
+        while (leftContext2.size() > contextSize.first)
+            leftContext2.erase(leftContext2.begin());
+        while (rightContext2.size() > contextSize.second)
+            rightContext2.pop_back();
+
+        int lc , rc;
+        lc = ((int) rand()%(leftContext2.size()+1));
+        rc = (int) rand()%(rightContext2.size()+1);
+        for (int i = 0; i < lc; i++)
+            leftContext2.erase(leftContext2.begin());
+        for (int i = 0; i < rc; i++)
+            rightContext2.pop_back();
+        std::vector<Symbol> lhs;
+        lhs.insert(lhs.end(), leftContext2.begin(), leftContext2.end());
+        lhs.push_back(rightB);
+        lhs.insert(lhs.end(), rightContext2.begin(), rightContext2.end());
+        Rule nextRule = findRuleByLHS(lhs);
+        sampleParseTreeKLVecOpt(vr, nextRule, w, insideTable, i, i+j);
+
+        getActualContext(leftContext2,rightContext2 );
+
+        while (leftContext2.size() > contextSize.first)
+            leftContext2.erase(leftContext2.begin());
+        while (rightContext2.size() > contextSize.second)
+            rightContext2.pop_back();
+        lc = (int) rand()%(leftContext2.size()+1);
+        rc = (int) rand()%(rightContext2.size()+1);
+        for (int i = 0; i < lc; i++)
+            leftContext2.erase(leftContext2.begin() +i);
+        for (int i = 0; i < rc; i++)
+            rightContext2.pop_back();
+
+        lhs.clear();
+        lhs.insert(lhs.begin(), leftContext2.begin(), leftContext2.end());
+        lhs.push_back(rightC);
+        lhs.insert(lhs.begin(), rightContext2.begin(), rightContext2.end());
+        sampleParseTreeKLVecOpt(vr, findRuleByLHS(lhs), w, insideTable, i+j+1, k);
+
+    } else {
+        std::vector<Symbol> leftContext2;
+        std::vector<Symbol> rightContext2;
+        getActualContext(leftContext2, rightContext2);
+
+        while (leftContext2.size() > contextSize.first)
+            leftContext2.erase(leftContext2.begin());
+        while (rightContext2.size() > contextSize.second)
+            rightContext2.pop_back();
+        int lc , rc;
+        lc = (int) rand()%(leftContext2.size()+1);
+        rc = (int) rand()%(rightContext2.size()+1);
+        for (int i = 0; i < lc; i++)
+            leftContext2.erase(leftContext2.begin() +i);
+        for (int i = 0; i < rc; i++)
+            rightContext2.pop_back();
+        std::pair<std::vector<Symbol>,std::pair<double, double>> rightProduction;
+        rightProduction.first.insert(rightProduction.first.end(), leftContext.begin(), leftContext.end());
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+        std::string s = w[i].name;
+        for (itRight = r.right.begin(); itRight != r.right.end(); itRight++) {
+            std::vector<Symbol>::iterator itSymbol;
+            bool flagContext = false;
+            for (itSymbol = (*itRight).first.begin(); itSymbol != (*itRight).first.end(); itSymbol++) {
+                if ((*itSymbol).name.compare(s) == 0 && !(*itSymbol).context ) {
+                    rightProduction.first.push_back((*itSymbol));
+                    rightProduction.second.first = (*itRight).second.first;
+                    rightProduction.second.second = (*itRight).second.second;
+                    flagContext = true;
+                } else if (flagContext)
+                    rightProduction.first.push_back((*itSymbol));
+            }
+
+        }
+        std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>> production = std::make_pair(r.left, rightProduction);
+        vr.push_back(production);
+        applyProduction(production);
+        return;
+    }
+}
+
+double ****Grammar::CYKProbKLVecOpt(std::vector<Symbol> w) {
+    int sizeLeftContext = 0;
+    int sizeRightContext = 0;
+    for (int i = 0; i <= contextSize.first; i++) {
+        std::vector<Symbol> word;
+        std::vector<std::vector<Symbol>> permutationsTerminals;
+        generatePermutation(permutationsTerminals, terminals, i, word, true);
+        sizeLeftContext += permutationsTerminals.size();
+
+    }
+    contextAmount.first = sizeLeftContext;
+    for (int i = 0; i <= contextSize.second; i++) {
+        std::vector<Symbol> word;
+        std::vector<std::vector<Symbol>> permutationsTerminals;
+        generatePermutation(permutationsTerminals, nonterminals, i, word, true);
+//        rightContexts.insert(rightContexts.end(), permutationsTerminals.begin(), permutationsTerminals.end());
+        sizeRightContext += permutationsTerminals.size();
+    }
+    contextAmount.second = sizeRightContext;
+    double ****p = new double***[nonterminals.size()*sizeLeftContext];
+    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
+        p[i] = new double **[w.size()];
+        for (int j = 0; j < w.size(); j++) {
+            p[i][j] = new double *[w.size()];
+            for (int k = 0; k < w.size(); k++)
+                p[i][j][k] = new double[sizeRightContext];
+        }
+    }
+
+    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++)
+        for (int j = 0; j < w.size(); j++)
+            for (int k = 0; k < w.size(); k++)
+                for (int l = 0; l < sizeRightContext; l++)
+                    p[i][j][k][l] = 0.0;
+    std::vector<Rule>::iterator itRule;
+    for (int i = 0; i < w.size(); i++) {
+        for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+            std::vector<Symbol>::iterator itLeft;
+            Symbol nonterminal =  Symbol("", 0,false);
+            std::vector<Symbol> leftContext;
+            for (itLeft = (*itRule).left.begin(); itLeft != (*itRule).left.end(); itLeft++) {
+                if (itLeft->terminal == false && itLeft->context == false) {
+                    nonterminal = (*itLeft).clone();
+                    itLeft++;
+                    break;
+                }
+                else {
+                    leftContext.push_back((*itLeft));
+                }
+            }
+            std::vector<Symbol> rightContext;
+            while (itLeft != (*itRule).left.end() ) {
+                rightContext.push_back((*itLeft));
+                itLeft++;
+            }
+
+            std::pair<std::vector<Symbol>,std::pair<double, double>> rightHandSide;
+            rightHandSide = (*itRule).getRightSidebyId(w[i].id, 0, true, nNonTerminals);
+            std::vector<Symbol>::iterator itRightS;
+            for (itRightS = rightHandSide.first.begin(); itRightS != rightHandSide.first.end(); itRightS++) {
+                if (itRightS->terminal == true && itRightS->context == false) {
+                    if(itRightS->name.compare(w[i].name) == 0) {
+                        p[sizeLeftContext*nonterminal.id+ convertContextToID(0,leftContext)][i][i][convertContextToID(1,rightContext)] = rightHandSide.second.first;
+                        /*std::cout<< "IT["<<sizeLeftContext*nonterminal.id + convertContextToID(0,leftContext)<<"]["<<i<<"]["<<i<<"]["<< convertContextToID(1,rightContext)<<"] = ProbR"
+                        << " " << (*itRight).second.first << std::endl;*/
+                        break;
+                    }
+                }
+            }
+
+        }
+    }
+    for (int i = 1; i < w.size(); i++) {
+        for (int j = 0; j < w.size()-i; j++) {
+            for (int k = 0; k< i; k++) {
+                for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+                    std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+                    for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+                            if ((*itRight).first[(*itRule).index1stNonContext].terminal == false && (*itRight).first[(*itRule).index1stNonContext].context == false) {
+                                std::vector<Symbol> rightContextLine;
+                                if ( contextSize.second > 0) {
+                                    rightContextLine.push_back((*itRight).first[(*itRule).index1stNonContext+1]);
+                                    rightContextLine.front().context = true;
+                                    if (!(*itRule).rightContext.empty()) {
+                                        rightContextLine.insert(rightContextLine.end(), (*itRule).rightContext.begin(), (*itRule).rightContext.end());
+                                        rightContextLine.pop_back();
+                                    }
+                                }
+                                int leftContextID = convertContextToID(0,(*itRule).leftContext);
+                                int rightContextID = convertContextToID(1,(*itRule).rightContext);
+                                double bInside = p[sizeLeftContext*(*itRight).first[(*itRule).index1stNonContext].id + leftContextID][j][j+k][convertContextToID(1,rightContextLine)];
+                                double cInside = p[sizeLeftContext*(*itRight).first[(*itRule).index1stNonContext+1].id + leftContextID][j+k+1][j+i][rightContextID];
+
+                                p[sizeLeftContext*(*itRight).first[(*itRule).index1stNonContext].id+ leftContextID][j][i+j][rightContextID] =
+                                        p[sizeLeftContext*(*itRight).first[(*itRule).index1stNonContext].id+ leftContextID][j][i+j][rightContextID] + bInside*cInside*(*itRight).second.first;
+
+
+
+/*                                for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+                                    std::vector<Symbol>::iterator itRightS;
+                                    std::vector<Symbol> rightContextLine;
+                                    if ( contextSize.second > 0) {
+                                        rightContextLine.push_back((*itRight).first[(*itRule).index1stNonContext+1]);
+                                        rightContextLine.front().context = true;
+                                        if (!(*itRule).rightContext.empty()) {
+                                            rightContextLine.insert(rightContextLine.end(), (*itRule).rightContext.begin(), (*itRule).rightContext.end());
+                                            rightContextLine.pop_back();
+                                        }
+                                    }
+                                    int leftContextID = convertContextToID(0,(*itRule).leftContext);
+                                    int rightContextID = convertContextToID(1,(*itRule).rightContext);
+                                    double bInside = p[sizeLeftContext*((*itRight).first[(*itRule).index1stNonContext]).id + leftContextID][j][j+k][convertContextToID(1,rightContextLine)];
+                                    double cInside = p[sizeLeftContext*((*itRight).first[(*itRule).index1stNonContext+1]).id + leftContextID][j+k+1][j+i][rightContextID];
+                                    //nonterminal  é igual a (*itRight).first[(*itRule).index1stNonContext]
+                                    p[sizeLeftContext*(*itRight).first[(*itRule).index1stNonContext].id+ leftContextID][j][i+j][rightContextID] =
+                                            p[sizeLeftContext*(*itRight).first[(*itRule).index1stNonContext].id+ leftContextID][j][i+j][rightContextID] + bInside*cInside*(*itRight).second.first;
+                                    break;
+                                }*/
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //printInsideTableKL(p,w.size());
+    return p;
 }

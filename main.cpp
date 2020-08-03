@@ -10,50 +10,106 @@
 #include <stdarg.h>
 #include "InputWords.h"
 #include <string.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 
 using namespace std;
+/*
+namespace py = pybind11;
+int square(int x) {
+    return x * x;
+}
+*/
 
+
+/* py::class_<Symbol>(m, "Symbol")
+            .def(py::init<const std::string &, unsigned int, bool, bool &>());
+
+    py::class_<Grammar>(m, "Grammar")
+            .def(py::init<const std::vector<Symbol> &, std::pair<int, int>, int, std::vector<std::vector<Symbol>>, int>())
+            .def("train", &Grammar::train)
+            .def("printGrammar", &Grammar::printGrammar);*//*
+
+}
+*/
 
 int main(int argc, char** argv) {
 
-    InputWords iw = InputWords(false, 5);
-    iw.readWords();
-    iw.selectTrainingWords(172, false);
-    vector<Symbol> terminals = iw.generateTerminals();
-    int nInput = 10;
+    //argv[1] = nTerminals
+    //argv[2] = nSharesOrAmount
+    //argv[3] = byShare
+    //argv[4] = nInputForTraining
+    //argv[5] = contextleftSize
+    //argv[6] = contextRIghtSize
+    //argv[7] = iterations
+    //argv[8] = trainingMethod
+    //argv[9] = normalizedPerplexity
+    //argv[10] = timedInt
+    //argv[11] = nNonterminals
+    int nTerminals = stoi((argv[1]));
+    int nSharesOrAmount = stoi((argv[2]));
+    int nInputForTraining = stoi((argv[4]));
+    int contextLeftSize = stoi((argv[5]));
+    int contextRightSize = stoi((argv[6]));
+    int iterations = stoi((argv[7]));
+    int trainingMethod = stoi((argv[8]));
+    int nNonterminals = stoi(argv[11]);
+    bool byShare = true;
+    if(!stoi((argv[3])))
+        byShare = false;
+    bool normalizedPerplexity = true;
+    if (!stoi((argv[9])))
+        normalizedPerplexity = false;
+    bool timed = true;
+    if(!stoi(argv[10]))
+        timed = false;
 
-    vector<vector<Symbol>> iWordsLim;
-    iWordsLim.reserve(nInput);
-    for (int i = 0; i < nInput; i++)
-        iWordsLim.push_back(iw.inputWords[i]);
+    InputWords iw = InputWords(timed, nTerminals);
+    iw.readWords();
+    vector<Symbol> terminals = iw.generateTerminals();
+    iw.selectTrainingWords(nSharesOrAmount, byShare);
+    if(iw.inputWords.size() < nInputForTraining)
+        nInputForTraining = iw.inputWords.size();
 
     pair<int,int> contextSize;
+    contextSize = make_pair(contextLeftSize,contextRightSize);
 
-    contextSize = make_pair(0,0);
-    Grammar g = Grammar(terminals, contextSize, 5, iWordsLim, 1);
-    g.train(3,100);
-    double p1 = g.perplexity(iw.testWords,true);
-    cout<<endl <<"Final Perplexity: " <<p1 << endl;
-    g.~Grammar();
+    cout << "nTerminals: "<< nTerminals << " " << "nSharesOrAmount: " << nSharesOrAmount << " byShare: " << byShare << " nInputForTraining: " <<
+            nInputForTraining << " contextLeftSize: "  << contextLeftSize << endl<< " contextRightSize: " <<
+            contextRightSize << " iterations: " << iterations << " trainingMethod: " << trainingMethod << endl << " normalizedPerplexity: " <<
+            normalizedPerplexity << " timed: " << timed << " nNonterminals: " << nNonterminals << endl;
 
-    contextSize = make_pair(1,0);
-    Grammar gkl = Grammar(terminals, contextSize, 5, iWordsLim, 2);
-    gkl.train(4,100);
-    double pkl1 = gkl.perplexity(iw.testWords,true);
-    cout<< "Final Perplexity: " <<pkl1<< endl;
-    gkl.~Grammar();
+    do {
+        auto start = std::chrono::system_clock::now();
+        vector<vector<Symbol>> iWordsLim;
+        iWordsLim.reserve(nInputForTraining);
+        for (int i = 0; i < nInputForTraining; i++)
+            iWordsLim.push_back(iw.inputWords[i]);
 
-/*
-    contextSize = make_pair(2,0);
-    Grammar gkl2 = Grammar(terminals, contextSize, 10, iWordsLim, 2);
-    gkl2.train(2,0);
-    double pkl2 = gkl2.perplexity(iw.testWords,true);
-    cout<< "Final Perplexity: " <<gkl2.perplexity(iw.testWords,true);
-*/
+        Grammar g = Grammar(terminals, contextSize, nNonterminals, iWordsLim, trainingMethod);
 
-    cout<< "Final Perplexity: g: " << p1 << " gkl: " << pkl1 << " gkl2: ";
-    //Grammar g2 = Grammar(terminals, t1, contextSize, 4, 2);
+
+        g.train(trainingMethod,iterations);
+
+        g.printGrammar();
+
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        pair<double,double> p1;
+        cout  << " Calcutating perplexity..." << endl;
+        if (trainingMethod == 3 || trainingMethod == 1)
+            p1 = g.perplexity(iw.testWords,normalizedPerplexity);
+        else if (trainingMethod == 4 || trainingMethod == 2)
+            p1 = g.perplexityKL(iw.testWords,normalizedPerplexity);
+
+        cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
+        cout <<"Share: " << iw.actualShare<<" - Final Perplexity: " <<p1.first <<" - Final NPerplexity: " <<p1.second << endl;
+        end = std::chrono::system_clock::now();
+        elapsed_seconds = end-start;
+        cout << "elapsed time with perplexity time: " << elapsed_seconds.count() << "s" << endl  << endl;
+    } while (iw.nextShareTrainingWords());
+
 
 
 }

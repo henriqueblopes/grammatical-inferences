@@ -17,7 +17,8 @@ namespace fs = std::experimental::filesystem;
 InputWords::InputWords(bool timed, int nTerminals) : timed(timed), nTerminals(nTerminals) {}
 
 void InputWords::readWords() {
-    fs::path p1 = "/home/henrique/CLionProjects/GrammarInduction/McGill-Billboard"; // portable format
+    fs::path p = fs::current_path().parent_path();
+    fs::path p1 = (p /= "McGill-Billboard");
     for(auto& p: fs::recursive_directory_iterator(p1)) {
         if (!fs::is_directory(p)) {
             //std::cout << p.path() << '\n';
@@ -211,11 +212,15 @@ vector<Symbol> InputWords::generateTerminals() {
             if(a.second > maxChord.second)
                 maxChord = a;
         }
-        terminals.push_back(Symbol(maxChord.first, i, true, false));
+        Symbol aux = Symbol(maxChord.first, i, true, false);
+        terminals.push_back(aux);
+        chordMap[aux.name] = aux;
         chordCounts.erase(maxChord.first);
         i++;
     }
-    terminals.push_back(Symbol("Other", nTerminals-1, true, false));
+    Symbol aux = Symbol("Other", nTerminals-1, true, false);
+    terminals.push_back(aux);
+    chordMap["Other"] = aux;
     truncChordWords();
     return terminals;
 }
@@ -223,8 +228,11 @@ vector<Symbol> InputWords::generateTerminals() {
 void InputWords::truncChordWords() {
     for (vector<vector<Symbol>>::iterator  itIW = inputWords.begin(); itIW != inputWords.end(); itIW++) {
         for (vector<Symbol>::iterator itS = (*itIW).begin(); itS != (*itIW).end(); itS++) {
-            if (chordCounts.find((*itS).name) != chordCounts.end()) {
-                (*itS).name = "Other";
+            if (chordMap.find((*itS).name) == chordMap.end()) {
+                (*itS) = chordMap["Other"];
+            } else {
+                (*itS) = chordMap[(*itS)
+                                  .name];
             }
         }
     }
@@ -261,7 +269,7 @@ void InputWords::selectTrainingWords(int nSharesOrAmount, bool byShare) {
     else
         nTestShares = inputWords.size()/nSharesOrAmount;
     actualShare = 0;
-    std::random_shuffle ( inputWords.begin(), inputWords.end());
+    //std::random_shuffle ( inputWords.begin(), inputWords.end());
     int tAmount = (int) inputWords.size()/nTestShares;
     vector<vector<Symbol>> tWords;
     for (int i = 0; i< tAmount; i++) {
@@ -271,9 +279,9 @@ void InputWords::selectTrainingWords(int nSharesOrAmount, bool byShare) {
 }
 
 bool InputWords::nextShareTrainingWords() {
+    actualShare++;
     if (actualShare >= nTestShares)
         return false;
-    actualShare++;
     inputWords.insert(inputWords.end(), testWords.begin(), testWords.end());
     testWords.clear();
     int tAmount = (int) inputWords.size()/nTestShares;

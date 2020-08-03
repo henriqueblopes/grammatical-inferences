@@ -5,7 +5,7 @@
 		<Option title="grammatical-inferences"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\local\;CMake Files\..\..\..\..\usr\local\share\;CMake Files\..\..\..\..\usr\local\share\cmake\;CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug"/>
@@ -34,6 +34,7 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/usr/include/python3.6m"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -57,6 +58,7 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/usr/include/python3.6m"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -83,12 +85,64 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="klpcsg">
+				<Option output="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/klpcsg.cpython-36m-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/python3.6m"/>
+					<Add directory="/home/henrique/CLionProjects/grammatical-inferences/pybind11/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 klpcsg"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="klpcsg/fast">
+				<Option output="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/klpcsg.cpython-36m-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/python3.6m"/>
+					<Add directory="/home/henrique/CLionProjects/grammatical-inferences/pybind11/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 klpcsg/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 		</Build>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp">
 			<Option target="grammatical-inferences"/>
+			<Option target="klpcsg"/>
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/Grammar.h">
 			<Option target="grammatical-inferences"/>
+			<Option target="klpcsg"/>
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/InputWords.cpp">
 			<Option target="grammatical-inferences"/>
@@ -98,15 +152,19 @@
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/Rule.cpp">
 			<Option target="grammatical-inferences"/>
+			<Option target="klpcsg"/>
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/Rule.h">
 			<Option target="grammatical-inferences"/>
+			<Option target="klpcsg"/>
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/Symbol.cpp">
 			<Option target="grammatical-inferences"/>
+			<Option target="klpcsg"/>
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/Symbol.h">
 			<Option target="grammatical-inferences"/>
+			<Option target="klpcsg"/>
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/catch.hpp">
 			<Option target="grammatical-inferences"/>
@@ -117,8 +175,27 @@
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/peglib.h">
 			<Option target="grammatical-inferences"/>
 		</Unit>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/pybinding.cpp">
+			<Option target="grammatical-inferences"/>
+			<Option target="klpcsg"/>
+		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/FindPythonLibsNew.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
+		</Unit>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/pybind11Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
+		</Unit>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/pybind11ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
+		</Unit>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/pybind11Targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
+		</Unit>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/pybind11Tools.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
 		</Unit>
 	</Project>
 </CodeBlocks_project_file>

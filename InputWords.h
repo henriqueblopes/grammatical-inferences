@@ -21,12 +21,14 @@ class InputWords {
 public:
     vector<vector<Symbol>> inputWords;
     vector<vector<Symbol>> testWords;
+    int actualShare;
 private:
     bool timed;
     std::unordered_map<string, int> chordCounts;
+    std::unordered_map<string, Symbol> chordMap;
     int nTerminals;
     int nTestShares;
-    int actualShare;
+
 public:
     InputWords(bool timed, int nTerminals);
     void readWords();

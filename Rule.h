@@ -13,6 +13,11 @@ public:
     std::vector<Symbol> left;
     std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>> right;
     double probDirichletTheta;
+    int index1stNonContext;
+    std::vector<Symbol> leftContext;
+    std::vector<Symbol> rightContext;
+    std::vector<std::pair<double, int>> ruleFrequence;
+    int index;
 
 
 public:
@@ -23,6 +28,7 @@ public:
     Rule clone();
     void updateProbDirichletTheta();
     void generatePiorDirichlet(double alfa,int thetaDist);
+    std::pair<std::vector<Symbol>,std::pair<double, double>> getRightSidebyId(int id1stNonContext, int id2ndNonContext, bool terminal, int nNonterminals);
 private:
     double cConstant();
 };

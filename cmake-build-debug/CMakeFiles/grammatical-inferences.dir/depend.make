@@ -16,7 +16,6 @@ CMakeFiles/grammatical-inferences.dir/Rule.cpp.o: ../Symbol.h
 
 CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o: ../Symbol.cpp
 CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o: ../Symbol.h
-CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o: ../catch.hpp
 
 CMakeFiles/grammatical-inferences.dir/main.cpp.o: ../Grammar.h
 CMakeFiles/grammatical-inferences.dir/main.cpp.o: ../InputWords.h
@@ -25,4 +24,9 @@ CMakeFiles/grammatical-inferences.dir/main.cpp.o: ../Symbol.h
 CMakeFiles/grammatical-inferences.dir/main.cpp.o: ../catch.hpp
 CMakeFiles/grammatical-inferences.dir/main.cpp.o: ../main.cpp
 CMakeFiles/grammatical-inferences.dir/main.cpp.o: ../peglib.h
+
+CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o: ../Grammar.h
+CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o: ../Rule.h
+CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o: ../Symbol.h
+CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o: ../pybinding.cpp
 

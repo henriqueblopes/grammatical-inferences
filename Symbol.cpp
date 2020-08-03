@@ -3,7 +3,6 @@
 //
 #include <iostream>
 #include "Symbol.h"
-#include "catch.hpp"
 
 void Symbol::free(Symbol &s) {
     //free(s.name);
@@ -34,7 +33,3 @@ int Symbol::xplusy(int x, int y) {
 }
 
 Symbol::Symbol() {}
-
-TEST_CASE("Test Catch2 for Symbol") {
-    REQUIRE (Symbol::xplusy(5,6) == 10);
-}

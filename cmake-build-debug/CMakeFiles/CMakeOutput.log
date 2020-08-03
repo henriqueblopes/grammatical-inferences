@@ -817,3 +817,20 @@ make[1]: Leaving directory '/home/henrique/CLionProjects/grammatical-inferences/
     Feature record: CXX_FEATURE:0cxx_variable_templates
     Feature record: CXX_FEATURE:0cxx_variadic_macros
     Feature record: CXX_FEATURE:0cxx_variadic_templates
+Performing C++ SOURCE FILE Test HAS_FLTO succeeded with the following output:
+Change Dir: /home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_87eb0/fast 
+make[1]: Entering directory '/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/CMakeTmp'
+/usr/bin/make -f CMakeFiles/cmTC_87eb0.dir/build.make CMakeFiles/cmTC_87eb0.dir/build
+make[2]: Entering directory '/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_87eb0.dir/src.cxx.o
+/usr/bin/c++    -static-libstdc++ -static-libgcc -DHAS_FLTO   -flto -fno-fat-lto-objects -o CMakeFiles/cmTC_87eb0.dir/src.cxx.o -c /home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_87eb0
+/home/henrique/cmake-3.14.2-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_87eb0.dir/link.txt --verbose=1
+/usr/bin/c++   -static-libstdc++ -static-libgcc -DHAS_FLTO    -rdynamic CMakeFiles/cmTC_87eb0.dir/src.cxx.o  -o cmTC_87eb0 -flto 
+make[2]: Leaving directory '/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/CMakeTmp'
+
+Source file was:
+int main() { return 0; }

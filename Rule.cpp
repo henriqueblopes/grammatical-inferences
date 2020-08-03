@@ -73,6 +73,9 @@ std::string Rule::ruleToStrLALR() {
             else
                 ruleStr += (*itRule).name + " ";
         }
+        std::string s = std::to_string((*itVector).second.first);
+        ruleStr += s;
+        ruleStr += " ";
 
         if (itVector != right.end()-1)
             ruleStr += "| ";
@@ -131,6 +134,13 @@ void Rule::updateProbDirichletTheta() {
     }
     //TO DO: talvez colocar cConstant como atributo
     probDirichletTheta = prodThetaAlfa/cConstant();
+}
+
+std::pair<std::vector<Symbol>, std::pair<double, double>> Rule::getRightSidebyId(int id1stNonContext, int id2ndNonContext, bool terminal, int nNonterminals) {
+    if (terminal)
+        return right[nNonterminals*nNonterminals + id1stNonContext];
+    else
+        return right[nNonterminals*id1stNonContext + id2ndNonContext];
 }
 
 

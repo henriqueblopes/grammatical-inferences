@@ -20,14 +20,13 @@
       <path>
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
         <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="BRANCH:origin/master" type="e8cecc67:BranchNodeDescriptor" />
       </path>
     </select>
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
       <config projectName="grammatical-inferences" targetName="grammatical-inferences" />
+      <config projectName="grammatical-inferences" targetName="klpcsg" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -36,7 +35,241 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f5246a4-a700-49ee-bd3b-d1a3bd0dc08e" name="Default Changelist" comment="" />
+    <list default="true" id="6f5246a4-a700-49ee-bd3b-d1a3bd0dc08e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.main.cpp.cppimporthash" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.rendered.main.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ResLargAlphabet" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/executeExperiment.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/.appveyor.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/.github/workflows/ci.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/.github/workflows/format.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/.gitmodules" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/.pre-commit-config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/.readthedocs.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/.travis.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/CONTRIBUTING.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/ISSUE_TEMPLATE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/MANIFEST.in" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/Doxyfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/_static/theme_overrides.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/cast/chrono.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/cast/custom.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/cast/eigen.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/cast/functional.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/cast/index.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/cast/overview.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/cast/stl.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/cast/strings.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/classes.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/embedding.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/exceptions.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/functions.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/misc.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/pycpp/index.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/pycpp/numpy.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/pycpp/object.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/pycpp/utilities.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/advanced/smart_ptrs.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/basics.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/benchmark.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/benchmark.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/changelog.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/classes.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/compiling.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/conf.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/faq.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/index.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/intro.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/limitations.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/pybind11-logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/pybind11_vs_boost_python1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/pybind11_vs_boost_python1.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/pybind11_vs_boost_python2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/pybind11_vs_boost_python2.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/reference.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/release.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/docs/upgrade.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/attr.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/buffer_info.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/cast.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/chrono.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/common.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/complex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/detail/class.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/detail/common.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/detail/descr.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/detail/init.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/detail/internals.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/detail/typeid.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/eigen.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/embed.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/eval.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/functional.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/iostream.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/numpy.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/operators.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/options.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/pybind11.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/pytypes.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/stl.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/include/pybind11/stl_bind.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/pybind11/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/pybind11/__main__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/pybind11/_version.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/setup.cfg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/setup.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/conftest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/constructor_stats.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/cross_module_gil_utils.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/local_bindings.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/object.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/pybind11_cross_module_tests.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/pybind11_tests.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/pybind11_tests.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/pytest.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_async.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_async.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_buffers.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_buffers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_builtin_casters.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_builtin_casters.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_call_policies.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_call_policies.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_callbacks.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_callbacks.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_chrono.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_chrono.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_class.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_class.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/embed.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/installed_embed/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/installed_function/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/installed_target/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/main.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/subdirectory_embed/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/subdirectory_function/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/subdirectory_target/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_cmake_build/test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_constants_and_functions.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_constants_and_functions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_copy_move.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_copy_move.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_custom_type_casters.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_custom_type_casters.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_docstring_options.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_docstring_options.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_eigen.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_eigen.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_embed/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_embed/catch.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_embed/external_module.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_embed/test_interpreter.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_embed/test_interpreter.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_enum.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_enum.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_eval.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_eval.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_eval_call.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_exceptions.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_exceptions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_factory_constructors.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_factory_constructors.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_gil_scoped.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_gil_scoped.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_iostream.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_iostream.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_kwargs_and_defaults.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_kwargs_and_defaults.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_local_bindings.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_local_bindings.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_methods_and_attributes.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_methods_and_attributes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_modules.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_modules.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_multiple_inheritance.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_multiple_inheritance.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_numpy_array.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_numpy_array.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_numpy_dtypes.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_numpy_dtypes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_numpy_vectorize.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_numpy_vectorize.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_opaque_types.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_opaque_types.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_operator_overloading.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_operator_overloading.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_pickling.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_pickling.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_pytypes.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_pytypes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_sequences_and_iterators.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_sequences_and_iterators.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_smart_ptr.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_smart_ptr.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_stl.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_stl.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_stl_binders.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_stl_binders.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_tagbased_polymorphic.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_tagbased_polymorphic.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_union.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_union.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_virtual_functions.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tests/test_virtual_functions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tools/FindCatch.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tools/FindEigen3.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tools/FindPythonLibsNew.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tools/check-style.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tools/libsize.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tools/mkdoc.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tools/pybind11Config.cmake.in" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybind11/tools/pybind11Tools.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pybinding.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resultsContext.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Grammar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Grammar.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Grammar.h" beforeDir="false" afterPath="$PROJECT_DIR$/Grammar.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/InputWords.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/InputWords.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/InputWords.h" beforeDir="false" afterPath="$PROJECT_DIR$/InputWords.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Rule.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Rule.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Rule.h" beforeDir="false" afterPath="$PROJECT_DIR$/Rule.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Symbol.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Symbol.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Symbol.h" beforeDir="false" afterPath="$PROJECT_DIR$/Symbol.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -47,6 +280,19 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/PCFGandPCSG" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
     <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
         <option value="Henrique Barros Lopes &lt;henrique.blopes90@gmail.com&gt;" />
@@ -67,29 +313,42 @@
     </option>
   </component>
   <component name="ProjectId" id="1cEXy529KF6CCV9NUaJxOC8om4J" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../cmake_example" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
   </component>
-  <component name="RunManager">
-    <configuration name="grammatical-inferences" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="grammatical-inferences" TARGET_NAME="grammatical-inferences" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="grammatical-inferences" RUN_TARGET_NAME="grammatical-inferences" TEST_MODE="SUITE_TEST">
+  <component name="RunManager" selected="Catch.grammatical-inferences">
+    <configuration name="grammatical-inferences" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" PROGRAM_PARAMS="4 10 1 30000 1 0 30 4 1 0 2" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="grammatical-inferences" TARGET_NAME="grammatical-inferences" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="grammatical-inferences" RUN_TARGET_NAME="grammatical-inferences" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
         <option name="BeforeTestRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="klpcsg" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="grammatical-inferences" TARGET_NAME="klpcsg" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Catch.grammatical-inferences" />
+      <item itemvalue="CMake Application.klpcsg" />
+    </list>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -102,7 +361,39 @@
       <option name="presentableId" value="Default" />
       <updated>1590094977463</updated>
       <workItem from="1590094979090" duration="763000" />
-      <workItem from="1590095808159" duration="1440000" />
+      <workItem from="1590095808159" duration="2638000" />
+      <workItem from="1590167570793" duration="10469000" />
+      <workItem from="1590179612077" duration="552000" />
+      <workItem from="1590180316461" duration="3132000" />
+      <workItem from="1590241373903" duration="1854000" />
+      <workItem from="1590250795158" duration="1184000" />
+      <workItem from="1590254349548" duration="1453000" />
+      <workItem from="1590411999126" duration="5754000" />
+      <workItem from="1590426645020" duration="235000" />
+      <workItem from="1590427500714" duration="21000" />
+      <workItem from="1590443930157" duration="16000" />
+      <workItem from="1591029864112" duration="10937000" />
+      <workItem from="1591065112048" duration="17000" />
+      <workItem from="1591108589048" duration="7429000" />
+      <workItem from="1591129026485" duration="22591000" />
+      <workItem from="1591194723086" duration="6239000" />
+      <workItem from="1591356433481" duration="25853000" />
+      <workItem from="1591626064512" duration="11333000" />
+      <workItem from="1591653114597" duration="19291000" />
+      <workItem from="1591750308743" duration="6000" />
+      <workItem from="1591920741808" duration="157000" />
+      <workItem from="1595533581454" duration="1271000" />
+      <workItem from="1595870700064" duration="4746000" />
+      <workItem from="1595876961289" duration="3588000" />
+      <workItem from="1595881317549" duration="2650000" />
+      <workItem from="1595894481802" duration="1443000" />
+      <workItem from="1595962193410" duration="1200000" />
+      <workItem from="1595966325890" duration="4014000" />
+      <workItem from="1595974566834" duration="979000" />
+      <workItem from="1595976313430" duration="495000" />
+      <workItem from="1595977513489" duration="2401000" />
+      <workItem from="1596038270343" duration="12341000" />
+      <workItem from="1596471065607" duration="5279000" />
     </task>
     <task id="LOCAL-00001" summary="Commit dos algoritmos implementados">
       <created>1590095539245</created>
@@ -111,7 +402,14 @@
       <option name="project" value="LOCAL" />
       <updated>1590095539245</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Commit dos algoritmos implementados">
+      <created>1590097313230</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1590097313230</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -147,19 +445,7 @@
         </entry>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="origin/master" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -172,6 +458,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Commit dos algoritmos implementados" />
     <option name="LAST_COMMIT_MESSAGE" value="Commit dos algoritmos implementados" />
   </component>
@@ -180,38 +467,80 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="863" y="421" width="251" height="263" key="#Notifications/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096343655" />
-    <state x="521" y="109" width="935" height="886" key="CommitChangelistDialog2" timestamp="1590095537959">
+    <state x="446" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595533812394">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="521" y="109" width="935" height="886" key="CommitChangelistDialog2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590095537959" />
+    <state x="446" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1591920869124" />
+    <state x="446" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1595533812394" />
+    <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1595979485161">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1595979485161" />
+    <state x="521" y="137" width="935" height="858" key="CommitChangelistDialog2" timestamp="1590097312622">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="521" y="137" width="935" height="858" key="CommitChangelistDialog2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590097312622" />
     <state x="167" y="125" width="1653" height="855" key="DiffContextDialog" timestamp="1590096828073">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="167" y="125" width="1653" height="855" key="DiffContextDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096828073" />
-    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl" timestamp="1590097035353">
+    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl" timestamp="1595968116882">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590097035353" />
-    <state width="1807" height="278" key="GridCell.Tab.0.bottom" timestamp="1590096928943">
+    <state x="2655" y="290" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1595880827910" />
+    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1595968116882" />
+    <state width="1374" height="277" key="GridCell.Tab.0.bottom" timestamp="1596051967977">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096928943" />
-    <state width="1807" height="278" key="GridCell.Tab.0.center" timestamp="1590096928943">
+    <state width="1465" height="274" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1591402776237" />
+    <state width="1374" height="277" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1596051967977" />
+    <state width="1375" height="277" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
+    <state width="1374" height="277" key="GridCell.Tab.0.center" timestamp="1596051967977">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096928943" />
-    <state width="1807" height="278" key="GridCell.Tab.0.left" timestamp="1590096928943">
+    <state width="1465" height="274" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1591402776237" />
+    <state width="1374" height="277" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1596051967977" />
+    <state width="1375" height="277" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
+    <state width="1374" height="277" key="GridCell.Tab.0.left" timestamp="1596051967976">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096928943" />
-    <state width="1807" height="278" key="GridCell.Tab.0.right" timestamp="1590096928943">
+    <state width="1465" height="274" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1591402776237" />
+    <state width="1374" height="277" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1596051967976" />
+    <state width="1375" height="277" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290288" />
+    <state width="1374" height="277" key="GridCell.Tab.0.right" timestamp="1596051967977">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096928943" />
-    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1590096963710">
+    <state width="1465" height="274" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1591402776237" />
+    <state width="1374" height="277" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1596051967977" />
+    <state width="1375" height="277" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
+    <state width="1443" height="380" key="GridCell.Tab.1.bottom" timestamp="1595540289516">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096963710" />
+    <state width="1465" height="274" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1591402776238" />
+    <state width="1447" height="380" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1591736629288" />
+    <state width="1443" height="380" key="GridCell.Tab.1.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289516" />
+    <state width="1443" height="380" key="GridCell.Tab.1.center" timestamp="1595540289514">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1465" height="274" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1591402776238" />
+    <state width="1447" height="380" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1591736629288" />
+    <state width="1443" height="380" key="GridCell.Tab.1.center/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289514" />
+    <state width="1443" height="380" key="GridCell.Tab.1.left" timestamp="1595540289514">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1465" height="274" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1591402776238" />
+    <state width="1447" height="380" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1591736629288" />
+    <state width="1443" height="380" key="GridCell.Tab.1.left/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289514" />
+    <state width="1443" height="380" key="GridCell.Tab.1.right" timestamp="1595540289515">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1465" height="274" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1591402776238" />
+    <state width="1447" height="380" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1591736629288" />
+    <state width="1443" height="380" key="GridCell.Tab.1.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289515" />
+    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1590097386984">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590097386984" />
     <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1590096828073">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -220,13 +549,52 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096828073" />
-    <state x="764" y="467" width="448" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1590096781612">
+    <state x="764" y="467" width="458" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1591055740256">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="764" y="467" width="448" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096781612" />
+    <state x="764" y="467" width="458" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1591055740256" />
     <state x="167" y="125" width="1653" height="855" key="git4idea.log.GitShowExternalLogAction" timestamp="1590096828073">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="167" y="125" width="1653" height="855" key="git4idea.log.GitShowExternalLogAction/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096828073" />
+    <state x="690" y="341" width="597" height="423" key="git4idea.merge.GitMergeDialog" timestamp="1590098884211">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="690" y="341" width="597" height="423" key="git4idea.merge.GitMergeDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590098884211" />
+    <state x="876" y="338" width="216" height="429" key="refactoring.ChangeSignatureDialog" timestamp="1595878367853">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="876" y="338" width="216" height="429" key="refactoring.ChangeSignatureDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1595878367853" />
+    <state x="657" y="253" key="run.anything.popup" timestamp="1591367685108">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="657" y="253" key="run.anything.popup/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1591367685108" />
+    <state x="656" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1595974599692">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="656" y="257" width="672" height="678" key="search.everywhere.popup/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1595974599692" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Grammar.cpp</url>
+          <line>1210</line>
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Grammar.cpp</url>
+          <line>1850</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CMakeCatchTestRunConfigurationType">
+        <watch expression="(*itLeft)" language="ObjectiveC" />
+        <watch expression="iw.testWords.size()" language="ObjectiveC" />
+        <watch expression="*itRight" language="ObjectiveC" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
