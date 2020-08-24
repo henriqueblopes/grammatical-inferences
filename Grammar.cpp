@@ -9,6 +9,8 @@
 #include <chrono>
 #include "Grammar.h"
 
+using namespace std;
+
 Grammar::Grammar(const std::vector<Symbol> &terminals, const std::vector<Symbol> &nonterminals,
                  const std::vector<Rule> &rules, const Symbol &start) : terminals(terminals),
                                                                         nonterminals(nonterminals), rules(rules),
@@ -27,6 +29,23 @@ Grammar::Grammar(const std::vector<Symbol> &terminals, std::pair<int, int> conte
     generateNonTermnals();
     generateRulesCNF();
     start = rules[0].left.front();
+}
+
+Grammar::Grammar(const std::vector<Symbol> &terminals, int nNonTerminals, std::vector<std::vector<Symbol>> words,
+                 int type) : terminals(terminals), nNonTerminals(nNonTerminals), words(words), type(type) {
+    nTerminals = terminals.size();
+    generateNonTermnals();
+    if(type == 3)
+        generateRulesRegular();
+    else if (type == 2) {
+        contextSize = make_pair(0,0);
+        generateRulesCNF();
+        start = rules[0].left.front();
+    }
+
+
+//    start = rules[0].left.front();
+
 }
 
 void Grammar::printGrammar() {
@@ -236,6 +255,7 @@ double*** Grammar::CYKProb(std::string w) {
 }
 
 void Grammar::printInsideTable(double ***p, int wSize) {
+    cout << "IutsideTable" << endl;
     for (int i = 0; i< nonterminals.size(); i++) {
         std::cout <<"Nonterminal: " << i << "\n";
         for (int j = 0; j < wSize; j++) {
@@ -245,6 +265,22 @@ void Grammar::printInsideTable(double ***p, int wSize) {
             std::cout << "\n";
         }
     }
+}
+
+void Grammar::printOutsideTable(std::vector<std::vector<std::vector<double>>> p) {
+    int i = 0;
+    cout << "OutsideTable" << endl;
+    for (auto a: p) {
+        cout << "Nonterminal: " << i << endl;
+        i++;
+        for (auto b: a) {
+            for (auto c: b) {
+                std::cout << c << " ";
+            }
+            std::cout << "\n";
+        }
+    }
+    std::cout << "\n";
 }
 
 void Grammar::printInsideTableKL(double ****p, int wSize) {
@@ -1454,6 +1490,153 @@ double ***Grammar::CYKProbVec(std::vector<Symbol> w) {
     return p;
 }
 
+vector<vector<vector<double>>> Grammar::outsideTable(std::vector<Symbol> w, double *** insideTable) {
+    vector<vector<vector<double>>>  outsideTable;
+    for (auto nt: nonterminals) {
+        outsideTable.push_back(vector<vector<double>>());
+        for (int i = 0; i < w.size(); i++) {
+            outsideTable[nt.id].push_back(vector<double>());
+            for (int j = 0; j < w.size(); j++) {
+                outsideTable[nt.id][i].push_back(0.0);
+            }
+        }
+    }
+    outsideTable[0][0][w.size()-1] = 1;
+    //printOutsideTable(outsideTable);
+
+    for (int i = w.size()-1; i >=0; i--) {
+        for (int j = 0; j+i< w.size(); j++) {
+            for (auto nt: nonterminals) {
+                //cout << "B_"<<nt.id<<"_"<<j<<"_"<<j+i<<endl;
+
+                for (auto r: rules) {
+                    for (auto right: r.right) {
+                        if (right.first[0].terminal)
+                            break;
+                        for (int k=0; k < j; k++) {
+
+                            if (right.first[1].id ==nt.id) {
+                                outsideTable[nt.id][j][j+i] += outsideTable[r.left[0].id][k][j+i]*insideTable[ right.first[0].id][k][j-1]* right.second.first;
+                                /*cout << "B_" << r.left[0].id << "_" << k << "_" << j + i << " * " << "I_" << right.first[0].id << "_" << k << "_" << j - 1 << " = "
+                                     <<outsideTable[r.left[0].id][k][j+i] << " * " << insideTable[ right.first[0].id][k][j-1] << " * " << right.second.first
+                                     << " = " << outsideTable[nt.id][j][j+i] << endl;*/
+                            }                    }
+                        for (int k=w.size()-1; k > j+i; k--) {
+                            if (right.first[0].id ==nt.id) {
+                                outsideTable[nt.id][j][j+i] += outsideTable[r.left[0].id][j][k]*insideTable[ right.first[1].id][j+i+1][k]* right.second.first;
+                                /*cout << "B_" <<r.left[0].id<<"_"<<j<<"_"<<k<< " * " << "I_"<<right.first[1].id<<"_"<<j+i+1<<"_"<<k << " = "
+                                     << outsideTable[r.left[0].id][j][k] << " * " <<insideTable[ right.first[1].id][j+i+1][k] << " * " << right.second.first
+                                     << " = " << outsideTable[nt.id][j][j+i] <<endl;*/
+                            }
+                        }
+                    }
+                }
+                //cout << endl;
+            }
+
+        }
+    }
+
+
+
+    /*
+    cout << endl << endl << "ordered outside:" <<endl;
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j<=n; j++) {
+            cout << "B_"<<nt<<"_"<<i<<"_"<<j<<endl;
+            for (auto r: rules) {
+                for (auto right: r.right) {
+                    if (right.first[0].terminal)
+                        break;
+                    for (int k=1; k < i; k++) {
+                        if (right.first[1].id ==nt)
+                            cout << "B_" <<r.left[0].id<<"_"<<k<<"_"<<j << " * " << "I_"<<right.first[0].id<<"_"<<k<<"_"<<i-1 <<endl;
+                    }
+                    for (int k=n; k > j; k--) {
+                        if (right.first[0].id ==nt)
+                            cout << "B_" <<r.left[0].id<<"_"<<i<<"_"<<k<< " * " << "I_"<<right.first[1].id<<"_"<<j+1<<"_"<<k <<endl;
+
+                    }
+                }
+            }
+            cout << endl;
+        }
+    }*/
+
+    /*for (int i = w.size()-1; i>0 ; i++) {
+        for (int j = i-1; j >0; j++) {
+
+        }
+    }*/
+
+/*
+    for (int e = 0; e<= w.size(); e++) {
+        for (int j = 1; j <= w.size()-e; j++) {
+            int k = w.size()+1-j+e;
+            for (auto r: rules) {
+                for (int l = 0; l < nNonTerminals*nNonTerminals; l++) {
+                    for (int s = j; s <=k; s++) {
+                        outsideTable[r.right[l].first[0].id][j][s] += r.right[l].second.first *
+                                outsideTable[r.left[0].id][j][k] * insideTable[r.right[l].first[1].id][s][k-1];
+
+                        cout << "O["<<r.right[l].first[0].id<<"]["<<j<<"]["<<s<<"] += O[" << r.left[0].id<<"]["<<j<<"]["<<k<<"] * I["
+                        <<r.right[l].first[1].id<<"]["<<s<<"]["<<k-1<<"]\t\t" ;
+
+
+
+                        outsideTable[r.right[l].first[1].id][s][k] += r.right[l].second.first *
+                                outsideTable[r.left[0].id][j][k] * insideTable[r.right[l].first[0].id][j+1][s];
+
+                        cout << "O["<<r.right[l].first[1].id<<"]["<<s<<"]["<<k<<"] += O[" << r.left[0].id<<"]["<<j<<"]["<<k<<"] * I["
+                             <<r.right[l].first[0].id<<"]["<<j+1<<"]["<<s<<"]" << endl;
+                    }
+                }
+            }
+        }
+    }*/
+    /*for (int p = 0; p < w.size(); p++) {
+        for (int q=0; q < w.size(); q++) {
+            for (auto r: rules) {
+                for (int l = 0; l < nNonTerminals*nNonTerminals; l++) {
+                    for (int k = q+1; k <w.size();k++) {
+                        outsideTable[r.right[l].first[0].id][p][q] += outsideTable[r.left[0].id][p][k] *
+                                insideTable[r.right[l].first[1].id][q+1][k]*r.right[l].second.first;
+                    }
+                    for (int k = 0; k <p-1;k++) {
+
+                    }
+                }
+            }
+        }
+    }*/
+    /*for (int i = w.size()-1; i >0 ; i--) {
+        for (int j = 0; j < w.size() - i; j++) {
+            for (int k = 0; k < i; k++) {
+                for (auto r: rules) {
+                    for (int l = 0; l < nNonTerminals*nNonTerminals; l++) {
+                        cout << "i:"<<i<<" j:"<<j<<" k:"<<k<<" - ";
+                        outsideTable[r.right[l].first[0].id][j][j+k] +=
+                                outsideTable[r.left[0].id][j][j+i] * insideTable[r.right[l].first[1].id][j+k][j+i] * r.right[l].second.first;
+
+                        cout << "OT["<<r.right[l].first[0].id<<"]["<<j<<"]["<<j+k<<"] += OT["<<r.left[0].id<<"]["<<j<<"]["<<j+i<<"] * IT["
+                             << r.right[l].first[1].id<<"]["<<j+k<<"]["<<j+i<<"] * p"<<r.left[0].id<<"->"<<r.right[l].first[0].id<<r.right[l].first[1].id << " = " << outsideTable[r.left[0].id][j][j+i] << "*"
+                             << insideTable[r.right[l].first[1].id][j+k][j+i] <<"*" << r.right[l].second.first << " = " << outsideTable[r.right[l].first[0].id][j][j+k];
+
+                        outsideTable[r.right[l].first[1].id][j+k][j+i] +=
+                                outsideTable[r.left[0].id][j][j+i] * insideTable[r.right[l].first[0].id][j][j+k] * r.right[l].second.first;
+
+                        cout << "\tOT["<<r.right[l].first[1].id<<"]["<<j+k<<"]["<<j+i<<"] += OT["<<r.left[0].id<<"]["<<j<<"]["<<j+i<<"] * IT["
+                             <<r.right[l].first[0].id<<"]["<<j<<"]["<<j+k<<"] * p"<<r.left[0].id<<"->"<<r.right[l].first[0].id<<r.right[l].first[1].id << " = " << outsideTable[r.left[0].id][j][j+i] << "*"
+                             << insideTable[r.right[l].first[0].id][j][j+k] <<"*" << r.right[l].second.first << " = " << outsideTable[r.right[l].first[0].id][j+k][j+i] << endl;
+                    }
+                }
+            }
+        }
+    }*/
+    return outsideTable;
+}
+
 void Grammar::calculateNewThetaVec(std::vector<Symbol> w) {
     std::vector<Rule>::iterator itRule;
     for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
@@ -2627,3 +2810,294 @@ double ****Grammar::CYKProbKLVecOpt(std::vector<Symbol> w) {
     //printInsideTableKL(p,w.size());
     return p;
 }
+
+
+void Grammar::generateRulesRegular() {
+    for (auto n: nonterminals) {
+        std::vector<Symbol> left;
+        left.push_back(n);
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>> right;
+        for (auto t: terminals) {
+            std::pair<std::vector<Symbol>,std::pair<double, double>> rightHS;
+            rightHS.first.push_back(t);
+            for (auto nr: nonterminals) {
+                rightHS.first.push_back(nr);
+                rightHS.second.first = 1.0/(nNonTerminals*nTerminals+1);
+                rightHS.second.second = ALFA;
+                right.push_back(rightHS);
+                rightHS.first.pop_back();
+            }
+        }
+        std::pair<std::vector<Symbol>, std::pair<double, double>> rightHS;
+        rightHS.second.first = 1.0/(nNonTerminals*nTerminals+1);
+        rightHS.second.second = ALFA;
+        right.push_back(rightHS);
+        Rule r = Rule(left, right);
+        rules.push_back(r);
+    }
+}
+
+void Grammar::baumWelch(int iteration) {
+    std::vector<double> countNd;
+    std::vector<double> countNl;
+    vector<vector<vector<double>>> countNT;
+    for (int i = 0; i < iteration; i++) {
+        cout << "Iteration: "<<i << endl;
+        baumWelchExpectation(words, countNd, countNl, countNT);
+        baumWelchMaximization(words, countNd, countNl, countNT);
+    }
+
+}
+
+
+void Grammar::baumWelchExpectation(std::vector<std::vector<Symbol>> words, std::vector<double> &countNd, std::vector<double> &countNl, std::vector<std::vector<std::vector<double>>> &countNT) {
+    countNd.clear();
+    countNl.clear();
+    countNT.clear();
+    for (auto n: nonterminals) {
+        countNd.push_back(0);
+        countNl.push_back(0);
+        countNT.push_back(vector<vector<double>>());
+        for (auto t: terminals) {
+            countNT[n.id].push_back(vector<double>());
+            for (auto nl: nonterminals) {
+                countNT[n.id][t.id].push_back(0.0);
+            }
+        }
+    }
+    for (auto x: words) {
+        vector<vector<double>> F, B;
+        for (int i = 0; i <= x.size(); i++) {
+            F.push_back(vector<double>());
+            B.push_back(vector<double>());
+            for (auto n: nonterminals) {
+                F[i].push_back(0.0);
+                B[i].push_back(0.0);
+            }
+        }
+        //To DO: contar quantas vezes x acontece ou noã precisa?
+        for (auto n: nonterminals) {
+            if (n.id == 0) F[0][n.id] = 1; else F[0][n.id] = 0;
+            B[x.size()][n.id] = rules[n.id].right[nNonTerminals * nTerminals].second.first;
+            //cout << "F[" << "0" << "][" << n.id << "] = " << F[0][n.id] << "\t\t\t\t\t\t\t\t";
+            //cout << "B[" << x.size() << "][" << n.id << "] = "
+            //     << rules[n.id].right[nNonTerminals * nTerminals].second.first << endl;
+        }
+        for (int i = 1; i<= x.size(); i++) {
+            for (auto n: nonterminals) {
+                F[i][n.id] = 0;
+                B[x.size()-i][n.id]=0;
+                for (auto nl: nonterminals) {
+                    F[i][n.id] += F[i-1][nl.id]*rules[nl.id].right[x[i-1].id*nTerminals+n.id].second.first;
+                //    cout << "F["<<i<<"]"<<"["<<n.id<<"]"<< " += F["<<i-1<<"]"<<"["<<nl.id<<"] * " << "P["<<nl.id<<"]["<<x[i-1].id<<"]["<<n.id<<"] = "
+                //    << F[i-1][nl.id] << "*" << rules[nl.id].right[x[i-1].id*nTerminals+n.id].second.first << " = " << F[i][n.id]<< "\t\t\t\t";
+                    B[x.size()-i][n.id] +=  B[x.size()-i+1][nl.id]* rules[n.id].right[x[x.size()-i].id*nTerminals+nl.id].second.first;
+                //    cout << "B["<<x.size()-i<<"]"<<"["<<n.id<<"]"<< " += " << "B["<<x.size()-i+1<<"]"<<"["<<nl.id<<"]" << " * P["<<n.id<<"]["<<x[i-1].id<<"]["<<nl.id<<"] = "
+                //    << B[x.size()-i+1][nl.id]<< "*" << rules[n.id].right[x[x.size()-i].id*nTerminals+nl.id].second.first << " = " << B[x.size()-i][n.id] <<endl;
+                }
+            }
+        }
+        double total = 0.0;
+        double totalb = B[0][0];
+        for (auto n: nonterminals) {
+            total += F[x.size()][n.id]*rules[n.id].right[nNonTerminals*nTerminals].second.first;
+            //cout << " total = " << "total + " <<  F[x.size()][n.id] << "*" << rules[n.id].right[nNonTerminals*nTerminals].second.first << endl;
+        }
+        //cout << "Total = " << total << endl;
+        //cout << "TotalB = " << totalb <<endl;
+        for (int i = 1; i<= x.size(); i++) {
+            for (auto n: nonterminals) {
+                for (auto nl: nonterminals) {
+                    double val =(F[i-1][n.id]*  rules[n.id].right[x[i-1].id*nTerminals+nl.id].second.first* B[i][nl.id])/total;
+                    //cout << "val = F[" <<i-1<<"]["<<n.id<<"]* P["<<n.id<<"]["<<x[i-1].id<<"]["<<nl.id<<"]*"<<"B["<<i<<"]["<<nl.id<<"] = " <<
+                    //F[0][0] << "*" << rules[n.id].right[x[i-1].id*nTerminals+nl.id].second.first <<"*" << B[i][nl.id]<< " = " << val << " / ";
+                    countNT[n.id][x[i-1].id][nl.id] += val;
+                    //cout << "countNT["<<n.id<<"]["<<x[i-1].id<<"]["<<nl.id<<"] += val  = " <<countNT[n.id][x[i-1].id][nl.id] << " / ";
+                    countNl[nl.id] += val;
+                    //cout << "countNl["<<nl.id<<"] += "<< countNl[nl.id] << endl;
+                }
+
+            }
+        }
+        for (auto n: nonterminals) {
+            countNd[n.id] += (F[x.size()][n.id]* rules[n.id].right[nNonTerminals*nTerminals].second.first)/total;
+            //cout << "countNd["<<n.id<<"] += F["<<x.size()<<"]["<<n.id<<"]"<<"*"<< "P["<<n.id<<"][F]["<<nNonTerminals*nTerminals<<"] = "
+            //<< F[x.size()][n.id] << "*" <<rules[n.id].right[nNonTerminals*nTerminals].second.first << " / " << total << " = " << countNd[n.id] << endl;
+            if (n.id == 0) countNl[n.id] += B[0][n.id]/total;
+        }
+    }
+}
+
+void Grammar::baumWelchMaximization(std::vector<std::vector<Symbol>> words, vector<double> &countNdR, vector<double> &countNlR,
+                               vector<std::vector<std::vector<double>>> &countNTR) {
+    vector<double> val;
+    for (auto n: nonterminals) {
+        val.push_back(0.0);
+    }
+    for (auto n: nonterminals) {
+        rules[n.id].right[nNonTerminals*nTerminals].second.first = (1.0*countNdR[n.id])/(1.0*countNlR[n.id]);
+        //cout << "rulesF["<<n.id<<"]["<<nNonTerminals*nTerminals<<"] = countNdR["<<n.id<<"]/countNlR["<<n.id<<"] = " << countNdR[n.id] <<"/"<< countNlR[n.id] << endl;
+        double total = 0.0;
+        for (auto t: terminals) {
+            for (auto nl: nonterminals) {
+                total += 1.0 * countNTR[n.id][t.id][nl.id];
+                rules[n.id].right[t.id*nTerminals+nl.id].second.first = (1.0*countNTR[n.id][t.id][nl.id])/(1.0*countNlR[n.id]);
+                //cout << "rulesF["<<n.id<<"]["<<t.id*nTerminals+nl.id<<"] = countNTR["<<n.id<<"]["<<t.id<<"]["<<nl.id<<"]/countNlR["<<n.id<<"] = "
+                //<< countNTR[n.id][t.id][nl.id] <<"/"<< countNlR[n.id] << endl;
+            }
+        }
+        //cout << "cNdR: " << countNdR[n.id] << " cNTR: " << total
+        //<< " sum: " << countNdR[n.id]+ total<< " cNlR: "<< countNlR[n.id] << endl;
+    }
+}
+
+void Grammar::insideOutside(int iterations) {
+    for (int i = 0; i < iterations; i++) {
+        vector<vector<vector<double>>>newProbsNTn;
+        vector<vector<vector<double>>>newProbsNTd;
+        vector<vector<double>>newProbsTn;
+        for (int i = 0 ; i <nNonTerminals; i++) {
+            newProbsNTn.push_back(vector<vector<double>>());
+            newProbsNTd.push_back(vector<vector<double>>());
+            for (int j = 0; j < nNonTerminals; j++) {
+                newProbsNTn[i].push_back(vector<double>());
+                newProbsNTd[i].push_back(vector<double>());
+                for (int k = 0; k < nNonTerminals; k++) {
+                    newProbsNTn[i][j].push_back(0.0);
+                    newProbsNTd[i][j].push_back(0.0);
+                }
+            }
+        }
+        for (int i = 0 ; i <nNonTerminals; i++) {
+            newProbsTn.push_back(vector<double>());
+            for (int m = 0; m < nTerminals; m++) {
+                newProbsTn[i].push_back(0.0);
+            }
+        }
+
+        cout << "Iteration: "<<i << endl;
+        for (auto w: words) {
+            double *** insideTable;
+            insideTable = CYKProbVec(w);
+            //printInsideTable(insideTable, w.size());
+            std::vector<std::vector<std::vector<double>>> oT = outsideTable(w, insideTable);
+            //printOutsideTable(oT);
+            vector<vector<vector<vector<vector<double>>>>> W;
+            vector<vector<vector<double>>> V;
+            calculateWV(W,V, w, insideTable, oT);
+
+            for (int s = 0 ; s <w.size()-1; s++) {
+                for (int t = s+1; t <w.size(); t++) {
+                    for (int i = 0; i < nNonTerminals; i++) {
+                        for (int j = 0; j < nNonTerminals; j++) {
+                            for (int k = 0; k < nNonTerminals; k++) {
+                                    newProbsNTn[i][j][k] += W[s][t][i][j][k];
+                                    //cout << "nPNTn["<<i<<"]["<<j<<"]["<<k<<"] = "<< newProbsNTn[i][j][k] << endl;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < nNonTerminals; i++) {
+                for (int j = 0; j < nNonTerminals; j++) {
+                    for (int k = 0; k < nNonTerminals; k++) {
+                        for (int s = 0 ; s <w.size(); s++) {
+                            for (int t = s; t <w.size(); t++) {
+                                    newProbsNTd[i][j][k] += V[s][t][i];
+                                    //cout << "nPNTd["<<i<<"]["<<j<<"]["<<k<<"] = "<< newProbsNTd[i][j][k] << endl;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int t = 0; t <w.size(); t++) {
+                for (int i = 0; i < nNonTerminals; i++) {
+                    for (int m = 0; m < nTerminals; m++) {
+                        if(terminals[m].id == w[t].id) {
+                            newProbsTn[i][m] += V[t][t][i];
+                            //cout << "nPT["<<i<<"]["<<m<<"] = "<< newProbsTn[i][m] << endl;
+                        }
+                    }
+                }
+            }
+        }
+
+        vector<Rule>::iterator itRule;
+        for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+            std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+            for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+                if (!(*itRight).first[0].terminal) {
+                    (*itRight).second.first = newProbsNTn[(*itRule).left[0].id][(*itRight).first[0].id][(*itRight).first[1].id]/
+                                         newProbsNTd[(*itRule).left[0].id][(*itRight).first[0].id][(*itRight).first[1].id];
+                }
+                else {
+                    (*itRight).second.first = newProbsTn[(*itRule).left[0].id][(*itRight).first[0].id]/
+                                         newProbsNTd[(*itRule).left[0].id][0][0];
+                    //cout << "P"<<(*itRule).left[0].name<<"->"<< (*itRight).first[0].name<< " = " << (*itRight).second.first << endl;
+                }
+            }
+        }
+        printGrammar();
+    }
+}
+
+void Grammar::calculateWV(vector<std::vector<std::vector<std::vector<std::vector<double>>>>> &W,
+                          vector<std::vector<std::vector<double>>> &V, vector<Symbol> w,double***insideTable, vector<vector<vector<double>>>oT) {
+
+    for (int s = 0 ; s <w.size(); s++) {
+        W.push_back(vector<vector<vector<vector<double>>>>());
+        for (int t = 0; t <w.size(); t++) {
+            W[s].push_back(vector<vector<vector<double>>>());
+            for (int i = 0; i < nNonTerminals; i++) {
+                W[s][t].push_back(vector<vector<double>>());
+                for (int j = 0; j < nNonTerminals; j++) {
+                    W[s][t][i].push_back(vector<double>());
+                    for (int k = 0; k < nNonTerminals; k++) {
+                        W[s][t][i][j].push_back(0.0);
+                    }
+                }
+            }
+        }
+    }
+
+    for (int s = 0 ; s <w.size(); s++) {
+        V.push_back(vector<vector<double>>());
+        for (int t = 0; t < w.size(); t++) {
+            V[s].push_back(vector<double>());
+            for (int i = 0; i < nNonTerminals; i++) {
+                V[s][t].push_back(0.0);
+            }
+        }
+    }
+
+    for (int s = 0 ; s <w.size(); s++) {
+        for (int t = 0; t <w.size(); t++) {
+            for (int i = 0; i < nNonTerminals; i++) {
+                for (int j = 0; j < nNonTerminals; j++) {
+                    for (int k = 0; k < nNonTerminals; k++) {
+                        for (int r = s; r < t; r++) {
+                            W[s][t][i][j][k] += (rules[i].right[k+ nNonTerminals * j].second.first *
+                                                insideTable[j][s][r] * insideTable[k][r+1][t] * oT[i][s][t]) / insideTable[0][0][w.size()-1];
+                            //cout<< "W["<<s<<"]["<<t<<"]["<<i<<"]["<<j<<"]["<<k<<"] = " << W[s][t][i][j][k] << endl;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (int s = 0 ; s <w.size(); s++) {
+        for (int t = 0; t < w.size(); t++) {
+            for (int i = 0; i < nNonTerminals; i++) {
+                V[s][t][i] = (insideTable[i][s][t]*oT[i][s][t])/insideTable[0][0][w.size()-1];
+                //cout<< "V["<<s<<"]["<<t<<"]["<<i<<"] = " << V[s][t][i] << endl;
+            }
+        }
+    }
+}
+
+
+
+

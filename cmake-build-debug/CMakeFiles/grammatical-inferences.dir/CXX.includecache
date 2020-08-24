@@ -6,13 +6,25 @@
 
 #IncludeRegexTransform: 
 
-/home/henrique/CLionProjects/grammatical-inferences/Rule.cpp
+/home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp
 iostream
+-
+algorithm
+-
+tuple
 -
 cmath
 -
+chrono
+-
+Grammar.h
+/home/henrique/CLionProjects/grammatical-inferences/Grammar.h
+
+/home/henrique/CLionProjects/grammatical-inferences/Grammar.h
 Rule.h
 /home/henrique/CLionProjects/grammatical-inferences/Rule.h
+vector
+-
 
 /home/henrique/CLionProjects/grammatical-inferences/Rule.h
 vector

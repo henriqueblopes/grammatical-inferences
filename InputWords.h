@@ -22,10 +22,13 @@ public:
     vector<vector<Symbol>> inputWords;
     vector<vector<Symbol>> testWords;
     int actualShare;
+
 private:
     bool timed;
     std::unordered_map<string, int> chordCounts;
     std::unordered_map<string, Symbol> chordMap;
+    std::unordered_map<string, string> chordMapReduction;
+    std::unordered_map<string, int> reductedChordCounts;
     int nTerminals;
     int nTestShares;
 
@@ -41,6 +44,12 @@ public:
     void truncChordWords();
     void checkEmptyString(string path);
     bool nextShareTrainingWords();
+    void iterateChords();
+    string buildChordVector(string tone, string mode, string addition, string bass);
+private:
+    string addChordNote(string chord, string note);
+
+    void countAndShowReductedChords();
 };
 
 

@@ -28,12 +28,15 @@ public:
     std::pair<int,int> contextSize;
     std::vector<Symbol> actualProduction;
     std::vector<std::vector<Symbol>> words;
+    int type;
 
     Grammar(const std::vector<Symbol> &terminals, const std::vector<Symbol> &nonterminals,
             const std::vector<Rule> &rules, const Symbol &start);
 
     Grammar(const std::vector<Symbol> &terminals, std::pair<int, int> contextSize,
             int nNonTerminals, std::vector<std::vector<Symbol>> words, int trainingM);
+
+    Grammar(const std::vector<Symbol> &terminals, int nNonTerminals, std::vector<std::vector<Symbol>> words, int type);
 
     Grammar(const std::vector<Symbol> &terminals, const std::vector<Symbol> &nonterminals,
             const std::vector<Rule> &rules, const Symbol &start, int maxRightHandSize, int maxProductionRules,
@@ -47,15 +50,20 @@ public:
     std::pair<double,double> perplexity(std::vector<std::vector<Symbol>> testData, bool normalized);
     std::pair<double,double> perplexityKL(std::vector<std::vector<Symbol>> testData, bool normalized);
 
+    void baumWelch(int iteration);
+    void insideOutside(int iterations);
+
 private:
     void generateNonTermnals();
     void generatePermutation(std::vector<std::vector<Symbol>> & permutations, std::vector<Symbol> symbols, int size, std::vector<Symbol> word, bool context);
     void generateRulesCNF();
+    void generateRulesRegular();
     void inductGFG();
     void metropolisHastingsPCFG(int iterations);
     void gibbsSamplingPCFG(int iterations);
     void gibbsSamplingPCSG(int iterations);
     void metropolisHastingsPCSG(int iterations);
+
     double *** CYKProb(std::string w);
     double **** CYKProbKL(std::string w);
     double **** CYKProbKLVec(std::vector<Symbol> w);
@@ -65,6 +73,7 @@ private:
     void printInsideTable(double ***p, int wSize);
     void printInsideTableKL(double ****p, int wSize);
     void printInsideTableKLVec(double ****p, int wSize);
+    void printOutsideTable(std::vector<std::vector<std::vector<double>>> p);
     void sampleParseTree(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, Rule r, std::string w, double ***insideTable, int i, int k);
     void sampleParseTreeKL(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, Rule r, std::string w, double ****insideTable, int i, int k);
     void sampleParseTreeKLVec(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, Rule r, std::vector<Symbol> w, double ****insideTable, int i, int k);
@@ -97,6 +106,7 @@ private:
             Rule r, std::vector<Symbol> w, double ***pDouble, int i, unsigned long i1);
 
     double ***CYKProbVec(std::vector<Symbol> w);
+    std::vector<std::vector<std::vector<double>>> outsideTable(std::vector<Symbol> w, double ***insideTable);
     double ***CYKProbNVec(std::vector<Symbol> w);
 
     void calculateNewThetaVec(std::vector<Symbol> w);
@@ -115,6 +125,9 @@ private:
     void pTiMinus1PlusFrequence(std::vector<Symbol> w, int i);
     void freeInsideTable(double ***p, int wSize);
     void freeInsideTableKL(double ****p, int wSize);
+    void baumWelchExpectation(std::vector<std::vector<Symbol>> words, std::vector<double> &countNd, std::vector<double> &countNl, std::vector<std::vector<std::vector<double>>> &countNT);
+    void baumWelchMaximization(std::vector<std::vector<Symbol>> words, std::vector<double> &countNdR, std::vector<double> &countNlR, std::vector<std::vector<std::vector<double>>> &countNTR);
+    void calculateWV(std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> &W, std::vector<std::vector<std::vector<double>>> &V, std::vector<Symbol> w, double***insideTable, std::vector<std::vector<std::vector<double>>>oT);
 
 public:
     virtual ~Grammar();

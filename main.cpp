@@ -15,6 +15,7 @@
 
 
 using namespace std;
+
 /*
 namespace py = pybind11;
 int square(int x) {
@@ -66,7 +67,19 @@ int main(int argc, char** argv) {
         timed = false;
 
     InputWords iw = InputWords(timed, nTerminals);
-    iw.readWords();
+    //iw.readWords();
+    //iw.iterateChords();
+
+    std::vector<Symbol> terms = {Symbol("0", 0, true, false), Symbol("1", 1, true,false)};
+    vector<vector<Symbol>> words = {{Symbol("1", 1, true, false), Symbol("1", 1, true, false), Symbol("0", 0, true, false), Symbol("1", 1, true, false)},
+                                    {Symbol("0", 0, true, false), Symbol("0", 0, true,false),  Symbol("1", 1, true,false),  Symbol("1", 1,true,false)},
+                                    {Symbol("0", 0, true, false), Symbol("1", 1,true,false)}};
+
+    Grammar g = Grammar(terms, 2, words, 2);
+    g.printGrammar();
+    g.insideOutside(20);
+    //g.printGrammar();
+    return 0;
     vector<Symbol> terminals = iw.generateTerminals();
     iw.selectTrainingWords(nSharesOrAmount, byShare);
     if(iw.inputWords.size() < nInputForTraining)
@@ -140,8 +153,3 @@ int main(int argc, char** argv) {
             "00101010101010101010010101010101010101010101"
     };*/
 
-/*std::vector<Symbol> words[] = {{Symbol("0", 0, true, false), Symbol("1", 1, true,false), Symbol("0", 0, true,false), Symbol("1", 1,true,false)},
-                            {Symbol("0", 0, true, false), Symbol("0", 0, true,false), Symbol("1", 1, true,false), Symbol("1", 1,true,false)},
-                            {Symbol("0", 0, true, false), Symbol("1", 1,true,false)},
-                            {Symbol("0", 0, true, false), Symbol("0", 0, true,false), Symbol("1", 1, true,false), Symbol("1", 1,true,false)},
-};*/

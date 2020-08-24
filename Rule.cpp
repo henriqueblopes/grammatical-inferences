@@ -17,8 +17,9 @@ void Rule::printRule() {
     for (itRule = left.begin(); itRule != left.end(); itRule++)
         std::cout << (*itRule).name << " ";
     std::cout << " <- ";
-
+    double totalP = 0.0;
     for (itVector = right.begin(); itVector != right.end(); itVector++) {
+        totalP += (*itVector).second.first;
         if ((*itVector).second.first > 0.0001) {
             std::cout << "P: " << (*itVector).second.first << " ";//  << " a: " << (*itVector).second.second << " ";
             for(itRule = (*itVector).first.begin(); itRule != (*itVector).first.end(); itRule++)
@@ -28,6 +29,7 @@ void Rule::printRule() {
         }
 
     }
+    std::cout << " / " << totalP;
     std::cout << std::endl;
 
 }

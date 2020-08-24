@@ -291,3 +291,172 @@ bool InputWords::nextShareTrainingWords() {
     }
     return true;
 }
+
+void InputWords::iterateChords() {
+    string minor = "10110101101";
+    string major = "10101101010";
+    string chordNotes = "00000000000";
+    countChords();
+    std::unordered_map<string, int>::iterator chordCountsIt;
+    size_t tokenPos;
+    string tone = "";
+    string mode = "";
+    string bass = "";
+    string addition = "";
+    for (chordCountsIt = chordCounts.begin(); chordCountsIt != chordCounts.end(); chordCountsIt++) {
+        //cout << (*chordCountsIt).first << endl;
+        if ((*chordCountsIt).first.compare("N") !=0 && (*chordCountsIt).first.compare("&pause") !=0 && (*chordCountsIt).first.compare("*") !=0) {
+            tokenPos = (*chordCountsIt).first.find(":");
+            tone = (*chordCountsIt).first.substr(0, tokenPos);
+            tokenPos = (*chordCountsIt).first.find("(");
+            if (tokenPos == string::npos) {
+                tokenPos = (*chordCountsIt).first.find("/");
+                if (tokenPos == string::npos) {
+                    mode = (*chordCountsIt).first.substr(tone.size()+1, (*chordCountsIt).first.size()-tone.size()-1);
+                }
+                else {
+                    mode = (*chordCountsIt).first.substr(tone.size()+1, tokenPos-tone.size()-1);
+                    bass = (*chordCountsIt).first.substr(tokenPos+1, (*chordCountsIt).first.size()-tokenPos-1);
+                }
+            } else {
+                size_t tokenPosEnd = (*chordCountsIt).first.find(")");
+                mode = (*chordCountsIt).first.substr(tone.size()+1, tokenPos-tone.size()-1);
+                addition = (*chordCountsIt).first.substr(tokenPos+1, tokenPosEnd-tokenPos-1);
+                tokenPos = (*chordCountsIt).first.find("/");
+                if (tokenPos != string::npos) {
+                    bass = (*chordCountsIt).first.substr(tokenPos+1, (*chordCountsIt).first.size()-tokenPos-1);
+                }
+            }
+
+
+            chordNotes = buildChordVector(tone, mode, addition, bass);
+
+            std::vector<string> tones = {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
+            std::vector<string> tonesS = {"B#", "C#", "D", "D#", "Fb", "E#", "F#", "G", "G#", "A", "A#", "Cb"};
+            while (tones[0].compare(tone) != 0 && tonesS[0].compare(tone) != 0)  {
+                rotate(chordNotes.begin(), chordNotes.begin()+1, chordNotes.end());
+                rotate(tones.begin(), tones.begin()+1, tones.end());
+                rotate(tonesS.begin(), tonesS.begin()+1, tonesS.end());
+            }
+
+            chordMapReduction.insert(make_pair((*chordCountsIt).first, chordNotes));
+        } else {
+            chordMapReduction.insert(make_pair((*chordCountsIt).first, "00000000000"));
+        }
+    }
+    countAndShowReductedChords();
+
+}
+string InputWords::buildChordVector(string tone, string mode, string addition, string bass) {
+    string chord = "00000000000";
+    chord[0] = '1';
+
+    if (mode.size() > 2) {    //ModeSize > 2
+        if (mode.substr(0, 3).compare("maj") == 0) {
+            chord[4] = chord[7] = '1';
+        } else if (mode.substr(0, 3).compare("min") == 0) {
+            chord[3] = chord[7] = '1';
+        } else if (mode.substr(0, 3).compare("dim") == 0) {
+            chord[3] = chord[6] = '1';
+        } else if (mode.substr(0, 3).compare("aug") == 0) {
+            chord[4] = chord[8] = '1';
+        }
+        if (mode.size() >= 4) {
+            if (mode.substr(mode.size() - 4, 4).compare("maj7") == 0) {
+                chord[11] = '1';
+            } else if (mode.substr(mode.size() - 4, mode.size()).compare("min7") == 0) {
+                chord[10] = '1';
+            } else if (mode.compare("dim7") == 0) {
+                chord[9] = '1';
+            } else if (mode.compare("hdim7") == 0) {
+                chord[3] = chord[6] = chord[10] = '1';
+            } else if (mode.substr(mode.size() - 1, mode.size()).compare("6") == 0) {
+                chord[9] = '1';
+            } else if (mode.compare("maj9") == 0) {
+                chord[11] = chord[2] = '1';
+            } else if (mode.compare("min9") == 0) {
+                chord[10] = chord[2] = '1';
+            }
+                //Talvez omitir notas no 11 e 13
+            else if (mode.compare("maj11") == 0) {
+                chord[11] = chord[2] = chord[5] = '1';
+            } else if (mode.compare("min11") == 0) {
+                chord[10] = chord[2] = chord[5] = '1';
+            } else if (mode.compare("maj13") == 0) {
+                chord[11] = chord[2] = chord[5] = chord[9] = '1';
+            } else if (mode.compare("min13") == 0) {
+                chord[10] = chord[2] = chord[5] = chord[9] = '1';
+            } else if (mode.compare("sus4") == 0) {
+                chord[6] = chord[7] = '1';
+            } else if (mode.compare("sus2") == 0) {
+                chord[2] = chord[7] = '1';
+            }
+        }
+
+    } else {
+        if (mode.compare("5") == 0) {
+            chord[7] = '1';
+        } else {
+            chord[4] = chord[7] = '1';
+            if (mode.compare ("7") == 0) {
+                chord[10] = '1';
+            } else if (mode.compare ("9") == 0) {
+                chord[10] = chord[2] = '1';
+            } else if (mode.compare ("11") == 0) {
+                chord[10] = chord[2] = chord[5] = '1';
+            } else if (mode.compare ("13") == 0) {
+                chord[10] = chord[2] = chord[5] = chord[9] = '1';
+            }
+        }
+    }
+
+    if (addition.size()>0) {
+        size_t commaPos = addition.find(",");
+        string note;
+        size_t commaBefore = 0;
+        do {
+            if (commaPos == string::npos)
+                note = addition.substr(commaBefore, addition.size()-commaBefore);
+            else
+                note = addition.substr(commaBefore, commaPos-commaBefore);
+            chord = addChordNote(chord, note);
+            commaBefore = commaPos+1;
+            commaPos = addition.find(",", commaPos+1);
+        } while (commaPos != string::npos);
+    }
+
+    if(bass.size() >0) {
+        chord = addChordNote(chord, bass);
+    }
+    return chord;
+}
+
+string InputWords::addChordNote(string chord, string note) {
+    vector<int> intervals = {0,2,4,5,7,9,11};
+    int accident = 0;
+    while (note[0] =='b') {
+        accident -=1;
+        note = note.substr(1,note.size()-1);
+    }
+    while (note[0] =='#') {
+        accident +=1;
+        note = note.substr(1,note.size()-1);
+    }
+
+    int degree = stoi(note);
+    chord[intervals[((degree+accident)%7)-1]] = '1';
+    return chord;
+}
+
+void InputWords::countAndShowReductedChords() {
+    std::unordered_map<string, string>::iterator chordMRIt;
+    for (chordMRIt = chordMapReduction.begin(); chordMRIt != chordMapReduction.end(); chordMRIt++) {
+        if (reductedChordCounts.find((*chordMRIt).second) == chordCounts.end())
+            reductedChordCounts[(*chordMRIt).second] = 1;
+        else
+            reductedChordCounts[(*chordMRIt).second]++;
+    }
+    for (auto a: reductedChordCounts) {
+        cout <<a.first << " " << a.second << endl;
+    }
+}
