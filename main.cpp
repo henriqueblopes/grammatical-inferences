@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
 
     //g.insideOutside(20);
     //g.printGrammar();
-    return 0;
+    /*
     vector<Symbol> terminals = iw.generateTerminals();
     iw.selectTrainingWords(nSharesOrAmount, byShare);
     if(iw.inputWords.size() < nInputForTraining)
@@ -212,7 +212,7 @@ int main(int argc, char** argv) {
         cout << "elapsed time with perplexity time: " << elapsed_seconds.count() << "s" << endl  << endl;
     } while (iw.nextShareTrainingWords());
 
-
+*/
 
 }
 

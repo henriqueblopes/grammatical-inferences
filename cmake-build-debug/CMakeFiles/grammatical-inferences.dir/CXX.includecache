@@ -6,20 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp
-iostream
--
-algorithm
--
-tuple
--
-cmath
--
-chrono
--
-Grammar.h
-/home/henrique/CLionProjects/grammatical-inferences/Grammar.h
-
 /home/henrique/CLionProjects/grammatical-inferences/Grammar.h
 Rule.h
 /home/henrique/CLionProjects/grammatical-inferences/Rule.h
@@ -698,17 +684,5 @@ string
 unordered_map
 -
 vector
--
-
-/home/henrique/CLionProjects/grammatical-inferences/pybinding.cpp
-Grammar.h
-/home/henrique/CLionProjects/grammatical-inferences/Grammar.h
-vector
--
-Symbol.h
-/home/henrique/CLionProjects/grammatical-inferences/Symbol.h
-pybind11/pybind11.h
--
-pybind11/stl.h
 -
 

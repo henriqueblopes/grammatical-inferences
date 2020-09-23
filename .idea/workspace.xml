@@ -38,26 +38,12 @@
   <component name="ChangeListManager">
     <list default="true" id="6f5246a4-a700-49ee-bd3b-d1a3bd0dc08e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Grammar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Grammar.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Grammar.h" beforeDir="false" afterPath="$PROJECT_DIR$/Grammar.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Rule.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Rule.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Rule.h" beforeDir="false" afterPath="$PROJECT_DIR$/Rule.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Symbol.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Symbol.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Symbol.h" beforeDir="false" afterPath="$PROJECT_DIR$/Symbol.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CMakeSystem.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CMakeSystem.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-environment.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-environment.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/klpcsg.cpython-36m-x86_64-linux-gnu.so" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/klpcsg.cpython-36m-x86_64-linux-gnu.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -212,7 +198,7 @@
       <workItem from="1600709667936" duration="9543000" />
       <workItem from="1600793058587" duration="3094000" />
       <workItem from="1600796953487" duration="5147000" />
-      <workItem from="1600879549005" duration="2946000" />
+      <workItem from="1600879549005" duration="4602000" />
     </task>
     <task id="LOCAL-00001" summary="Commit dos algoritmos implementados">
       <created>1590095539245</created>
@@ -242,7 +228,21 @@
       <option name="project" value="LOCAL" />
       <updated>1598277374240</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Before removing Warnings">
+      <created>1600882835239</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1600882835239</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Before removing Warnings">
+      <created>1600882954117</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1600882954117</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -265,7 +265,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="PCFGandPCSG" />
+                        <option value="origin/PCFGandPCSG" />
                       </list>
                     </value>
                   </entry>
@@ -289,7 +289,19 @@
         </entry>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="PCFGandPCSG" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -305,7 +317,8 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Commit dos algoritmos implementados" />
     <MESSAGE value="Commit binding Python" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit binding Python" />
+    <MESSAGE value="Before removing Warnings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Before removing Warnings" />
   </component>
   <component name="WindowStateProjectService">
     <state x="697" y="377" width="582" height="350" key="#Notifications" timestamp="1600796318136">
@@ -321,63 +334,63 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1595979485161" />
-    <state x="521" y="137" width="935" height="858" key="CommitChangelistDialog2" timestamp="1598277367319">
+    <state x="521" y="137" width="935" height="858" key="CommitChangelistDialog2" timestamp="1600882953520">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="521" y="137" width="935" height="858" key="CommitChangelistDialog2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1598277367319" />
+    <state x="521" y="137" width="935" height="858" key="CommitChangelistDialog2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882953520" />
     <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl" timestamp="1595968116882">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="2655" y="290" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1595880827910" />
     <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1595968116882" />
-    <state width="1807" height="395" key="GridCell.Tab.0.bottom" timestamp="1600882521624">
+    <state width="1807" height="395" key="GridCell.Tab.0.bottom" timestamp="1600883238563">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="395" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882521624" />
+    <state width="1807" height="395" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600883238563" />
     <state width="1375" height="277" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
-    <state width="1807" height="395" key="GridCell.Tab.0.center" timestamp="1600882521624">
+    <state width="1807" height="395" key="GridCell.Tab.0.center" timestamp="1600883238563">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="395" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882521624" />
+    <state width="1807" height="395" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600883238563" />
     <state width="1375" height="277" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
-    <state width="1807" height="395" key="GridCell.Tab.0.left" timestamp="1600882521624">
+    <state width="1807" height="395" key="GridCell.Tab.0.left" timestamp="1600883238562">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="395" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882521624" />
+    <state width="1807" height="395" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600883238562" />
     <state width="1375" height="277" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290288" />
-    <state width="1807" height="395" key="GridCell.Tab.0.right" timestamp="1600882521624">
+    <state width="1807" height="395" key="GridCell.Tab.0.right" timestamp="1600883238563">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="395" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882521624" />
+    <state width="1807" height="395" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600883238563" />
     <state width="1375" height="277" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
-    <state width="1807" height="395" key="GridCell.Tab.1.bottom" timestamp="1600882520736">
+    <state width="1807" height="395" key="GridCell.Tab.1.bottom" timestamp="1600883238564">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="395" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882520736" />
+    <state width="1807" height="395" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600883238564" />
     <state width="1443" height="380" key="GridCell.Tab.1.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289516" />
-    <state width="1807" height="395" key="GridCell.Tab.1.center" timestamp="1600882520736">
+    <state width="1807" height="395" key="GridCell.Tab.1.center" timestamp="1600883238564">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="395" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882520736" />
+    <state width="1807" height="395" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600883238564" />
     <state width="1443" height="380" key="GridCell.Tab.1.center/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289514" />
-    <state width="1807" height="395" key="GridCell.Tab.1.left" timestamp="1600882520736">
+    <state width="1807" height="395" key="GridCell.Tab.1.left" timestamp="1600883238563">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="395" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882520736" />
+    <state width="1807" height="395" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600883238563" />
     <state width="1443" height="380" key="GridCell.Tab.1.left/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289514" />
-    <state width="1807" height="395" key="GridCell.Tab.1.right" timestamp="1600882520736">
+    <state width="1807" height="395" key="GridCell.Tab.1.right" timestamp="1600883238564">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="395" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600882520736" />
+    <state width="1807" height="395" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600883238564" />
     <state width="1443" height="380" key="GridCell.Tab.1.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289515" />
     <state x="482" y="187" key="SettingsEditor" timestamp="1600880018992">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="482" y="187" key="SettingsEditor/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600880018992" />
-    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1598277427269">
+    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1600884609586">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1598277427269" />
+    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600884609586" />
     <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1598282593247">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
