@@ -2,6 +2,7 @@
 // Created by henrique on 02/04/19.
 //
 #include <iostream>
+#include <utility>
 #include "Symbol.h"
 
 void Symbol::free(Symbol &s) {
@@ -9,27 +10,24 @@ void Symbol::free(Symbol &s) {
     //free(s.id);
 }
 
-void Symbol::printSymbol() {
+void Symbol::printSymbol() const {
     std::cout << "nome: " << name << " id: " << id;
 
 }
 
-Symbol::Symbol(const std::string &name, unsigned int id, bool terminal) : name(name), id(id), terminal(terminal) {}
+Symbol::Symbol(std::string name, unsigned int id, bool terminal) : name(std::move(name)), id(id), terminal(terminal) {context = false;}
 
-Symbol Symbol::clone() {
+Symbol Symbol::clone() const {
     return Symbol (name,id,terminal,context);
 }
 
-Symbol::Symbol(const std::string &name, unsigned int id, bool terminal, bool context) : name(name), id(id), terminal(terminal), context(context) {
+Symbol::Symbol(std::string name, unsigned int id, bool terminal, bool context) : name(std::move(name)), id(id), terminal(terminal), context(context) {
 
 }
 
-bool Symbol::equalSymbol(Symbol s) {
-    return(!name.compare(s.name));
+bool Symbol::equalSymbol(const Symbol& s) const {
+    return name == s.name;
 }
 
-int Symbol::xplusy(int x, int y) {
-    return x+y;
-}
 
-Symbol::Symbol() {}
+Symbol::Symbol() = default;

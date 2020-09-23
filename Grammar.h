@@ -20,15 +20,15 @@ public:
     std::vector<std::pair<std::string, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>>> parseTrees;
     std::vector<std::pair<std::vector<Symbol>, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>>> parseTreesVec;
     Symbol start;
-    int maxRightHandSize;
-    int maxProductionRules;
-    int nTerminals;
-    int nNonTerminals;
+    int maxRightHandSize{};
+    int maxProductionRules{};
+    int nTerminals{};
+    int nNonTerminals{};
     std::pair<int, int> contextAmount;
     std::pair<int,int> contextSize;
     std::vector<Symbol> actualProduction;
     std::vector<std::vector<Symbol>> words;
-    int type;
+    int type{};
 
     Grammar(const std::vector<Symbol> &terminals, const std::vector<Symbol> &nonterminals,
             const std::vector<Rule> &rules, const Symbol &start);
@@ -42,6 +42,8 @@ public:
             const std::vector<Rule> &rules, const Symbol &start, int maxRightHandSize, int maxProductionRules,
             int nTerminals, int nNonTerminals);
 
+    Grammar(const std::vector<Symbol> &terminals, std::vector<std::vector<Symbol>> words, int type);
+
     void printGrammar();
     std::string grammarToStr();
     void printRules();
@@ -49,20 +51,25 @@ public:
     void train(int algorithm, int iterations);
     std::pair<double,double> perplexity(std::vector<std::vector<Symbol>> testData, bool normalized);
     std::pair<double,double> perplexityKL(std::vector<std::vector<Symbol>> testData, bool normalized);
-
     void baumWelch(int iteration);
     void insideOutside(int iterations);
-
+    void genFPTA();
+    void ALERGIA(double alpha);
+    void collapsedGibbsSamplePFA(int iterations);
+    void trainNGram();
 private:
     void generateNonTermnals();
     void generatePermutation(std::vector<std::vector<Symbol>> & permutations, std::vector<Symbol> symbols, int size, std::vector<Symbol> word, bool context);
     void generateRulesCNF();
     void generateRulesRegular();
+    void generateNGramRules();
+    void generateNGramNonTerminals();
     void inductGFG();
     void metropolisHastingsPCFG(int iterations);
     void gibbsSamplingPCFG(int iterations);
     void gibbsSamplingPCSG(int iterations);
     void metropolisHastingsPCSG(int iterations);
+
 
     double *** CYKProb(std::string w);
     double **** CYKProbKL(std::string w);
@@ -128,6 +135,16 @@ private:
     void baumWelchExpectation(std::vector<std::vector<Symbol>> words, std::vector<double> &countNd, std::vector<double> &countNl, std::vector<std::vector<std::vector<double>>> &countNT);
     void baumWelchMaximization(std::vector<std::vector<Symbol>> words, std::vector<double> &countNdR, std::vector<double> &countNlR, std::vector<std::vector<std::vector<double>>> &countNTR);
     void calculateWV(std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> &W, std::vector<std::vector<std::vector<double>>> &V, std::vector<Symbol> w, double***insideTable, std::vector<std::vector<std::vector<double>>>oT);
+    bool compatibleALERGIA(Symbol a, Symbol b, double alpha);
+    bool testALERGIA(double probFa, double freqa, double probFb, double freqb, double alpha);
+    void stochasticMerge(Symbol a, Symbol b);
+    void stochasticFold(Symbol a, Symbol b);
+    void removeUnusedNT();
+    void recursiveInsertUnused(std::vector<Symbol> &unused, Symbol nt);
+    void normalizeProbs();
+    void sampleRegularRules(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, std::vector<Symbol> w);
+    void recursiveAddTerminalToNT(Symbol nt, int n, int &nIds);
+    void addNGramRuleFrequency(Symbol lhs, Symbol nextSymbol);
 
 public:
     virtual ~Grammar();

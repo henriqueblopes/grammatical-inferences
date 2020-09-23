@@ -93,7 +93,6 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/python3.6m"/>
-					<Add directory="/home/henrique/CLionProjects/grammatical-inferences/pybind11/include"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -118,7 +117,6 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/python3.6m"/>
-					<Add directory="/home/henrique/CLionProjects/grammatical-inferences/pybind11/include"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>

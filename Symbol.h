@@ -10,23 +10,19 @@
 
 class Symbol{
 public:
-    Symbol(const std::vector<Symbol> vector, std::pair<int, int> pair, int i, std::vector<std::vector<Symbol>> vector1,
-           int i1);
-
     std::string name;
-    unsigned int id;
-    bool terminal;
-    bool context;
+    unsigned int id{};
+    bool terminal{};
+    bool context{};
 public:
-    Symbol(const std::string &name, unsigned int id, bool terminal);
-    Symbol(const std::string &name, unsigned int id, bool terminal, bool context);
+    Symbol(std::string name, unsigned int id, bool terminal);
+    Symbol(std::string name, unsigned int id, bool terminal, bool context);
 
     Symbol();
 
-    Symbol clone();
-    void printSymbol();
-    bool equalSymbol(Symbol s);
-    static int xplusy (int x, int y);
+    Symbol clone() const;
+    void printSymbol() const;
+    bool equalSymbol(const Symbol& s) const;
 
 protected:
     static inline void free(Symbol& s);

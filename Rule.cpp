@@ -4,10 +4,11 @@
 
 #include <iostream>
 #include <cmath>
+#include <utility>
 #include "Rule.h"
 
-Rule::Rule(const std::vector<Symbol> &left, const std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>> &right) : left(left),
-                                                                                                                right(right) {}
+Rule::Rule(std::vector<Symbol> left, std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>> right) : left(std::move(left)),
+                                                                                                                right(std::move(right)) {}
 
 void Rule::printRule() {
     std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>>::iterator itVector;
@@ -35,7 +36,8 @@ void Rule::printRule() {
 }
 
 std::string Rule::ruleToStr() {
-    std::string ruleStr = R"()";
+    std::string ruleStr;
+    ruleStr = R"()";
     std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>>::iterator itVector;
     std::vector<Symbol>::iterator itRule;
 
@@ -45,7 +47,7 @@ std::string Rule::ruleToStr() {
 
     for (itVector = right.begin(); itVector != right.end(); itVector++) {
         for(itRule = (*itVector).first.begin(); itRule != (*itVector).first.end(); itRule++) {
-            if ((*itRule).terminal == true)
+            if ((*itRule).terminal)
                 ruleStr += "'"+ (*itRule).name + "'"+" ";
             else
                 ruleStr += (*itRule).name + " ";
@@ -59,7 +61,7 @@ std::string Rule::ruleToStr() {
 }
 
 std::string Rule::ruleToStrLALR() {
-    std::string ruleStr = "";
+    std::string ruleStr;
 
     std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>>::iterator itVector;
     std::vector<Symbol>::iterator itRule;
@@ -70,7 +72,7 @@ std::string Rule::ruleToStrLALR() {
 
     for (itVector = right.begin(); itVector != right.end(); itVector++) {
         for(itRule = (*itVector).first.begin(); itRule != (*itVector).first.end(); itRule++) {
-            if ((*itRule).terminal == true)
+            if ((*itRule).terminal)
                 ruleStr += "'"+ (*itRule).name + "'"+" ";
             else
                 ruleStr += (*itRule).name + " ";
@@ -94,20 +96,20 @@ std::string Rule::ruleToStrLALR() {
 
 Rule Rule::clone() {
     std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>> ps;
-    for (std::pair<std::vector<Symbol>,std::pair<double, double>> p : right) {
+    for (const std::pair<std::vector<Symbol>,std::pair<double, double>>& p : right) {
         std::pair<std::vector<Symbol>,std::pair<double, double>> pc;
         pc.second = p.second;
-        for (Symbol s: p.first)
+        for (const Symbol& s: p.first)
             pc.first.push_back(s.clone());
         ps.push_back(pc);
     }
     std::vector<Symbol> l;
-    for (Symbol s : left)
+    for (const Symbol& s : left)
         l.push_back(s.clone());
     return Rule(l,ps);
 }
 
-void Rule::generatePiorDirichlet(double alfa, int thetaDist) {
+void Rule::generatePiorDirichlet(double alfa) {
     //alfa = 10E-4 and theta uniform suggested
     std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
     double theta = 1.0/right.size();
@@ -143,6 +145,14 @@ std::pair<std::vector<Symbol>, std::pair<double, double>> Rule::getRightSidebyId
         return right[nNonterminals*nNonterminals + id1stNonContext];
     else
         return right[nNonterminals*id1stNonContext + id2ndNonContext];
+}
+
+double Rule::freq() {
+    double freq = 0.0;
+    for (const auto& a: right) {
+        freq += a.second.first;
+    }
+    return freq;
 }
 
 

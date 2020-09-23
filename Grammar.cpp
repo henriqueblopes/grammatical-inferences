@@ -34,19 +34,26 @@ Grammar::Grammar(const std::vector<Symbol> &terminals, std::pair<int, int> conte
 Grammar::Grammar(const std::vector<Symbol> &terminals, int nNonTerminals, std::vector<std::vector<Symbol>> words,
                  int type) : terminals(terminals), nNonTerminals(nNonTerminals), words(words), type(type) {
     nTerminals = terminals.size();
-    generateNonTermnals();
-    if(type == 3)
-        generateRulesRegular();
-    else if (type == 2) {
-        contextSize = make_pair(0,0);
-        generateRulesCNF();
-        start = rules[0].left.front();
+    if (type == 4 ) {
+        generateNGramNonTerminals();
+        generateNGramRules();
+    } else {
+        generateNonTermnals();
+        if(type == 3)
+            generateRulesRegular();
+        else if (type == 2) {
+            contextSize = make_pair(0,0);
+            generateRulesCNF();
+            start = rules[0].left.front();
+        }
     }
 
-
-//    start = rules[0].left.front();
-
 }
+
+Grammar::Grammar(const vector<Symbol> &terminals, std::vector<std::vector<Symbol>> words, int type) : terminals(terminals), words(words), type(type){
+    nTerminals = terminals.size();
+}
+
 
 void Grammar::printGrammar() {
     std::cout << "Terminals: " << std::endl;
@@ -549,6 +556,11 @@ bool Grammar::equalProductions (std::pair<std::vector<Symbol>, std::pair<std::ve
     if(flag) {
         itB = prodB.second.first.begin();
         for (itA = prodA.second.first.begin(); itA != prodA.second.first.end(); itA++) {
+            //retirar a condição abaixo caso dê merda em outros métodos
+            if (itB == prodB.second.first.end()) {
+                flag = false;
+                break;
+            }
             if(!(*itA).equalSymbol((*itB))) {
                 flag = false;
                 break;
@@ -828,7 +840,7 @@ void Grammar::generateRulesCNF() {
                             rulesByLeft.push_back(rightHandSide);
                         }
                         Rule r = Rule(leftHandSide, rulesByLeft);
-                        r.generatePiorDirichlet(ALFA,0);
+                        r.generatePiorDirichlet(ALFA);
                         r.updateProbDirichletTheta();
                         r.leftContext.insert(r.leftContext.end(), (*itPermutationsTerminals).begin(), (*itPermutationsTerminals).end());
                         r.rightContext.insert(r.rightContext.end(),(*itPermutationsAll).begin(), (*itPermutationsAll).end());
@@ -3093,6 +3105,421 @@ void Grammar::calculateWV(vector<std::vector<std::vector<std::vector<std::vector
             for (int i = 0; i < nNonTerminals; i++) {
                 V[s][t][i] = (insideTable[i][s][t]*oT[i][s][t])/insideTable[0][0][w.size()-1];
                 //cout<< "V["<<s<<"]["<<t<<"]["<<i<<"] = " << V[s][t][i] << endl;
+            }
+        }
+    }
+}
+
+void Grammar::genFPTA() {
+    Symbol nI = Symbol("NTI", 0, false, false);
+    nonterminals.push_back(nI);
+    int nNT = 1;
+    vector<Symbol> vr;
+    vr.push_back(nI);
+    Rule r = Rule(vr, std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>());
+    rules.push_back(r);
+    for (auto w: words) {
+        string s = "";
+        for (int i = 0; i < w.size(); i++) {
+            s += w[i].name;
+            std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+            bool existRule = false;
+            for (itRight = rules[nI.id].right.begin(); itRight != rules[nI.id].right.end()-1; itRight++) {
+                if ((*itRight).first[1].name.compare("NT"+s) == 0) {
+                    (*itRight).second.first += 1.0;
+                    existRule = true;
+                    nI = (*itRight).first[1];
+                    break;
+                }
+            }
+            if (!existRule) {
+                Symbol nt = Symbol("NT"+s, nNT, false, false);
+                nonterminals.push_back(nt);
+                nNT++;
+                std::pair<std::vector<Symbol>,std::pair<double, double>> right;
+                right.first.push_back(w[i]);
+                right.first.push_back(nt);
+                right.second.first = 1.0;
+                rules[nI.id].right.insert(rules[nI.id].right.end()-1, right);
+                //rules[nI.id].right.push_back(right);
+                vr.clear();
+                vr.push_back(nt);
+                r = Rule(vr, std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>());
+                rules.push_back(r);
+                nI = nt;
+            }
+
+        }
+        bool existRule = false;
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+        for (itRight = rules[nI.id].right.begin(); itRight != rules[nI.id].right.end(); itRight++) {
+            if ((*itRight).first[0].name.compare("") == 0) {
+                (*itRight).second.first += 1.0;
+                existRule = true;
+            }
+        }
+        if (!existRule) {
+            Symbol nt = Symbol("", -1, false, false);
+            nonterminals.push_back(nt);
+            std::pair<std::vector<Symbol>,std::pair<double, double>> right;
+            right.first.push_back(nt);
+            right.second.first = 1.0;
+            rules[nI.id].right.push_back(right);
+
+        }
+        nI = nonterminals[0];
+    }
+    nNonTerminals = nNT;
+}
+
+void Grammar::ALERGIA(double alpha) {
+    genFPTA();
+    printGrammar();
+    vector<Symbol> red;
+    red.push_back(nonterminals[0]);
+    vector<Symbol> blue;
+    for (auto s: rules[0].right) {
+        if (s.first[0].name.compare("") == 0)
+            break;
+        blue.push_back(s.first[1]);
+    }
+    int t0 = 30;
+
+
+    vector<Symbol>::iterator itBlue = blue.begin();
+    double freqCBlue = rules[(*itBlue).id].freq();
+    while (freqCBlue >= t0) {
+        bool existRed = false;
+        for (auto cRed: red) {
+            if (compatibleALERGIA(cRed, (*itBlue), alpha)) {
+                cout << "merge " << cRed.name << " and " << (*itBlue).name << endl;
+                stochasticMerge(cRed, (*itBlue));
+                existRed = true;
+                break;
+            }
+        }
+        if (!existRed) {
+            red.push_back((*itBlue));
+            for (auto right: rules[(*itBlue).id].right) {
+                if (!(right.first[0].name.compare("") == 0))
+                    blue.push_back(right.first[1]);
+            }
+            itBlue = blue.begin();
+        }
+        blue.erase(itBlue);
+        itBlue = blue.begin();
+        if (itBlue == blue.end())
+            break;
+        freqCBlue = rules[(*itBlue).id].freq();
+        printGrammar();
+
+    }
+    removeUnusedNT();
+    normalizeProbs();
+}
+
+bool Grammar::compatibleALERGIA(Symbol a, Symbol b, double alpha) {
+    bool correct = true;
+    if (!testALERGIA((*(rules[a.id].right.end()-1)).second.first, rules[a.id].freq(),(*(rules[b.id].right.end()-1)).second.first, rules[b.id].freq(), alpha))
+        correct = false;
+    for (auto t: terminals) {
+        double dFreqa = 0.0;
+        double dFreqb = 0.0;
+
+        for (auto nt: rules[a.id].right) {
+            if (nt.first[0].id == t.id) {
+                dFreqa =nt.second.first;
+            }
+        }
+        for (auto nt: rules[b.id].right) {
+            if (nt.first[0].id == t.id) {
+                dFreqa =nt.second.first;
+            }
+        }
+        if (!testALERGIA(dFreqa, rules[a.id].freq(), dFreqb, rules[b.id].freq(), alpha))
+            correct = false;
+    }
+    return correct;
+}
+
+bool Grammar::testALERGIA(double probFa, double freqa, double probFb, double freqb, double alpha) {
+    double y = abs(probFa/freqa - probFb/freqb);
+    return (y < ( (sqrt(1/freqa) + sqrt(1/freqb)) * sqrt(0.5 * log(2/alpha)) ));
+}
+
+void Grammar::stochasticMerge(Symbol a, Symbol b) {
+    vector<Rule>::iterator itRule;
+    for (itRule = rules.begin(); itRule < rules.end(); itRule++) {
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+        for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+            if ((*itRight).first[1].id == b.id) {
+                stochasticFold(a,b);
+                std::pair<std::vector<Symbol>,std::pair<double, double>> newRight;
+                int n = (*itRight).second.first;
+                newRight.first.push_back((*itRight).first[0]);
+                newRight.first.push_back(a);
+                newRight.second.first = (*itRight).second.first;
+                (*itRight).second.first = 0;
+                (*itRule).right.insert((*itRule).right.end()-1, newRight);
+                return;
+            }
+        }
+    }
+}
+
+void Grammar::stochasticFold(Symbol a, Symbol b) {
+    std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+    for (itRight = rules[b.id].right.begin(); itRight != rules[b.id].right.end()-1; itRight++) {
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRighta;
+        for (itRighta = rules[a.id].right.begin(); itRighta != rules[a.id].right.end(); itRighta++) {
+            if (itRighta->first[0].id == itRight->first[0].id) {
+                if (itRighta->second.first >=1.0)
+                    break;
+            }
+        }
+        if (itRighta != rules[a.id].right.end()) {
+            if (itRighta->second.first >= 1.0) {
+                stochasticFold(itRighta->first[1], itRight->first[1]);
+                (*itRighta).second.first += (*itRight).second.first;
+            }
+        }
+        else {
+            itRighta->first[1] = Symbol(itRight->first[1]);
+            (*itRighta).second.first = (*itRight).second.first;
+
+        }
+    }
+    (*(rules[a.id].right.end()-1)).second.first += (*(rules[b.id].right.end()-1)).second.first;
+
+}
+
+void Grammar::removeUnusedNT() {
+    vector<Symbol> notUsed;
+    vector<Symbol> used;
+    used.push_back(rules[0].left[0]);
+    for (int i = 0; i < used.size(); i++) {
+        Rule r = rules[used[i].id];
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+        for (itRight = r.right.begin(); itRight != r.right.end()-1; itRight++) {
+            if ((*itRight).second.first <1.0) {
+                notUsed.push_back((*itRight).first[1]);
+                Symbol aux = (*itRight).first[1];
+                recursiveInsertUnused(notUsed, aux);
+
+            }
+            else {
+                bool isUsed = false;
+                for (auto u: used) {
+                    if(itRight->first[1].id == u.id) {
+                        isUsed = true;
+                        break;
+                    }
+                }
+                if (!isUsed)
+                    used.push_back((*itRight).first[1]);
+            }
+        }
+    }
+    for (auto nu: notUsed) {
+        vector<Rule>::iterator itRule;
+        for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+            if ((*itRule).left[0].id == nu.id) {
+                rules.erase(itRule);
+                break;
+            }
+        }
+    }
+}
+
+void Grammar::recursiveInsertUnused(vector<Symbol> &unused, Symbol nt) {
+    std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+    for (itRight = rules[nt.id].right.begin();itRight != rules[nt.id].right.end()-1; itRight++) {
+        unused.push_back((*itRight).first[1]);
+        recursiveInsertUnused(unused, (*itRight).first[1]);
+    }
+}
+
+void Grammar::normalizeProbs() {
+    vector<Rule>::iterator itRule;
+    for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+        std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+        double freq = itRule->freq();
+        for(itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++)
+            itRight->second.first = itRight->second.first/freq;
+    }
+
+}
+
+void Grammar::sampleRegularRules(
+        vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>, std::pair<double, double>>>> &vr,
+        std::vector<Symbol> w) {
+    Rule actualState = rules[0];
+    pair<std::vector<Symbol>, std::pair<std::vector<Symbol>, std::pair<double, double>>> prod;
+    for (auto s: w) {
+        double total = 0.0;
+        vector<double> probsTerminal;
+        for (int i = nTerminals*s.id; i < nTerminals*s.id + nNonTerminals;i++) {
+            probsTerminal.push_back(total + actualState.right[i].second.first);
+            total += actualState.right[i].second.first;
+        }
+        double p = (double) rand()/RAND_MAX;
+        int i;
+        for (i = 0; i < probsTerminal.size(); i++) {
+            if (p * total < probsTerminal[i])
+                break;
+        }
+
+        prod = make_pair(actualState.left, actualState.right[nTerminals*s.id+i]);
+        vr.push_back(prod);
+        actualState = rules[actualState.right[i].first[1].id];
+    }
+    prod = make_pair(actualState.left, actualState.right[actualState.right.size()-1]);
+    vr.push_back(prod);
+}
+
+void Grammar::collapsedGibbsSamplePFA(int iterations) {
+    srand((unsigned) time(NULL));
+    int sentencesLength = words.size();
+    for (int j = 0; j < iterations; j++) {
+        parseTreesVec.clear();
+        for (int i = 0; i< sentencesLength; i++) {
+            std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>> vProds;
+            sampleRegularRules(vProds,words[i]);
+            std::pair<std::vector<Symbol>, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>> pairTree;
+            pairTree.first = words[i];
+            pairTree.second = vProds;
+            parseTreesVec.push_back(pairTree);
+        }
+        std::vector<Symbol> a;
+        calculateNewThetaVec(a);
+    }
+}
+
+void Grammar::generateNGramRules() {
+    int lastSmallRuleI = 0;
+    for (int i = 1; i < nNonTerminals; i++) {
+        lastSmallRuleI += pow(terminals.size(), i);
+    }
+
+    for (int i = 0; i <= lastSmallRuleI; i++) {
+        vector<Symbol> left;
+        left.push_back(nonterminals[i]);
+        vector<std::pair<std::vector<Symbol>, std::pair<double, double>>> right;
+        for (auto t: terminals) {
+            std::pair<std::vector<Symbol>, std::pair<double, double>> rightHS;
+            rightHS.first.push_back(t);
+            rightHS.first.push_back(nonterminals[nTerminals*i+t.id+1]);
+            rightHS.second.first = 0;
+            rightHS.second.second = ALFA;
+            right.push_back(rightHS);
+        }
+        std::pair<std::vector<Symbol>, std::pair<double, double>> rightHS;
+        //rightHS.second.first = 1.0/((nTerminals+1)*1.0);
+        rightHS.second.first = 0;
+        rightHS.second.second = ALFA;
+        right.push_back(rightHS);
+        Rule r = Rule(left, right);
+        rules.push_back(r);
+    }
+
+    for (int i = lastSmallRuleI+1; i < nonterminals.size(); i++) {
+        vector<Symbol> left;
+        left.push_back(nonterminals[i]);
+        vector<std::pair<std::vector<Symbol>, std::pair<double, double>>> right;
+        for (auto t: terminals) {
+            std::pair<std::vector<Symbol>, std::pair<double, double>> rightHS;
+            rightHS.first.push_back(t);
+            rightHS.first.push_back(nonterminals[lastSmallRuleI+1+(((i-lastSmallRuleI-1)% ((nonterminals.size()-lastSmallRuleI-1)/nTerminals))*nTerminals+t.id)]);
+            //rightHS.second.first = 1.0/((nTerminals+1)*1.0);
+            rightHS.second.first = 0;
+            rightHS.second.second = ALFA;
+            right.push_back(rightHS);
+        }
+        std::pair<std::vector<Symbol>, std::pair<double, double>> rightHS;
+        rightHS.second.first = 0;
+        rightHS.second.second = ALFA;
+        right.push_back(rightHS);
+        Rule r = Rule(left, right);
+        rules.push_back(r);
+    }
+
+}
+
+
+void Grammar::generateNGramNonTerminals() {
+    int nIds = 0;
+    Symbol nt = Symbol("NTI", nIds, false, false);
+    nonterminals.push_back(nt);
+    nt.name = "NT";
+    for (int i = 1; i <= nNonTerminals; i++)
+        recursiveAddTerminalToNT(nt, i, nIds);
+}
+
+void Grammar::recursiveAddTerminalToNT(Symbol nt, int n, int &nIds) {
+    if (n ==0) {
+        nonterminals.push_back(nt);;
+    } else {
+        for (auto t: terminals) {
+            nt.name += t.name;
+            nt.id = ++nIds;
+            recursiveAddTerminalToNT(nt, n-1,nIds);
+            nt.name = nt.name.substr(0, nt.name.size()-1);
+        }
+    }
+}
+
+void Grammar::trainNGram() {
+    for (auto w: words) {
+        vector<Symbol> nGram;
+        Symbol finalLHS = Symbol("NTI", 0, false, false);
+        for(int i = 0; i < w.size(); i++) {
+            if (i == nNonTerminals ) break;
+            Symbol nt = Symbol("NTI", 0, false, false);
+            if (i >=1)
+                nt.name = "NT";
+            finalLHS.name = "NT";
+            for (auto s: nGram) {
+                nt.name += s.name;
+                finalLHS.name += s.name;;
+            }
+            addNGramRuleFrequency(nt, w[i]);
+            finalLHS.name += w[i].name;;
+            nGram.push_back(w[i]);
+        }
+        for(int i = nNonTerminals; i < w.size(); i++) {
+            Symbol nt = Symbol("NT", 0, false, false);
+            for (auto s: nGram)
+                nt.name += s.name;
+            addNGramRuleFrequency(nt, w[i]);
+            finalLHS.name = nt.name;
+            nGram.erase(nGram.begin());
+            nGram.push_back(w[i]);
+        }
+        Symbol final = Symbol("", 0, true, false);
+        addNGramRuleFrequency(finalLHS, final);
+    }
+    normalizeProbs();
+}
+
+void Grammar::addNGramRuleFrequency(Symbol lhs, Symbol nextSymbol) {
+    vector<Rule>::iterator itRule;
+
+    for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+        if (itRule->left[0].name.compare(lhs.name) == 0) {
+            std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+            bool flag = false;
+            for (itRight = itRule->right.begin(); itRight != itRule->right.end()-1; itRight++){
+                if (itRight->first[0].name.compare(nextSymbol.name) == 0) {
+                    itRight->second.first += 1.0;
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag) {
+                break;
+            } else {
+                (itRule->right.end()-1)->second.first += 1.0;
+                break;
             }
         }
     }
