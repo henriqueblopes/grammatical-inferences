@@ -4,12 +4,11 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o"
-  "/home/henrique/CLionProjects/grammatical-inferences/InputWords.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o"
-  "/home/henrique/CLionProjects/grammatical-inferences/Rule.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o"
-  "/home/henrique/CLionProjects/grammatical-inferences/Symbol.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o"
-  "/home/henrique/CLionProjects/grammatical-inferences/main.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o"
-  "/home/henrique/CLionProjects/grammatical-inferences/pybinding.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o"
+  "/home/henrique/CLionProjects/grammatical-inferences/source/Grammar.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o"
+  "/home/henrique/CLionProjects/grammatical-inferences/source/InputWords.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o"
+  "/home/henrique/CLionProjects/grammatical-inferences/source/Rule.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o"
+  "/home/henrique/CLionProjects/grammatical-inferences/source/Symbol.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o"
+  "/home/henrique/CLionProjects/grammatical-inferences/source/main.cpp" "/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

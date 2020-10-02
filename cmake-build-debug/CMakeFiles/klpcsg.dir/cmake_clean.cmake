@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/klpcsg.dir/Grammar.cpp.o"
-  "CMakeFiles/klpcsg.dir/Rule.cpp.o"
-  "CMakeFiles/klpcsg.dir/Symbol.cpp.o"
+  "CMakeFiles/klpcsg.dir/source/Grammar.cpp.o"
+  "CMakeFiles/klpcsg.dir/source/Rule.cpp.o"
+  "CMakeFiles/klpcsg.dir/source/Symbol.cpp.o"
   "CMakeFiles/klpcsg.dir/pybinding.cpp.o"
   "klpcsg.pdb"
   "klpcsg.cpython-36m-x86_64-linux-gnu.so"

@@ -57,44 +57,44 @@ include CMakeFiles/klpcsg.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/klpcsg.dir/flags.make
 
-CMakeFiles/klpcsg.dir/Grammar.cpp.o: CMakeFiles/klpcsg.dir/flags.make
-CMakeFiles/klpcsg.dir/Grammar.cpp.o: ../Grammar.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/klpcsg.dir/Grammar.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/klpcsg.dir/Grammar.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp
+CMakeFiles/klpcsg.dir/source/Grammar.cpp.o: CMakeFiles/klpcsg.dir/flags.make
+CMakeFiles/klpcsg.dir/source/Grammar.cpp.o: ../source/Grammar.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/klpcsg.dir/source/Grammar.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/klpcsg.dir/source/Grammar.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/source/Grammar.cpp
 
-CMakeFiles/klpcsg.dir/Grammar.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/klpcsg.dir/Grammar.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp > CMakeFiles/klpcsg.dir/Grammar.cpp.i
+CMakeFiles/klpcsg.dir/source/Grammar.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/klpcsg.dir/source/Grammar.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/source/Grammar.cpp > CMakeFiles/klpcsg.dir/source/Grammar.cpp.i
 
-CMakeFiles/klpcsg.dir/Grammar.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/klpcsg.dir/Grammar.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp -o CMakeFiles/klpcsg.dir/Grammar.cpp.s
+CMakeFiles/klpcsg.dir/source/Grammar.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/klpcsg.dir/source/Grammar.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/source/Grammar.cpp -o CMakeFiles/klpcsg.dir/source/Grammar.cpp.s
 
-CMakeFiles/klpcsg.dir/Rule.cpp.o: CMakeFiles/klpcsg.dir/flags.make
-CMakeFiles/klpcsg.dir/Rule.cpp.o: ../Rule.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/klpcsg.dir/Rule.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/klpcsg.dir/Rule.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/Rule.cpp
+CMakeFiles/klpcsg.dir/source/Rule.cpp.o: CMakeFiles/klpcsg.dir/flags.make
+CMakeFiles/klpcsg.dir/source/Rule.cpp.o: ../source/Rule.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/klpcsg.dir/source/Rule.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/klpcsg.dir/source/Rule.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/source/Rule.cpp
 
-CMakeFiles/klpcsg.dir/Rule.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/klpcsg.dir/Rule.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/Rule.cpp > CMakeFiles/klpcsg.dir/Rule.cpp.i
+CMakeFiles/klpcsg.dir/source/Rule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/klpcsg.dir/source/Rule.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/source/Rule.cpp > CMakeFiles/klpcsg.dir/source/Rule.cpp.i
 
-CMakeFiles/klpcsg.dir/Rule.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/klpcsg.dir/Rule.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/Rule.cpp -o CMakeFiles/klpcsg.dir/Rule.cpp.s
+CMakeFiles/klpcsg.dir/source/Rule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/klpcsg.dir/source/Rule.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/source/Rule.cpp -o CMakeFiles/klpcsg.dir/source/Rule.cpp.s
 
-CMakeFiles/klpcsg.dir/Symbol.cpp.o: CMakeFiles/klpcsg.dir/flags.make
-CMakeFiles/klpcsg.dir/Symbol.cpp.o: ../Symbol.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/klpcsg.dir/Symbol.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/klpcsg.dir/Symbol.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/Symbol.cpp
+CMakeFiles/klpcsg.dir/source/Symbol.cpp.o: CMakeFiles/klpcsg.dir/flags.make
+CMakeFiles/klpcsg.dir/source/Symbol.cpp.o: ../source/Symbol.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/klpcsg.dir/source/Symbol.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/klpcsg.dir/source/Symbol.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/source/Symbol.cpp
 
-CMakeFiles/klpcsg.dir/Symbol.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/klpcsg.dir/Symbol.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/Symbol.cpp > CMakeFiles/klpcsg.dir/Symbol.cpp.i
+CMakeFiles/klpcsg.dir/source/Symbol.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/klpcsg.dir/source/Symbol.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/source/Symbol.cpp > CMakeFiles/klpcsg.dir/source/Symbol.cpp.i
 
-CMakeFiles/klpcsg.dir/Symbol.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/klpcsg.dir/Symbol.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/Symbol.cpp -o CMakeFiles/klpcsg.dir/Symbol.cpp.s
+CMakeFiles/klpcsg.dir/source/Symbol.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/klpcsg.dir/source/Symbol.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/source/Symbol.cpp -o CMakeFiles/klpcsg.dir/source/Symbol.cpp.s
 
 CMakeFiles/klpcsg.dir/pybinding.cpp.o: CMakeFiles/klpcsg.dir/flags.make
 CMakeFiles/klpcsg.dir/pybinding.cpp.o: ../pybinding.cpp
@@ -111,17 +111,17 @@ CMakeFiles/klpcsg.dir/pybinding.cpp.s: cmake_force
 
 # Object files for target klpcsg
 klpcsg_OBJECTS = \
-"CMakeFiles/klpcsg.dir/Grammar.cpp.o" \
-"CMakeFiles/klpcsg.dir/Rule.cpp.o" \
-"CMakeFiles/klpcsg.dir/Symbol.cpp.o" \
+"CMakeFiles/klpcsg.dir/source/Grammar.cpp.o" \
+"CMakeFiles/klpcsg.dir/source/Rule.cpp.o" \
+"CMakeFiles/klpcsg.dir/source/Symbol.cpp.o" \
 "CMakeFiles/klpcsg.dir/pybinding.cpp.o"
 
 # External object files for target klpcsg
 klpcsg_EXTERNAL_OBJECTS =
 
-klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/Grammar.cpp.o
-klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/Rule.cpp.o
-klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/Symbol.cpp.o
+klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/source/Grammar.cpp.o
+klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/source/Rule.cpp.o
+klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/source/Symbol.cpp.o
 klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/pybinding.cpp.o
 klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/build.make
 klpcsg.cpython-36m-x86_64-linux-gnu.so: CMakeFiles/klpcsg.dir/link.txt

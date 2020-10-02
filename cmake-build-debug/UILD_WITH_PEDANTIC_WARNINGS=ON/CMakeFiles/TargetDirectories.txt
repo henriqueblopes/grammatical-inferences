@@ -1,0 +1,4 @@
+/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/rebuild_cache.dir
+/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir
+/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/edit_cache.dir
+/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir

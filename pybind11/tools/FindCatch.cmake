@@ -6,8 +6,7 @@
 # will be downloaded and placed in the build dir: PROJECT_BINARY_DIR.
 #
 # This code sets the following variables:
-#  CATCH_INCLUDE_DIR      - path to catch.hpp
-#  CATCH_VERSION          - version number
+
 
 if(NOT Catch_FIND_VERSION)
   message(FATAL_ERROR "A version number must be specified.")
@@ -17,7 +16,6 @@ elseif(Catch_FIND_VERSION_EXACT)
   message(FATAL_ERROR "Exact version numbers are not supported, only minimum.")
 endif()
 
-# Extract the version number from catch.hpp
 function(_get_catch_version)
   file(STRINGS "${CATCH_INCLUDE_DIR}/catch.hpp" version_line REGEX "Catch v.*" LIMIT_COUNT 1)
   if(version_line MATCHES "Catch v([0-9]+)\\.([0-9]+)\\.([0-9]+)")

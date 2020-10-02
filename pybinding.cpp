@@ -1,19 +1,15 @@
 //
 // Created by henrique on 29/07/2020.
 //
-#include "Grammar.h"
+#include "source/Grammar.h"
 #include <vector>
-#include "Symbol.h"
+#include "source/Symbol.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 
 using namespace std;
 namespace py = pybind11;
-int square(int x) {
-    return x * x;
-}
-
 
 
 PYBIND11_MODULE(klpcsg, m) {

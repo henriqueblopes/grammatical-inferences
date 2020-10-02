@@ -14,6 +14,16 @@
 # EXTERNAL cache entries
 ########################
 
+//Build an installation package
+BUILD_INSTALLER:BOOL=OFF
+
+//Build an installation package
+BUILD_PACKAGE:BOOL=OFF
+
+//Use pedantic warnings. This is useful for developers because
+// many of these warnings will be in continuous integration anyway.
+BUILD_WITH_PEDANTIC_WARNINGS:BOOL=ON
+
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
 

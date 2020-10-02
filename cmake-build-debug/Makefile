@@ -136,157 +136,12 @@ klpcsg/fast:
 	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/build
 .PHONY : klpcsg/fast
 
-Grammar.o: Grammar.cpp.o
-
-.PHONY : Grammar.o
-
-# target to build an object file
-Grammar.cpp.o:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Grammar.cpp.o
-.PHONY : Grammar.cpp.o
-
-Grammar.i: Grammar.cpp.i
-
-.PHONY : Grammar.i
-
-# target to preprocess a source file
-Grammar.cpp.i:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Grammar.cpp.i
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Grammar.cpp.i
-.PHONY : Grammar.cpp.i
-
-Grammar.s: Grammar.cpp.s
-
-.PHONY : Grammar.s
-
-# target to generate assembly for a file
-Grammar.cpp.s:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Grammar.cpp.s
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Grammar.cpp.s
-.PHONY : Grammar.cpp.s
-
-InputWords.o: InputWords.cpp.o
-
-.PHONY : InputWords.o
-
-# target to build an object file
-InputWords.cpp.o:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o
-.PHONY : InputWords.cpp.o
-
-InputWords.i: InputWords.cpp.i
-
-.PHONY : InputWords.i
-
-# target to preprocess a source file
-InputWords.cpp.i:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/InputWords.cpp.i
-.PHONY : InputWords.cpp.i
-
-InputWords.s: InputWords.cpp.s
-
-.PHONY : InputWords.s
-
-# target to generate assembly for a file
-InputWords.cpp.s:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/InputWords.cpp.s
-.PHONY : InputWords.cpp.s
-
-Rule.o: Rule.cpp.o
-
-.PHONY : Rule.o
-
-# target to build an object file
-Rule.cpp.o:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Rule.cpp.o
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Rule.cpp.o
-.PHONY : Rule.cpp.o
-
-Rule.i: Rule.cpp.i
-
-.PHONY : Rule.i
-
-# target to preprocess a source file
-Rule.cpp.i:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Rule.cpp.i
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Rule.cpp.i
-.PHONY : Rule.cpp.i
-
-Rule.s: Rule.cpp.s
-
-.PHONY : Rule.s
-
-# target to generate assembly for a file
-Rule.cpp.s:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Rule.cpp.s
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Rule.cpp.s
-.PHONY : Rule.cpp.s
-
-Symbol.o: Symbol.cpp.o
-
-.PHONY : Symbol.o
-
-# target to build an object file
-Symbol.cpp.o:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Symbol.cpp.o
-.PHONY : Symbol.cpp.o
-
-Symbol.i: Symbol.cpp.i
-
-.PHONY : Symbol.i
-
-# target to preprocess a source file
-Symbol.cpp.i:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Symbol.cpp.i
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Symbol.cpp.i
-.PHONY : Symbol.cpp.i
-
-Symbol.s: Symbol.cpp.s
-
-.PHONY : Symbol.s
-
-# target to generate assembly for a file
-Symbol.cpp.s:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/Symbol.cpp.s
-	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/Symbol.cpp.s
-.PHONY : Symbol.cpp.s
-
-main.o: main.cpp.o
-
-.PHONY : main.o
-
-# target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/main.cpp.o
-.PHONY : main.cpp.o
-
-main.i: main.cpp.i
-
-.PHONY : main.i
-
-# target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/main.cpp.i
-.PHONY : main.cpp.i
-
-main.s: main.cpp.s
-
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/main.cpp.s
-.PHONY : main.cpp.s
-
 pybinding.o: pybinding.cpp.o
 
 .PHONY : pybinding.o
 
 # target to build an object file
 pybinding.cpp.o:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o
 	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/pybinding.cpp.o
 .PHONY : pybinding.cpp.o
 
@@ -296,7 +151,6 @@ pybinding.i: pybinding.cpp.i
 
 # target to preprocess a source file
 pybinding.cpp.i:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/pybinding.cpp.i
 	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/pybinding.cpp.i
 .PHONY : pybinding.cpp.i
 
@@ -306,9 +160,152 @@ pybinding.s: pybinding.cpp.s
 
 # target to generate assembly for a file
 pybinding.cpp.s:
-	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/pybinding.cpp.s
 	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/pybinding.cpp.s
 .PHONY : pybinding.cpp.s
+
+source/Grammar.o: source/Grammar.cpp.o
+
+.PHONY : source/Grammar.o
+
+# target to build an object file
+source/Grammar.cpp.o:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Grammar.cpp.o
+.PHONY : source/Grammar.cpp.o
+
+source/Grammar.i: source/Grammar.cpp.i
+
+.PHONY : source/Grammar.i
+
+# target to preprocess a source file
+source/Grammar.cpp.i:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.i
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Grammar.cpp.i
+.PHONY : source/Grammar.cpp.i
+
+source/Grammar.s: source/Grammar.cpp.s
+
+.PHONY : source/Grammar.s
+
+# target to generate assembly for a file
+source/Grammar.cpp.s:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.s
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Grammar.cpp.s
+.PHONY : source/Grammar.cpp.s
+
+source/InputWords.o: source/InputWords.cpp.o
+
+.PHONY : source/InputWords.o
+
+# target to build an object file
+source/InputWords.cpp.o:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o
+.PHONY : source/InputWords.cpp.o
+
+source/InputWords.i: source/InputWords.cpp.i
+
+.PHONY : source/InputWords.i
+
+# target to preprocess a source file
+source/InputWords.cpp.i:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.i
+.PHONY : source/InputWords.cpp.i
+
+source/InputWords.s: source/InputWords.cpp.s
+
+.PHONY : source/InputWords.s
+
+# target to generate assembly for a file
+source/InputWords.cpp.s:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.s
+.PHONY : source/InputWords.cpp.s
+
+source/Rule.o: source/Rule.cpp.o
+
+.PHONY : source/Rule.o
+
+# target to build an object file
+source/Rule.cpp.o:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Rule.cpp.o
+.PHONY : source/Rule.cpp.o
+
+source/Rule.i: source/Rule.cpp.i
+
+.PHONY : source/Rule.i
+
+# target to preprocess a source file
+source/Rule.cpp.i:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.i
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Rule.cpp.i
+.PHONY : source/Rule.cpp.i
+
+source/Rule.s: source/Rule.cpp.s
+
+.PHONY : source/Rule.s
+
+# target to generate assembly for a file
+source/Rule.cpp.s:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.s
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Rule.cpp.s
+.PHONY : source/Rule.cpp.s
+
+source/Symbol.o: source/Symbol.cpp.o
+
+.PHONY : source/Symbol.o
+
+# target to build an object file
+source/Symbol.cpp.o:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Symbol.cpp.o
+.PHONY : source/Symbol.cpp.o
+
+source/Symbol.i: source/Symbol.cpp.i
+
+.PHONY : source/Symbol.i
+
+# target to preprocess a source file
+source/Symbol.cpp.i:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.i
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Symbol.cpp.i
+.PHONY : source/Symbol.cpp.i
+
+source/Symbol.s: source/Symbol.cpp.s
+
+.PHONY : source/Symbol.s
+
+# target to generate assembly for a file
+source/Symbol.cpp.s:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.s
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/source/Symbol.cpp.s
+.PHONY : source/Symbol.cpp.s
+
+source/main.o: source/main.cpp.o
+
+.PHONY : source/main.o
+
+# target to build an object file
+source/main.cpp.o:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/main.cpp.o
+.PHONY : source/main.cpp.o
+
+source/main.i: source/main.cpp.i
+
+.PHONY : source/main.i
+
+# target to preprocess a source file
+source/main.cpp.i:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/main.cpp.i
+.PHONY : source/main.cpp.i
+
+source/main.s: source/main.cpp.s
+
+.PHONY : source/main.s
+
+# target to generate assembly for a file
+source/main.cpp.s:
+	$(MAKE) -f CMakeFiles/grammatical-inferences.dir/build.make CMakeFiles/grammatical-inferences.dir/source/main.cpp.s
+.PHONY : source/main.cpp.s
 
 # Help Target
 help:
@@ -320,24 +317,24 @@ help:
 	@echo "... grammatical-inferences"
 	@echo "... edit_cache"
 	@echo "... klpcsg"
-	@echo "... Grammar.o"
-	@echo "... Grammar.i"
-	@echo "... Grammar.s"
-	@echo "... InputWords.o"
-	@echo "... InputWords.i"
-	@echo "... InputWords.s"
-	@echo "... Rule.o"
-	@echo "... Rule.i"
-	@echo "... Rule.s"
-	@echo "... Symbol.o"
-	@echo "... Symbol.i"
-	@echo "... Symbol.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
 	@echo "... pybinding.o"
 	@echo "... pybinding.i"
 	@echo "... pybinding.s"
+	@echo "... source/Grammar.o"
+	@echo "... source/Grammar.i"
+	@echo "... source/Grammar.s"
+	@echo "... source/InputWords.o"
+	@echo "... source/InputWords.i"
+	@echo "... source/InputWords.s"
+	@echo "... source/Rule.o"
+	@echo "... source/Rule.i"
+	@echo "... source/Rule.s"
+	@echo "... source/Symbol.o"
+	@echo "... source/Symbol.i"
+	@echo "... source/Symbol.s"
+	@echo "... source/main.o"
+	@echo "... source/main.i"
+	@echo "... source/main.s"
 .PHONY : help
 
 

@@ -57,107 +57,92 @@ include CMakeFiles/grammatical-inferences.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/grammatical-inferences.dir/flags.make
 
-CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
-CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o: ../Grammar.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp
+CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
+CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o: ../source/Grammar.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/source/Grammar.cpp
 
-CMakeFiles/grammatical-inferences.dir/Grammar.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/Grammar.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp > CMakeFiles/grammatical-inferences.dir/Grammar.cpp.i
+CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/source/Grammar.cpp > CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.i
 
-CMakeFiles/grammatical-inferences.dir/Grammar.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/Grammar.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/Grammar.cpp -o CMakeFiles/grammatical-inferences.dir/Grammar.cpp.s
+CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/source/Grammar.cpp -o CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.s
 
-CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
-CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o: ../InputWords.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/InputWords.cpp
+CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
+CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o: ../source/Rule.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/source/Rule.cpp
 
-CMakeFiles/grammatical-inferences.dir/InputWords.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/InputWords.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/InputWords.cpp > CMakeFiles/grammatical-inferences.dir/InputWords.cpp.i
+CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/source/Rule.cpp > CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.i
 
-CMakeFiles/grammatical-inferences.dir/InputWords.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/InputWords.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/InputWords.cpp -o CMakeFiles/grammatical-inferences.dir/InputWords.cpp.s
+CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/source/Rule.cpp -o CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.s
 
-CMakeFiles/grammatical-inferences.dir/main.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
-CMakeFiles/grammatical-inferences.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/grammatical-inferences.dir/main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/main.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/main.cpp
+CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
+CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o: ../source/Symbol.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/source/Symbol.cpp
 
-CMakeFiles/grammatical-inferences.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/main.cpp > CMakeFiles/grammatical-inferences.dir/main.cpp.i
+CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/source/Symbol.cpp > CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.i
 
-CMakeFiles/grammatical-inferences.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/main.cpp -o CMakeFiles/grammatical-inferences.dir/main.cpp.s
+CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/source/Symbol.cpp -o CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.s
 
-CMakeFiles/grammatical-inferences.dir/Rule.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
-CMakeFiles/grammatical-inferences.dir/Rule.cpp.o: ../Rule.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/grammatical-inferences.dir/Rule.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/Rule.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/Rule.cpp
+CMakeFiles/grammatical-inferences.dir/source/main.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
+CMakeFiles/grammatical-inferences.dir/source/main.cpp.o: ../source/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/grammatical-inferences.dir/source/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/source/main.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/source/main.cpp
 
-CMakeFiles/grammatical-inferences.dir/Rule.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/Rule.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/Rule.cpp > CMakeFiles/grammatical-inferences.dir/Rule.cpp.i
+CMakeFiles/grammatical-inferences.dir/source/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/source/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/source/main.cpp > CMakeFiles/grammatical-inferences.dir/source/main.cpp.i
 
-CMakeFiles/grammatical-inferences.dir/Rule.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/Rule.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/Rule.cpp -o CMakeFiles/grammatical-inferences.dir/Rule.cpp.s
+CMakeFiles/grammatical-inferences.dir/source/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/source/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/source/main.cpp -o CMakeFiles/grammatical-inferences.dir/source/main.cpp.s
 
-CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
-CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o: ../Symbol.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/Symbol.cpp
+CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
+CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o: ../source/InputWords.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/source/InputWords.cpp
 
-CMakeFiles/grammatical-inferences.dir/Symbol.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/Symbol.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/Symbol.cpp > CMakeFiles/grammatical-inferences.dir/Symbol.cpp.i
+CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/source/InputWords.cpp > CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.i
 
-CMakeFiles/grammatical-inferences.dir/Symbol.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/Symbol.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/Symbol.cpp -o CMakeFiles/grammatical-inferences.dir/Symbol.cpp.s
-
-CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o: CMakeFiles/grammatical-inferences.dir/flags.make
-CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o: ../pybinding.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o -c /home/henrique/CLionProjects/grammatical-inferences/pybinding.cpp
-
-CMakeFiles/grammatical-inferences.dir/pybinding.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/grammatical-inferences.dir/pybinding.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/henrique/CLionProjects/grammatical-inferences/pybinding.cpp > CMakeFiles/grammatical-inferences.dir/pybinding.cpp.i
-
-CMakeFiles/grammatical-inferences.dir/pybinding.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/pybinding.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/pybinding.cpp -o CMakeFiles/grammatical-inferences.dir/pybinding.cpp.s
+CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/henrique/CLionProjects/grammatical-inferences/source/InputWords.cpp -o CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.s
 
 # Object files for target grammatical-inferences
 grammatical__inferences_OBJECTS = \
-"CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" \
-"CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o" \
-"CMakeFiles/grammatical-inferences.dir/main.cpp.o" \
-"CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" \
-"CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" \
-"CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o"
+"CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o" \
+"CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o" \
+"CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o" \
+"CMakeFiles/grammatical-inferences.dir/source/main.cpp.o" \
+"CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o"
 
 # External object files for target grammatical-inferences
 grammatical__inferences_EXTERNAL_OBJECTS =
 
-grammatical-inferences: CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o
-grammatical-inferences: CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o
-grammatical-inferences: CMakeFiles/grammatical-inferences.dir/main.cpp.o
-grammatical-inferences: CMakeFiles/grammatical-inferences.dir/Rule.cpp.o
-grammatical-inferences: CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o
-grammatical-inferences: CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o
+grammatical-inferences: CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o
+grammatical-inferences: CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o
+grammatical-inferences: CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o
+grammatical-inferences: CMakeFiles/grammatical-inferences.dir/source/main.cpp.o
+grammatical-inferences: CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o
 grammatical-inferences: CMakeFiles/grammatical-inferences.dir/build.make
 grammatical-inferences: /usr/lib/x86_64-linux-gnu/libpython3.6m.so
 grammatical-inferences: /usr/lib/x86_64-linux-gnu/libpython3.6m.so
 grammatical-inferences: CMakeFiles/grammatical-inferences.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable grammatical-inferences"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable grammatical-inferences"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/grammatical-inferences.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

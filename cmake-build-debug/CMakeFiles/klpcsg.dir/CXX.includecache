@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/henrique/CLionProjects/grammatical-inferences/pybinding.cpp
+source/Grammar.h
+/home/henrique/CLionProjects/grammatical-inferences/source/Grammar.h
+vector
+-
+source/Symbol.h
+/home/henrique/CLionProjects/grammatical-inferences/source/Symbol.h
+pybind11/pybind11.h
+-
+pybind11/stl.h
+-
+
+/home/henrique/CLionProjects/grammatical-inferences/source/Grammar.h
+Rule.h
+/home/henrique/CLionProjects/grammatical-inferences/source/Rule.h
+vector
+-
+random
+-
+
+/home/henrique/CLionProjects/grammatical-inferences/source/Rule.h
+vector
+-
+Symbol.h
+/home/henrique/CLionProjects/grammatical-inferences/source/Symbol.h
+
+/home/henrique/CLionProjects/grammatical-inferences/source/Symbol.h
+string
+-
+vector
+-
+
