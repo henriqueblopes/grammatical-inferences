@@ -19,24 +19,138 @@
     <select>
       <path>
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="BRANCH:origin/master" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:PCFGandPCSG" type="e8cecc67:BranchNodeDescriptor" />
       </path>
     </select>
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
       <config projectName="grammatical-inferences" targetName="grammatical-inferences" />
+      <config projectName="grammatical-inferences" targetName="klpcsg" />
     </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DBUILD_WITH_PEDANTIC_WARNINGS=ON" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f5246a4-a700-49ee-bd3b-d1a3bd0dc08e" name="Default Changelist" comment="" />
+    <list default="true" id="6f5246a4-a700-49ee-bd3b-d1a3bd0dc08e" name="Default Changelist" comment="Removed Warnings&#10;source folder&#10;CMakeList Changes">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/main.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/CXX.includecache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.internal" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/pybinding.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/source/Grammar.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/source/Rule.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/source/Symbol.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeCache.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeCCompiler.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeCXXCompiler.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeSystem.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CompilerIdC/CMakeCCompilerId.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CompilerIdC/a.out" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CompilerIdCXX/CMakeCXXCompilerId.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CompilerIdCXX/a.out" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/Makefile2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/cmake.check_cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/feature_tests.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/feature_tests.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/feature_tests.cxx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/build.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/depend.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/flags.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/link.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/progress.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/DependInfo.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/build.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/cmake_clean.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/depend.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/flags.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/link.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/progress.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/progress.marks" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/grammatical-inferences.cbp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/CXX.includecache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/build.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/depend.internal" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/depend.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/flags.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/link.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/progress.make" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/progress.marks" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake-build-debug/bindings/cmake_install.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/Grammar.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Grammar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/Grammar.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Grammar.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/InputWords.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/InputWords.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/InputWords.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/InputWords.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Rule.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/Rule.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Rule.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/Rule.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Symbol.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/Symbol.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Symbol.h" beforeDir="false" afterPath="$PROJECT_DIR$/source/Symbol.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/catch.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-environment.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-environment.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/pybinding.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/cmake_clean.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/klpcsg.cpython-36m-x86_64-linux-gnu.so" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/klpcsg.cpython-36m-x86_64-linux-gnu.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/source/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peglib.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybind11/tools/FindCatch.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/pybind11/tools/FindCatch.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybinding.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/pybinding.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,10 +160,31 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CMakeLists.txt" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/PCFGandPCSG" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
     <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
         <option value="Henrique Barros Lopes &lt;henrique.blopes90@gmail.com&gt;" />
+        <option value="henrique.blopes90 &lt;henrique.blopes90@gmail.com&gt;" />
       </list>
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -67,30 +202,57 @@
     </option>
   </component>
   <component name="ProjectId" id="1cEXy529KF6CCV9NUaJxOC8om4J" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/pybinding.cpp" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/pybinding.cpp" />
   </component>
-  <component name="RunManager">
-    <configuration name="grammatical-inferences" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="grammatical-inferences" TARGET_NAME="grammatical-inferences" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="grammatical-inferences" RUN_TARGET_NAME="grammatical-inferences" TEST_MODE="SUITE_TEST">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/source" />
+      <recent name="$PROJECT_DIR$/bindings" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Catch.grammatical-inferences">
+    <configuration name="grammatical-inferences" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" PROGRAM_PARAMS="4 10 1 10 1 0 30 4 1 0 2" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="grammatical-inferences" TARGET_NAME="grammatical-inferences" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="grammatical-inferences" RUN_TARGET_NAME="grammatical-inferences" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
         <option name="BeforeTestRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="klpcsg" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="grammatical-inferences" TARGET_NAME="klpcsg" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Catch.grammatical-inferences" />
+      <item itemvalue="CMake Application.klpcsg" />
+    </list>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -102,7 +264,65 @@
       <option name="presentableId" value="Default" />
       <updated>1590094977463</updated>
       <workItem from="1590094979090" duration="763000" />
-      <workItem from="1590095808159" duration="1440000" />
+      <workItem from="1590095808159" duration="2638000" />
+      <workItem from="1590167570793" duration="10469000" />
+      <workItem from="1590179612077" duration="552000" />
+      <workItem from="1590180316461" duration="3132000" />
+      <workItem from="1590241373903" duration="1854000" />
+      <workItem from="1590250795158" duration="1184000" />
+      <workItem from="1590254349548" duration="1453000" />
+      <workItem from="1590411999126" duration="5754000" />
+      <workItem from="1590426645020" duration="235000" />
+      <workItem from="1590427500714" duration="21000" />
+      <workItem from="1590443930157" duration="16000" />
+      <workItem from="1591029864112" duration="10937000" />
+      <workItem from="1591065112048" duration="17000" />
+      <workItem from="1591108589048" duration="7429000" />
+      <workItem from="1591129026485" duration="22591000" />
+      <workItem from="1591194723086" duration="6239000" />
+      <workItem from="1591356433481" duration="25853000" />
+      <workItem from="1591626064512" duration="11333000" />
+      <workItem from="1591653114597" duration="19291000" />
+      <workItem from="1591750308743" duration="6000" />
+      <workItem from="1591920741808" duration="157000" />
+      <workItem from="1595533581454" duration="1271000" />
+      <workItem from="1595870700064" duration="4746000" />
+      <workItem from="1595876961289" duration="3588000" />
+      <workItem from="1595881317549" duration="2650000" />
+      <workItem from="1595894481802" duration="1443000" />
+      <workItem from="1595962193410" duration="1200000" />
+      <workItem from="1595966325890" duration="4014000" />
+      <workItem from="1595974566834" duration="979000" />
+      <workItem from="1595976313430" duration="495000" />
+      <workItem from="1595977513489" duration="2401000" />
+      <workItem from="1596038270343" duration="12341000" />
+      <workItem from="1596471065607" duration="6242000" />
+      <workItem from="1596538777705" duration="13118000" />
+      <workItem from="1596722812248" duration="742000" />
+      <workItem from="1596731099878" duration="12364000" />
+      <workItem from="1597682570931" duration="15050000" />
+      <workItem from="1597764133946" duration="18119000" />
+      <workItem from="1597843883548" duration="23682000" />
+      <workItem from="1597949788896" duration="6861000" />
+      <workItem from="1598030182177" duration="7865000" />
+      <workItem from="1598064399631" duration="5363000" />
+      <workItem from="1598277219798" duration="6128000" />
+      <workItem from="1598371321162" duration="9547000" />
+      <workItem from="1598457915342" duration="14982000" />
+      <workItem from="1598543241799" duration="14898000" />
+      <workItem from="1598979727029" duration="7867000" />
+      <workItem from="1600709667936" duration="9543000" />
+      <workItem from="1600793058587" duration="3094000" />
+      <workItem from="1600796953487" duration="5147000" />
+      <workItem from="1600879549005" duration="5950000" />
+      <workItem from="1600887054255" duration="7466000" />
+      <workItem from="1600969572541" duration="8176000" />
+      <workItem from="1600978283740" duration="618000" />
+      <workItem from="1601047920765" duration="1812000" />
+      <workItem from="1601569862614" duration="4304000" />
+      <workItem from="1601609952205" duration="5458000" />
+      <workItem from="1601661765689" duration="1555000" />
+      <workItem from="1601663409611" duration="756000" />
     </task>
     <task id="LOCAL-00001" summary="Commit dos algoritmos implementados">
       <created>1590095539245</created>
@@ -111,11 +331,53 @@
       <option name="project" value="LOCAL" />
       <updated>1590095539245</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Commit dos algoritmos implementados">
+      <created>1590097313230</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1590097313230</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Commit binding Python">
+      <created>1596478864179</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1596478864196</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Commit binding Python">
+      <created>1598277374240</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1598277374240</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Before removing Warnings">
+      <created>1600882835239</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1600882835239</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Before removing Warnings">
+      <created>1600882954117</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1600882954117</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Before removing Warnings">
+      <created>1600884853332</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1600884853332</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="2" />
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -123,13 +385,18 @@
         <entry key="1">
           <value>
             <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
               <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="HEAD" />
+                        <option value="PCFGandPCSG" />
                       </list>
                     </value>
                   </entry>
@@ -140,6 +407,12 @@
                       </list>
                     </value>
                   </entry>
+                </map>
+              </option>
+              <option name="COLUMN_WIDTH">
+                <map>
+                  <entry key="2" value="142" />
+                  <entry key="3" value="141" />
                 </map>
               </option>
             </State>
@@ -153,7 +426,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/master" />
+                        <option value="PCFGandPCSG" />
                       </list>
                     </value>
                   </entry>
@@ -172,61 +445,143 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Commit dos algoritmos implementados" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit dos algoritmos implementados" />
+    <MESSAGE value="Commit binding Python" />
+    <MESSAGE value="Before removing Warnings" />
+    <MESSAGE value="Merge branch 'master' into PCFGandPCSG&#10;&#10;# Conflicts:&#10;#&#9;.idea/misc.xml&#10;#&#9;CMakeLists.txt&#10;#&#9;Grammar.cpp&#10;#&#9;Grammar.h&#10;#&#9;InputWords.cpp&#10;#&#9;InputWords.h&#10;#&#9;Rule.cpp&#10;#&#9;Rule.h&#10;#&#9;Symbol.cpp&#10;#&#9;Symbol.h&#10;#&#9;cmake-build-debug/CMakeCache.txt&#10;#&#9;cmake-build-debug/CMakeFiles/3.14.2/CMakeSystem.cmake&#10;#&#9;cmake-build-debug/CMakeFiles/CMakeOutput.log&#10;#&#9;cmake-build-debug/CMakeFiles/Makefile.cmake&#10;#&#9;cmake-build-debug/CMakeFiles/Makefile2&#10;#&#9;cmake-build-debug/CMakeFiles/TargetDirectories.txt&#10;#&#9;cmake-build-debug/CMakeFiles/clion-environment.txt&#10;#&#9;cmake-build-debug/CMakeFiles/clion-log.txt&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/build.make&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.internal&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.make&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/flags.make&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/link.txt&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/progress.make&#10;#&#9;cmake-build-debug/CMakeFiles/progress.marks&#10;#&#9;cmake-build-debug/Makefile&#10;#&#9;cmake-build-debug/grammatical-inferences&#10;#&#9;cmake-build-debug/grammatical-inferences.cbp&#10;#&#9;main.cpp" />
+    <MESSAGE value="Removed Warnings&#10;source folder&#10;CMakeList Changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed Warnings&#10;source folder&#10;CMakeList Changes" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="863" y="421" width="251" height="263" key="#Notifications" timestamp="1590096343655">
+    <state x="583" y="227" width="800" height="677" key="#Deployment" timestamp="1600884843369">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="863" y="421" width="251" height="263" key="#Notifications/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096343655" />
-    <state x="521" y="109" width="935" height="886" key="CommitChangelistDialog2" timestamp="1590095537959">
+    <state x="583" y="227" width="800" height="677" key="#Deployment/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600884843369" />
+    <state x="622" y="234" width="732" height="637" key="#Inspections" timestamp="1600972384273">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="521" y="109" width="935" height="886" key="CommitChangelistDialog2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590095537959" />
-    <state x="167" y="125" width="1653" height="855" key="DiffContextDialog" timestamp="1590096828073">
+    <state x="622" y="234" width="732" height="637" key="#Inspections/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600972384273" />
+    <state x="697" y="377" width="582" height="350" key="#Notifications" timestamp="1600796318136">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="167" y="125" width="1653" height="855" key="DiffContextDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096828073" />
-    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl" timestamp="1590097035353">
+    <state x="697" y="377" width="582" height="350" key="#Notifications/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600796318136" />
+    <state x="731" y="185" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1600889935247">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590097035353" />
-    <state width="1807" height="278" key="GridCell.Tab.0.bottom" timestamp="1590096928943">
+    <state x="731" y="185" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600889935247" />
+    <state x="446" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1595533812394" />
+    <state x="801" y="271" width="374" height="562" key="#com.intellij.ide.util.MemberChooser" timestamp="1600974394121">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096928943" />
-    <state width="1807" height="278" key="GridCell.Tab.0.center" timestamp="1590096928943">
+    <state x="801" y="271" width="374" height="562" key="#com.intellij.ide.util.MemberChooser/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600974394121" />
+    <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1600973458486">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096928943" />
-    <state width="1807" height="278" key="GridCell.Tab.0.left" timestamp="1590096928943">
+    <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600973458486" />
+    <state x="598" y="27" width="935" height="979" key="CommitChangelistDialog2" timestamp="1601664167104">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096928943" />
-    <state width="1807" height="278" key="GridCell.Tab.0.right" timestamp="1590096928943">
+    <state x="598" y="27" width="935" height="979" key="CommitChangelistDialog2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601664167104" />
+    <state x="320" y="80" width="1482" height="872" key="DiffContextDialog" timestamp="1601663329267">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096928943" />
-    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1590096963710">
+    <state x="320" y="80" width="1482" height="872" key="DiffContextDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601663329267" />
+    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl" timestamp="1601662912806">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096963710" />
-    <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1590096828073">
+    <state x="2655" y="290" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@1920.0.1920.1080" timestamp="1595880827910" />
+    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601662912806" />
+    <state width="1154" height="359" key="GridCell.Tab.0.bottom" timestamp="1601615452954">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096828073" />
-    <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1590096828073">
+    <state width="1154" height="359" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601615452954" />
+    <state width="1375" height="277" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
+    <state width="1154" height="359" key="GridCell.Tab.0.center" timestamp="1601615452954">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096828073" />
-    <state x="764" y="467" width="448" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1590096781612">
+    <state width="1154" height="359" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601615452954" />
+    <state width="1375" height="277" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
+    <state width="1154" height="359" key="GridCell.Tab.0.left" timestamp="1601615452954">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="764" y="467" width="448" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096781612" />
-    <state x="167" y="125" width="1653" height="855" key="git4idea.log.GitShowExternalLogAction" timestamp="1590096828073">
+    <state width="1154" height="359" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601615452954" />
+    <state width="1375" height="277" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290288" />
+    <state width="1154" height="359" key="GridCell.Tab.0.right" timestamp="1601615452954">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="167" y="125" width="1653" height="855" key="git4idea.log.GitShowExternalLogAction/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1590096828073" />
+    <state width="1154" height="359" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601615452954" />
+    <state width="1375" height="277" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595540290289" />
+    <state width="1255" height="395" key="GridCell.Tab.1.bottom" timestamp="1601049887721">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1255" height="395" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601049887721" />
+    <state width="1443" height="380" key="GridCell.Tab.1.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289516" />
+    <state width="1255" height="395" key="GridCell.Tab.1.center" timestamp="1601049887721">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1255" height="395" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601049887721" />
+    <state width="1443" height="380" key="GridCell.Tab.1.center/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289514" />
+    <state width="1255" height="395" key="GridCell.Tab.1.left" timestamp="1601049887721">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1255" height="395" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601049887721" />
+    <state width="1443" height="380" key="GridCell.Tab.1.left/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289514" />
+    <state width="1255" height="395" key="GridCell.Tab.1.right" timestamp="1601049887721">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1255" height="395" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601049887721" />
+    <state width="1443" height="380" key="GridCell.Tab.1.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595540289515" />
+    <state x="301" y="169" width="1482" height="872" key="MergeDialog" timestamp="1601663635086">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="301" y="169" width="1482" height="872" key="MergeDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601663635086" />
+    <state x="414" y="367" width="1266" height="475" key="MultipleFileMergeDialog" timestamp="1601663635089">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="414" y="367" width="1266" height="475" key="MultipleFileMergeDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601663635089" />
+    <state x="482" y="187" key="SettingsEditor" timestamp="1601570564785">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="482" y="187" key="SettingsEditor/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601570564785" />
+    <state x="737" y="366" width="600" height="477" key="Vcs.Multiple.Commit.Info.Dialog.Key" timestamp="1601663560702">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="737" y="366" width="600" height="477" key="Vcs.Multiple.Commit.Info.Dialog.Key/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601663560702" />
+    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1600884865678">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600884865678" />
+    <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1598282593247">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1598282593247" />
+    <state x="774" y="467" width="438" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601049608863">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="774" y="467" width="438" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601049608863" />
+    <state x="613" y="341" width="751" height="423" key="git4idea.merge.GitPullDialog" timestamp="1596479344758">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="613" y="341" width="751" height="423" key="git4idea.merge.GitPullDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1596479344758" />
+    <state x="876" y="338" width="325" height="429" key="refactoring.ChangeSignatureDialog" timestamp="1600975790017">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="876" y="338" width="325" height="429" key="refactoring.ChangeSignatureDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600975790017" />
+    <state x="656" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1600794501451">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="656" y="257" width="672" height="678" key="search.everywhere.popup/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600794501451" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="CMakeCatchTestRunConfigurationType">
+        <watch expression="lastSmallRuleI+1+((i-lastSmallRuleI-1)*nTerminals+t.id)" language="ObjectiveC" />
+        <watch expression="i%(nonterminals.size()-lastSmallRuleI)+lastSmallRuleI" language="ObjectiveC" />
+        <watch expression="i%(nonterminals.size()-lastSmallRuleI-1)" language="ObjectiveC" />
+        <watch expression="(nonterminals.size()-lastSmallRuleI-1)/nTerminals" language="ObjectiveC" />
+        <watch expression="nonterminals" language="ObjectiveC" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

@@ -102,6 +102,43 @@ clean: CMakeFiles/grammatical-inferences.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/klpcsg.dir
+
+# All Build rule for target.
+CMakeFiles/klpcsg.dir/all:
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/depend
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles --progress-num=7,8,9,10,11 "Built target klpcsg"
+.PHONY : CMakeFiles/klpcsg.dir/all
+
+# Include target in all.
+all: CMakeFiles/klpcsg.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/klpcsg.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles 5
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/klpcsg.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/klpcsg.dir/rule
+
+# Convenience name for target.
+klpcsg: CMakeFiles/klpcsg.dir/rule
+
+.PHONY : klpcsg
+
+# clean rule for target.
+CMakeFiles/klpcsg.dir/clean:
+	$(MAKE) -f CMakeFiles/klpcsg.dir/build.make CMakeFiles/klpcsg.dir/clean
+.PHONY : CMakeFiles/klpcsg.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/klpcsg.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Special targets to cleanup operation of make.
 
 # Special rule to run CMake to check the build system integrity.

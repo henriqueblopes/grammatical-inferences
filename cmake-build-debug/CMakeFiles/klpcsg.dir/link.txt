@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC  -static-libstdc++ -static-libgcc -g  -shared  -o klpcsg.cpython-36m-x86_64-linux-gnu.so CMakeFiles/klpcsg.dir/source/Grammar.cpp.o CMakeFiles/klpcsg.dir/source/Rule.cpp.o CMakeFiles/klpcsg.dir/source/Symbol.cpp.o CMakeFiles/klpcsg.dir/pybinding.cpp.o 
