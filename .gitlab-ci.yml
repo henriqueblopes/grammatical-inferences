@@ -2,15 +2,14 @@ build:
   image: ubuntu
   stage: build
   before_script:
-    - apt install sudo
-    - sudo apt update
+    #- apt install sudo
+    #- sudo apt update
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   # before_script:
   #   - apt update && apt -y install make autoconf
   script:
     - mkdir build && cd build
-    - g++ helloworld.cpp -o mybinary
     - cmake .. -DCMAKE_C_COMPILER=/usr/bin/gcc-8 -DCMAKE_CXX_COMPILER=/usr/bin/g++-8 -DCMAKE_BUILD_TYPE=Release 
   #artifacts:
     #paths:
