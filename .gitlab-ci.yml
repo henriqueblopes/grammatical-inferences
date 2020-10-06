@@ -1,5 +1,5 @@
 build:
-  image: ubuntu
+  image: gcc
   stage: build
   before_script:
      - apt-get update --yes
