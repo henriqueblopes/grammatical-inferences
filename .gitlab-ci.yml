@@ -2,7 +2,7 @@ build:
   image: ubuntu
   stage: build
   before_script:
-    - apr install sudo
+    - apt install sudo
     - sudo apt update
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
