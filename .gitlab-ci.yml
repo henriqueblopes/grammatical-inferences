@@ -3,8 +3,7 @@ build:
   stage: build
   before_script:
      - apt-get update --yes
-     - apt-get install g++
-     - y
+     - apt-get install --yes g++
      - apt-get install --yes cmake
     #- apt install sudo
     #- sudo apt update
