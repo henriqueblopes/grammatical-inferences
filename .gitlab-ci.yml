@@ -2,6 +2,8 @@ build:
   image: ubuntu
   stage: build
   before_script:
+     - apt-get update --yes
+     - apt-get install --yes cmake
     #- apt install sudo
     #- sudo apt update
   # instead of calling g++ directly you can also use some build toolkit like make
