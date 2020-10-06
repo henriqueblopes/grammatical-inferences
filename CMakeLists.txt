@@ -24,6 +24,7 @@ add_executable(grammatical-inferences
         source/InputWords.h)
 
 
+#[[
 find_package(pybind11 REQUIRED)
 
 pybind11_add_module(klpcsg
@@ -34,9 +35,10 @@ pybind11_add_module(klpcsg
         source/Symbol.cpp
         source/Symbol.h
         pybinding.cpp)
+]]
 
 
-target_link_libraries(grammatical-inferences stdc++fs ${PYTHON_LIBRARIES} pybind11::embed)
+target_link_libraries(grammatical-inferences stdc++fs ${PYTHON_LIBRARIES})# pybind11::embed)
 
 if (BUILD_INSTALLER)
     set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/source)
