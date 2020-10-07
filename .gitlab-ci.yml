@@ -1,5 +1,5 @@
 windows-build:
-  image: windows:1903
+  image: windows:1903-amd64
   stage: build
   before_script:
      - choco install -y cmake
