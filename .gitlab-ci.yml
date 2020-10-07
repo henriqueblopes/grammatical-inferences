@@ -1,5 +1,5 @@
 windows-build:
-  image: windows
+  image: windowsservercore
   stage: build
   before_script:
      - choco install -y cmake
