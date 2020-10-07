@@ -1,6 +1,6 @@
 windows-build:
   image: windows
-  state: build
+  stage: build
   before_script:
      - choco install -y cmake
      - $env:Path += ';C:\Program Files\CMake\bin'
