@@ -1,3 +1,12 @@
+windows-build:
+  image: windows
+  state: build
+  before_script:
+     - choco install -y cmake
+     - $env:Path += ';C:\Program Files\CMake\bin'
+  script:
+     - mkdir build && cd build
+     - cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release 
 build:
   image: ubuntu
   stage: build
@@ -5,15 +14,6 @@ build:
      - apt-get update --yes
      - apt-get install --yes g++-8
      - apt-get install --yes cmake
-     #- export CXX='xcrun -find c++'
-     #- export CC='xcrun -find cc'
-
-    #- apt install sudo
-    #- sudo apt update
-  # instead of calling g++ directly you can also use some build toolkit like make
-  # install the necessary build tools when needed
-  # before_script:
-  #   - apt update && apt -y install make autoconf
   script:
     - mkdir build && cd build
     - cmake .. -DCMAKE_C_COMPILER=/usr/bin/gcc-8 -DCMAKE_CXX_COMPILER=/usr/bin/g++-8 -DCMAKE_BUILD_TYPE=Release 
