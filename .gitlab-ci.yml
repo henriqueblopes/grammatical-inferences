@@ -1,5 +1,5 @@
 windows-build:
-  image: win-py2.7
+  image: windows:1903
   stage: build
   before_script:
      - choco install -y cmake
