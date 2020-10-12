@@ -1,3 +1,0 @@
-ToolSet: 1.0 (local)Options: 
-
-Options:-DBUILD_WITH_PEDANTIC_WARNINGS=ON
