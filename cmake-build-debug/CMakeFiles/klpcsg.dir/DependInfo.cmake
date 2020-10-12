@@ -19,6 +19,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/include/python3.6m"
+  "_deps/pybind11-src/include"
   )
 
 # Targets to which this target links.

@@ -6,5 +6,5 @@ CXX_FLAGS =  -static-libstdc++ -static-libgcc -g   -std=gnu++14
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -isystem /usr/include/python3.6m 
+CXX_INCLUDES = -I/usr/include/python3.6m -I/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/include 
 

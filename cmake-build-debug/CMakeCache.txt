@@ -288,7 +288,7 @@ CPM_LOCAL_PACKAGES_ONLY:BOOL=OFF
 CPM_SOURCE_CACHE:PATH=OFF
 
 //Try `find_package` before downloading dependencies
-CPM_USE_LOCAL_PACKAGES:BOOL=ON
+CPM_USE_LOCAL_PACKAGES:BOOL=OFF
 
 //Directory under which to collect all populated content
 FETCHCONTENT_BASE_DIR:PATH=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps
@@ -300,8 +300,15 @@ FETCHCONTENT_FULLY_DISCONNECTED:BOOL=OFF
 //Enables QUIET option for all content population
 FETCHCONTENT_QUIET:BOOL=ON
 
+//When not empty, overrides where to find pre-populated content
+// for pybind11
+FETCHCONTENT_SOURCE_DIR_PYBIND11:PATH=
+
 //Enables UPDATE_DISCONNECTED behavior for all content population
 FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
+
+//Enables UPDATE_DISCONNECTED behavior just for population of pybind11
+FETCHCONTENT_UPDATES_DISCONNECTED_PYBIND11:BOOL=OFF
 
 //Python version to use for compiling modules
 PYBIND11_PYTHON_VERSION:STRING=
@@ -318,14 +325,21 @@ ProcessorCount_cmd_getconf:FILEPATH=/usr/bin/getconf
 //Path to a program.
 ProcessorCount_cmd_sysctl:FILEPATH=/sbin/sysctl
 
+//Install pybind11 headers in Python include directory instead
+// of default installation prefix
+USE_PYTHON_INCLUDE_DIR:BOOL=OFF
+
 //Value Computed by CMake
 grammatical-inferences_BINARY_DIR:STATIC=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug
 
 //Value Computed by CMake
 grammatical-inferences_SOURCE_DIR:STATIC=/home/henrique/CLionProjects/grammatical-inferences
 
-//The directory containing a CMake configuration file for pybind11.
-pybind11_DIR:PATH=/usr/local/share/cmake/pybind11
+//Value Computed by CMake
+pybind11_BINARY_DIR:STATIC=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-build
+
+//Value Computed by CMake
+pybind11_SOURCE_DIR:STATIC=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src
 
 
 ########################
@@ -468,7 +482,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -519,17 +533,31 @@ CPM_PACKAGE_LOCK_FILE:INTERNAL=/home/henrique/CLionProjects/grammatical-inferenc
 CPM_PACKAGE_pybind11_VERSION:INTERNAL=2.5.0
 CPM_VERSION:INTERNAL=0.27.2
 //Details about finding PYTHON
-FIND_PACKAGE_MESSAGE_DETAILS_PYTHON:INTERNAL=/usr/bin/python3.63.6.9
+FIND_PACKAGE_MESSAGE_DETAILS_PYTHON:INTERNAL=/usr/bin/python3.6
 //Details about finding PythonInterp
 FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python3.6][v3.6.9()]
 //Test HAS_FLTO
 HAS_FLTO:INTERNAL=1
+PYBIND11_INCLUDE_DIR:INTERNAL=/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/include
+//Install pybind11 header files?
+PYBIND11_INSTALL:INTERNAL=OFF
 PYBIND11_LTO_CXX_FLAGS:INTERNAL=-flto;-fno-fat-lto-objects
 PYBIND11_LTO_LINKER_FLAGS:INTERNAL=-flto
+//Build pybind11 test suite?
+PYBIND11_TEST:INTERNAL=OFF
+PYBIND11_VERSION_MAJOR:INTERNAL=2
+PYBIND11_VERSION_MINOR:INTERNAL=5
+PYBIND11_VERSION_PATCH:INTERNAL=0
 //ADVANCED property for variable: PYTHON_EXECUTABLE
 PYTHON_EXECUTABLE-ADVANCED:INTERNAL=1
+PYTHON_INCLUDE_DIRS:INTERNAL=/usr/include/python3.6m
+PYTHON_LIBRARIES:INTERNAL=/usr/lib/x86_64-linux-gnu/libpython3.6m.so
 //ADVANCED property for variable: PYTHON_LIBRARY
 PYTHON_LIBRARY-ADVANCED:INTERNAL=1
+PYTHON_MODULE_EXTENSION:INTERNAL=.cpython-36m-x86_64-linux-gnu.so
+PYTHON_MODULE_PREFIX:INTERNAL=
+PYTHON_VERSION_MAJOR:INTERNAL=3
+PYTHON_VERSION_MINOR:INTERNAL=6
 //ADVANCED property for variable: ProcessorCount_cmd_getconf
 ProcessorCount_cmd_getconf-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ProcessorCount_cmd_sysctl

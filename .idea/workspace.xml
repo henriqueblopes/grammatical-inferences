@@ -37,123 +37,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f5246a4-a700-49ee-bd3b-d1a3bd0dc08e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/grammatical-inferences.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CMakeCCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CMakeCXXCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CMakeDetermineCompilerABI_C.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CMakeSystem.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CMakeSystem.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CompilerIdC/a.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.2/CompilerIdCXX/a.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cmake.check_cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.cxx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Grammar.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/InputWords.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Rule.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/Symbol.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/source/main.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/pybinding.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/source/Grammar.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/source/Rule.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/source/Symbol.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeCache.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeCCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeCXXCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeDetermineCompilerABI_C.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CMakeSystem.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CompilerIdC/CMakeCCompilerId.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CompilerIdC/a.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/3.14.2/CompilerIdCXX/a.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/CMakeOutput.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/Makefile.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/Makefile2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/TargetDirectories.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/cmake.check_cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/feature_tests.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/feature_tests.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/feature_tests.cxx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/grammatical-inferences.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/klpcsg.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/CMakeFiles/progress.marks" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/cmake_install.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/UILD_WITH_PEDANTIC_WARNINGS=ON/grammatical-inferences.cbp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/grammatical-inferences.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/CMakeFiles/progress.marks" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/bindings/cmake_install.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/klpcsg.cpython-36m-x86_64-linux-gnu.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/klpcsg.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/pybind11/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/pybind11/CMakeFiles/progress.marks" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/pybind11/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/pybind11/cmake_install.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/pybind11/pybind11.cbp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/grammatical-inferences.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/klpcsg.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/grammatical-inferences.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pybinding.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/pybinding.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -333,7 +229,7 @@
       <workItem from="1601661765689" duration="1555000" />
       <workItem from="1601663409611" duration="2136000" />
       <workItem from="1602002351516" duration="2180000" />
-      <workItem from="1602513718422" duration="6781000" />
+      <workItem from="1602513718422" duration="7176000" />
     </task>
     <task id="LOCAL-00001" summary="Commit dos algoritmos implementados">
       <created>1590095539245</created>
@@ -419,7 +315,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602523645799</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Merge branch 'master' into PCFGandPCSG&#10;&#10;# Conflicts:&#10;#&#9;.idea/misc.xml&#10;#&#9;CMakeLists.txt&#10;#&#9;Grammar.cpp&#10;#&#9;Grammar.h&#10;#&#9;InputWords.cpp&#10;#&#9;InputWords.h&#10;#&#9;Rule.cpp&#10;#&#9;Rule.h&#10;#&#9;Symbol.cpp&#10;#&#9;Symbol.h&#10;#&#9;cmake-build-debug/CMakeCache.txt&#10;#&#9;cmake-build-debug/CMakeFiles/3.14.2/CMakeSystem.cmake&#10;#&#9;cmake-build-debug/CMakeFiles/CMakeOutput.log&#10;#&#9;cmake-build-debug/CMakeFiles/Makefile.cmake&#10;#&#9;cmake-build-debug/CMakeFiles/Makefile2&#10;#&#9;cmake-build-debug/CMakeFiles/TargetDirectories.txt&#10;#&#9;cmake-build-debug/CMakeFiles/clion-environment.txt&#10;#&#9;cmake-build-debug/CMakeFiles/clion-log.txt&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/CXX.includecache&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/DependInfo.cmake&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Grammar.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/InputWords.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Rule.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/Symbol.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/build.make&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/cmake_clean.cmake&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.internal&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/depend.make&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/flags.make&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/link.txt&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/main.cpp.o&#10;#&#9;cmake-build-debug/CMakeFiles/grammatical-inferences.dir/progress.make&#10;#&#9;cmake-build-debug/CMakeFiles/progress.marks&#10;#&#9;cmake-build-debug/Makefile&#10;#&#9;cmake-build-debug/grammatical-inferences&#10;#&#9;cmake-build-debug/grammatical-inferences.cbp&#10;#&#9;main.cpp">
+      <created>1602523796397</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1602523796397</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -525,10 +428,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1600973458486" />
-    <state x="598" y="27" width="935" height="979" key="CommitChangelistDialog2" timestamp="1602523642596">
+    <state x="598" y="27" width="935" height="979" key="CommitChangelistDialog2" timestamp="1602523789910">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="598" y="27" width="935" height="979" key="CommitChangelistDialog2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1602523642596" />
+    <state x="598" y="27" width="935" height="979" key="CommitChangelistDialog2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1602523789910" />
     <state x="320" y="80" width="1482" height="872" key="DiffContextDialog" timestamp="1601663329267">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -598,10 +501,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="737" y="366" width="600" height="477" key="Vcs.Multiple.Commit.Info.Dialog.Key/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1601663560702" />
-    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1602523658172">
+    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1602523800916">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1602523658172" />
+    <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1602523800916" />
     <state x="167" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1598282593247">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>

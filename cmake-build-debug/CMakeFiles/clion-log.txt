@@ -1,5 +1,58 @@
 /home/henrique/cmake-3.14.2-Linux-x86_64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_WITH_PEDANTIC_WARNINGS=ON -G "CodeBlocks - Unix Makefiles" /home/henrique/CLionProjects/grammatical-inferences
--- CPM: using local package pybind11@2.5.0
+-- The C compiler identification is GNU 7.5.0
+-- The CXX compiler identification is GNU 7.5.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Downloading CPM.cmake
+-- CPM: adding package pybind11@2.5.0 (v2.5.0)
+-- Found PythonInterp: /usr/bin/python3.6 (found version "3.6.9") 
+-- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.6m.so
+-- pybind11 v2.5.0
+CMake Warning at cmake-build-debug/cmake/CPM_0.27.2.cmake:165 (message):
+  CPM: ignoring package option for pybind11: PYBIND11_TEST = ON (OFF)
+Call Stack (most recent call first):
+  cmake-build-debug/cmake/CPM_0.27.2.cmake:241 (CPMCheckIfPackageAlreadyAdded)
+  cmake-build-debug/CPM_modules/Findpybind11.cmake:2 (CPMAddPackage)
+  CMakeLists.txt:50 (find_package)
+
+
+CMake Warning at cmake-build-debug/cmake/CPM_0.27.2.cmake:165 (message):
+  CPM: ignoring package option for pybind11: OFF = ON ()
+Call Stack (most recent call first):
+  cmake-build-debug/cmake/CPM_0.27.2.cmake:241 (CPMCheckIfPackageAlreadyAdded)
+  cmake-build-debug/CPM_modules/Findpybind11.cmake:2 (CPMAddPackage)
+  CMakeLists.txt:50 (find_package)
+
+
+CMake Warning at cmake-build-debug/cmake/CPM_0.27.2.cmake:165 (message):
+  CPM: ignoring package option for pybind11: PYBIND11_INSTALL = ON (OFF)
+Call Stack (most recent call first):
+  cmake-build-debug/cmake/CPM_0.27.2.cmake:241 (CPMCheckIfPackageAlreadyAdded)
+  cmake-build-debug/CPM_modules/Findpybind11.cmake:2 (CPMAddPackage)
+  CMakeLists.txt:50 (find_package)
+
+
+CMake Warning at cmake-build-debug/cmake/CPM_0.27.2.cmake:165 (message):
+  CPM: ignoring package option for pybind11: OFF = ON ()
+Call Stack (most recent call first):
+  cmake-build-debug/cmake/CPM_0.27.2.cmake:241 (CPMCheckIfPackageAlreadyAdded)
+  cmake-build-debug/CPM_modules/Findpybind11.cmake:2 (CPMAddPackage)
+  CMakeLists.txt:50 (find_package)
+
+
+-- Performing Test HAS_FLTO
+-- Performing Test HAS_FLTO - Success
+-- LTO enabled
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug

@@ -5,7 +5,7 @@
 		<Option title="grammatical-inferences"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\cmake-build-debug\;CMake Files\cmake-build-debug\cmake\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\local\;CMake Files\..\..\..\..\usr\local\share\;CMake Files\..\..\..\..\usr\local\share\cmake\;CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake-build-debug\;CMake Files\cmake-build-debug\cmake\;CMake Files\cmake-build-debug\CPM_modules\;CMake Files\cmake-build-debug\_deps\;CMake Files\cmake-build-debug\_deps\pybind11-src\;CMake Files\cmake-build-debug\_deps\pybind11-src\tools\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug"/>
@@ -35,6 +35,7 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/python3.6m"/>
+					<Add directory="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/include"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -59,6 +60,7 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/python3.6m"/>
+					<Add directory="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/include"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -93,6 +95,7 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/python3.6m"/>
+					<Add directory="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/include"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -117,6 +120,7 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/python3.6m"/>
+					<Add directory="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/include"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -176,20 +180,17 @@
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/cmake/CPM_0.27.2.cmake">
 			<Option virtualFolder="CMake Files\cmake-build-debug\cmake\"/>
 		</Unit>
-		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/FindPythonLibsNew.cmake">
-			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CPM_modules/Findpybind11.cmake">
+			<Option virtualFolder="CMake Files\cmake-build-debug\CPM_modules\"/>
 		</Unit>
-		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/pybind11Config.cmake">
-			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\pybind11-src\"/>
 		</Unit>
-		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/pybind11ConfigVersion.cmake">
-			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/tools/FindPythonLibsNew.cmake">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\pybind11-src\tools\"/>
 		</Unit>
-		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/pybind11Targets.cmake">
-			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
-		</Unit>
-		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/pybind11Tools.cmake">
-			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/_deps/pybind11-src/tools/pybind11Tools.cmake">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\pybind11-src\tools\"/>
 		</Unit>
 	</Project>
 </CodeBlocks_project_file>
