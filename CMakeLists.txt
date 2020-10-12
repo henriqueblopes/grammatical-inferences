@@ -2,15 +2,39 @@ cmake_minimum_required(VERSION 3.14)
 project(grammatical-inferences)
 
 set(CMAKE_CXX_STANDARD 14)
+
+set(CPM_DOWNLOAD_VERSION 0.27.2)
+set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
+
+if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
+    message(STATUS "Downloading CPM.cmake")
+    file(DOWNLOAD https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
+endif()
+
+include(${CPM_DOWNLOAD_LOCATION})
+option(CPM_USE_LOCAL_PACKAGES "Try `find_package` before downloading dependencies" ON)
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -static-libgcc")
 
 option(BUILD_WITH_PEDANTIC_WARNINGS "Use pedantic warnings. This is useful for developers because many of these warnings will be in continuous integration anyway." ${DEBUG_MODE})
 option(BUILD_INSTALLER "Build an installation package" ${MASTER_PROJECT})
 option(BUILD_PACKAGE "Build an installation package" ${MASTER_PROJECT})
 
+
+
+CPMAddPackage(
+        NAME pybind11
+        GIT_REPOSITORY https://github.com/pybind/pybind11/
+        VERSION 2.5.0
+        OPTIONS "PYBIND11_TEST OFF" "PYBIND11_INSTALL OFF"
+)
+
+
 include_directories(${PYTHON_INCLUDE_DIRS})
 
 #[[add_subdirectory(source bindings)]]
+
+
 
 add_executable(grammatical-inferences
         source/Grammar.cpp
@@ -23,8 +47,6 @@ add_executable(grammatical-inferences
         source/InputWords.cpp
         source/InputWords.h)
 
-
-#[[
 find_package(pybind11 REQUIRED)
 
 pybind11_add_module(klpcsg
@@ -35,10 +57,9 @@ pybind11_add_module(klpcsg
         source/Symbol.cpp
         source/Symbol.h
         pybinding.cpp)
-]]
 
 
-target_link_libraries(grammatical-inferences stdc++fs ${PYTHON_LIBRARIES})# pybind11::embed)
+target_link_libraries(grammatical-inferences stdc++fs ${PYTHON_LIBRARIES} pybind11::embed)
 
 if (BUILD_INSTALLER)
     set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/source)

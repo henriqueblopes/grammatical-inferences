@@ -4,6 +4,7 @@
 #include "source/Grammar.h"
 #include <vector>
 #include "source/Symbol.h"
+#include <Python.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
