@@ -1,5 +1,0 @@
-/home/henrique/cmake-3.14.2-Linux-x86_64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_WITH_PEDANTIC_WARNINGS=ON -G "CodeBlocks - Unix Makefiles" /home/henrique/CLionProjects/grammatical-inferences
--- CPM: using local package pybind11@2.5.0
--- Configuring done
--- Generating done
--- Build files have been written to: /home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug

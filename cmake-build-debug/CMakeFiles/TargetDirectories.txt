@@ -1,4 +1,0 @@
-/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/grammatical-inferences.dir
-/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/CMakeFiles/klpcsg.dir
