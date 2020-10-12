@@ -48,3 +48,4 @@ gh-md-toc
 *.app
 
 .DS_Store
+/cmake-build-debug/

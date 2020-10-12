@@ -5,7 +5,7 @@
 		<Option title="grammatical-inferences"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\local\;CMake Files\..\..\..\..\usr\local\share\;CMake Files\..\..\..\..\usr\local\share\cmake\;CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake-build-debug\;CMake Files\cmake-build-debug\cmake\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\local\;CMake Files\..\..\..\..\usr\local\share\;CMake Files\..\..\..\..\usr\local\share\cmake\;CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug"/>
@@ -172,6 +172,9 @@
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/cmake-build-debug/cmake/CPM_0.27.2.cmake">
+			<Option virtualFolder="CMake Files\cmake-build-debug\cmake\"/>
 		</Unit>
 		<Unit filename="/home/henrique/CLionProjects/grammatical-inferences/../../../../usr/local/share/cmake/pybind11/FindPythonLibsNew.cmake">
 			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\cmake\pybind11\"/>
