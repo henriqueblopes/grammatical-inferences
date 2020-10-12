@@ -12,7 +12,6 @@
 using namespace std;
 namespace py = pybind11;
 
-
 PYBIND11_MODULE(klpcsg, m) {
 
     py::class_<Symbol>(m, "Symbol")
