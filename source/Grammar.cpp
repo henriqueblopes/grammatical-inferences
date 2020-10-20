@@ -13,11 +13,12 @@
 using namespace std;
 
 Grammar::Grammar(std::vector<Symbol> terminals, pair<int,int> contextSize, int nNonTerminals,
-                 std::vector<std::vector<Symbol>> words, int trainingMethod): terminals(std::move(terminals)), contextSize(std::move(contextSize)), nNonTerminals(nNonTerminals), words(std::move(words)) {
+                 std::vector<std::vector<Symbol>> words): terminals(std::move(terminals)), nNonTerminals(nNonTerminals), contextSize(std::move(contextSize)), words(std::move(words)) {
     nTerminals = terminals.size();
     generateNonTermnals();
     generateRulesCNF();
     start = rules[0].left.front();
+    cout<<"Test";
 }
 
 
@@ -27,7 +28,7 @@ Grammar::Grammar(std::vector<Symbol> terminals, std::vector<Symbol> nonterminals
                                                     start(std::move(start)), nNonTerminals(nNonTerminals) {}
 
 Grammar::Grammar(std::vector<Symbol> terminals, std::vector<Symbol> nonterminals,
-                 std::vector<Rule> rules, Symbol start, int maxRightHandSize, int maxProductionRules,
+                 std::vector<Rule> rules, Symbol start,
                  int nTerminals, int nNonTerminals) : terminals(std::move(terminals)), nonterminals(std::move(nonterminals)), rules(std::move(rules)),
                                                       start(std::move(start)), nTerminals(nTerminals),
                                                       nNonTerminals(nNonTerminals) {}
@@ -67,7 +68,7 @@ Grammar::Grammar(const std::vector<Symbol> &terminals, int nNonTerminals, std::v
 
 Grammar::Grammar(const vector<Symbol> &terminals, std::vector<std::vector<Symbol>> words, int type,
                  int nNonTerminals)
-        : terminals(terminals), words(std::move(words)), type(type), nNonTerminals(nNonTerminals) {
+        : terminals(terminals), nNonTerminals(nNonTerminals), words(std::move(words)), type(type) {
     nTerminals = terminals.size();
 }
 
@@ -163,7 +164,7 @@ void Grammar::generateNonTermnals() {
 
 
 
-void Grammar::generatePermutation(std::vector<std::vector<Symbol>> & permutations, std::vector<Symbol> symbols, int size, std::vector<Symbol> word, bool context) {
+void Grammar::generatePermutation(std::vector<std::vector<Symbol>> & permutations, std::vector<Symbol> symbols, unsigned long size, std::vector<Symbol> word, bool context) {
     if (size == 0 )
         permutations.push_back(word);
     else {
@@ -200,19 +201,19 @@ void Grammar::train(int algorithm, int iterations) {
 double*** Grammar::CYKProb(const std::string& w) {
     //std::cout <<"IT for " << w << std::endl;
     auto ***p = new double**[nonterminals.size()];
-    for (int i = 0; i < nonterminals.size(); i++) {
+    for (unsigned long i = 0; i < nonterminals.size(); i++) {
         p[i] = new double *[w.size()];
-        for (int j = 0; j < w.size(); j++)
+        for (unsigned long j = 0; j < w.size(); j++)
             p[i][j] = new double[w.size()];
     }
 
-    for (int i = 0; i < nonterminals.size(); i++)
-        for (int j = 0; j < w.size(); j++)
-            for (int k = 0; k < w.size(); k++)
+    for (unsigned long i = 0; i < nonterminals.size(); i++)
+        for (unsigned long j = 0; j < w.size(); j++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 p[i][j][k] = 0.0;
 
     std::vector<Rule>::iterator itRule;
-    for (int i = 0; i < w.size(); i++) {
+    for (unsigned long i = 0; i < w.size(); i++) {
         for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
             std::vector<Symbol>::iterator itLeft;
             Symbol nonterminal =  Symbol("", 0,false);
@@ -238,9 +239,9 @@ double*** Grammar::CYKProb(const std::string& w) {
 
         }
     }
-    for (int i = 1; i < w.size(); i++) {
-        for (int j = 0; j < w.size()-i; j++) {
-            for (int k = 0; k< i; k++) {
+    for (unsigned long i = 1; i < w.size(); i++) {
+        for (unsigned long j = 0; j < w.size()-i; j++) {
+            for (unsigned long k = 0; k< i; k++) {
                 for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
 
                     std::vector<Symbol>::iterator itLeft;
@@ -280,7 +281,7 @@ double*** Grammar::CYKProb(const std::string& w) {
 
 void Grammar::printInsideTable(double ***p, int wSize) const {
     cout << "IutsideTable" << endl;
-    for (int i = 0; i< nonterminals.size(); i++) {
+    for (unsigned long i = 0; i< nonterminals.size(); i++) {
         std::cout <<"Nonterminal: " << i << "\n";
         for (int j = 0; j < wSize; j++) {
             for (int k = 0; k < wSize; k++) {
@@ -311,14 +312,14 @@ void Grammar::printInsideTableKL(double ****p, int wSize) {
 
     int sizeLeftContext = 0;
     int sizeRightContext = 0;
-    for (int i = 0; i <= contextSize.first; i++) {
+    for (unsigned long i = 0; i <= contextSize.first; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, terminals, i, word, true);
         sizeLeftContext += permutationsTerminals.size();
     }
 
-    for (int i = 0; i <= contextSize.second; i++) {
+    for (unsigned long i = 0; i <= contextSize.second; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, nonterminals, i, word, true);
@@ -326,7 +327,7 @@ void Grammar::printInsideTableKL(double ****p, int wSize) {
     }
 
 
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
         std::cout <<"Nonterminal: " << i << "\n";
 
         for (int j = 0; j < sizeRightContext; j++) {
@@ -355,7 +356,7 @@ void Grammar::sampleParseTree(std::vector<std::pair<std::vector<Symbol>,std::pai
             std::vector<Symbol>::iterator itSymbol;
             for (itSymbol = (*itRight).first.begin(); itSymbol != (*itRight).first.end(); itSymbol++) {
                 if (!(*itSymbol).terminal && !(*itSymbol).context) {
-                    for (int l = 0; l < jRange; l++) {
+                    for (unsigned long l = 0; l < jRange; l++) {
                         unsigned int indexB;
                         indexB = (*itSymbol).id * nNonTerminals * jRange;
                         double pBij = insideTable[(*itSymbol).id][i][i + l];
@@ -374,7 +375,7 @@ void Grammar::sampleParseTree(std::vector<std::pair<std::vector<Symbol>,std::pai
 
             }
         }
-        int l = 0;
+        unsigned long l = 0;
         for (l = 1; l < rightRange*jRange; l++)
             jbc[l] = jbc[l] + jbc[l-1];
         std::mt19937 mt(rd());
@@ -442,8 +443,8 @@ void Grammar::sampleParseTree(std::vector<std::pair<std::vector<Symbol>,std::pai
     }
 
 }
-void Grammar::calculateNewThetaVecOpt(const std::vector<Symbol>& w, int i) {
-    pTiMinus1Frequence(w, i);
+void Grammar::calculateNewThetaVecOpt(int i) {
+    pTiMinus1Frequence(i);
     std::vector<Rule>::iterator itRule;
     for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
         double nonterminalTotal = 0;
@@ -458,7 +459,7 @@ void Grammar::calculateNewThetaVecOpt(const std::vector<Symbol>& w, int i) {
             iTrFrequence++;
         }
     }
-    pTiMinus1PlusFrequence(w, i);
+    pTiMinus1PlusFrequence(i);
 }
 
 
@@ -666,7 +667,7 @@ void Grammar::metropolisHastingsPCFG(int iterations) {
         parseTreesVec.push_back(pairTree);
     }
     int countAcceptedTress = 0;
-    bool acceptTree = true;
+    //bool acceptTree = true;
     for (int j = 0; j < iterations; j++) {
         double ***insideTable;
 
@@ -687,7 +688,7 @@ void Grammar::metropolisHastingsPCFG(int iterations) {
         //if (acceptTree) {
             calculateNewThetaVec(words[i]);
             updateParseTressTheta();
-            acceptTree = false;
+            //acceptTree = false;
         //}
         insideTable = CYKProbVec(words[i]);
         //printInsideTable(insideTable, sentences[i].size());
@@ -712,7 +713,7 @@ void Grammar::metropolisHastingsPCFG(int iterations) {
         if (funcA >= r)
             parseTreesVec[i] = tpaux;
         else {
-            acceptTree = true;
+//            acceptTree = true;
             countAcceptedTress++;
             /*std::pair<double,  double> pMpP = perplexity(words, true);
             std::cout << "  Accepted tree in iteration: " << j << " - PerplexityM: " << pMpP.first << " = PerplexityP: " << pMpP.second<< std::endl;
@@ -762,7 +763,7 @@ void Grammar::metropolisHastingsPCSG(int iterations) {
         int p = dist(mt);
         int i = p;
         double ****insideTableKL;
-        double ****iTableN;
+        //double ****iTableN;
         actualProduction.clear();
         actualProduction.push_back(nonterminals[0]);
         if (j%(iterations/5) == 0) {
@@ -776,7 +777,7 @@ void Grammar::metropolisHastingsPCSG(int iterations) {
 
         //std::cout << "SENSITIVE" << std::endl;
         auto startNewTheta = std::chrono::system_clock::now();
-        calculateNewThetaVecOpt(words[i], i);
+        calculateNewThetaVecOpt( i);
         newThetaTime += std::chrono::system_clock::now() - startNewTheta;
 
         updateParseTressTheta();
@@ -791,7 +792,7 @@ void Grammar::metropolisHastingsPCSG(int iterations) {
         double pTiWi = probTree(vProds)/ insideTableKL[0][0][words[i].size()-1][0] ;
 
         auto startUpdateTheta = std::chrono::system_clock::now();
-        double pTiTiMinis1 = pTiTiMinus1VecOpt(words[i], i);
+        double pTiTiMinis1 = pTiTiMinus1VecOpt(i);
 
         updateThetaTime += std::chrono::system_clock::now() - startUpdateTheta;
         vProds.clear();
@@ -806,13 +807,13 @@ void Grammar::metropolisHastingsPCSG(int iterations) {
         parseTreesVec[i] = tp;
         double pTiLineWi =  probTree(vProds) / insideTableKL[0][0][words[i].size()-1][0] ;
 
-        double pTiLineTiMinis1 = pTiTiMinus1VecOpt(words[i], i);
+        double pTiLineTiMinis1 = pTiTiMinus1VecOpt(i);
         double funcA = std::min(1.0,(pTiLineTiMinis1*pTiWi)/(pTiTiMinis1*pTiLineWi));
         freeInsideTableKL(insideTableKL, words[i].size());
         p = dist(mt);
         if (funcA >= p) {
             parseTreesVec[i] = tpaux;
-            pTiMinus1PlusFrequence(words[i],i);
+            pTiMinus1PlusFrequence(i);
         }
         else{
             countAcceptedTress++;
@@ -826,8 +827,8 @@ void Grammar::metropolisHastingsPCSG(int iterations) {
 
 void Grammar::generateRulesCNF() {
 
-    for (int i = 0; i <= contextSize.first; i++) {
-        for (int j = 0; j <= contextSize.second; j++) {
+    for (unsigned long i = 0; i <= contextSize.first; i++) {
+        for (unsigned long j = 0; j <= contextSize.second; j++) {
             std::vector<std::vector<Symbol>> permutationsTerminals;
             std::vector<std::vector<Symbol>> permutationsAll;
             std::vector<std::vector<Symbol>> permutationsNonterminals;
@@ -886,7 +887,7 @@ void Grammar::generateRulesCNF() {
     int j = 0;
     for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
         (*itRule).index = j;
-        for (int i =0; i < (*itRule).right.size(); i++)
+        for (unsigned long i =0; i < (*itRule).right.size(); i++)
             (*itRule).ruleFrequence.emplace_back(ALFA, 0);
         j++;
     }
@@ -898,7 +899,7 @@ double ****Grammar::CYKProbKL(const std::string& w) {
     //std::cout <<"Sensitive IT for " << w << std::endl;
     int sizeLeftContext = 0;
     int sizeRightContext = 0;
-    for (int i = 0; i <= contextSize.first; i++) {
+    for (unsigned long i = 0; i <= contextSize.first; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, terminals, i, word, true);
@@ -906,7 +907,7 @@ double ****Grammar::CYKProbKL(const std::string& w) {
 
     }
     contextAmount.first = sizeLeftContext;
-    for (int i = 0; i <= contextSize.second; i++) {
+    for (unsigned long i = 0; i <= contextSize.second; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, nonterminals, i, word, true);
@@ -915,23 +916,23 @@ double ****Grammar::CYKProbKL(const std::string& w) {
     }
     contextAmount.second = sizeRightContext;
     auto ****p = new double***[nonterminals.size()*sizeLeftContext];
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
         p[i] = new double **[w.size()];
-        for (int j = 0; j < w.size(); j++) {
+        for (unsigned long j = 0; j < w.size(); j++) {
             p[i][j] = new double *[w.size()];
-            for (int k = 0; k < w.size(); k++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 p[i][j][k] = new double[sizeRightContext];
         }
     }
 
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++)
-        for (int j = 0; j < w.size(); j++)
-            for (int k = 0; k < w.size(); k++)
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++)
+        for (unsigned long j = 0; j < w.size(); j++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 for (int l = 0; l < sizeRightContext; l++)
                     p[i][j][k][l] = 0.0;
 
     std::vector<Rule>::iterator itRule;
-    for (int i = 0; i < w.size(); i++) {
+    for (unsigned long i = 0; i < w.size(); i++) {
         for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
             std::vector<Symbol>::iterator itLeft;
             Symbol nonterminal =  Symbol("", 0,false);
@@ -969,9 +970,9 @@ double ****Grammar::CYKProbKL(const std::string& w) {
 
         }
     }
-    for (int i = 1; i < w.size(); i++) {
-        for (int j = 0; j < w.size()-i; j++) {
-            for (int k = 0; k< i; k++) {
+    for (unsigned long i = 1; i < w.size(); i++) {
+        for (unsigned long j = 0; j < w.size()-i; j++) {
+            for (unsigned long k = 0; k< i; k++) {
                 for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
 
                     std::vector<Symbol>::iterator itLeft;
@@ -1042,7 +1043,7 @@ int Grammar::convertContextToID(int side, std::vector<Symbol> context) const {
     else
         nSymbols = nNonTerminals;
     std::vector<Symbol>::iterator itSymbol;
-    for (int i = 0; i < context.size(); i++)
+    for (unsigned long i = 0; i < context.size(); i++)
         id += pow(nSymbols, i);
     int position = 0;
     for (itSymbol = context.begin(); itSymbol != context.end(); itSymbol++) {
@@ -1076,7 +1077,7 @@ void Grammar::sampleParseTreeKL(
         rightContext.push_back((*itLeft));
         itLeft++;
     }
-    double sumJBC = 0.0;
+    //double sumJBC = 0.0;
     if (jRange > 0) {
         //std::cout << w << std::endl;
         auto *jbc = new double[(jRange+1) * rightRange];
@@ -1097,7 +1098,7 @@ void Grammar::sampleParseTreeKL(
                         }
                     }
                     itSymbol--;
-                    for (int l = 0; l < jRange; l++) {
+                    for (unsigned long l = 0; l < jRange; l++) {
                         unsigned int indexB = (*itSymbol).id * nNonTerminals * jRange;
                         double pBij = insideTable[contextAmount.first*(*itSymbol).id+ convertContextToID(0,leftContext)]
                                 [i][i + l][convertContextToID(1,rightContextLine)];
@@ -1133,7 +1134,7 @@ void Grammar::sampleParseTreeKL(
         }
 
 
-        int l = 0;
+        unsigned long l = 0;
         for (l = 1; l < rightRange*jRange; l++)
             jbc[l] = jbc[l] + jbc[l-1];
         std::mt19937 mt(rd());
@@ -1203,9 +1204,9 @@ void Grammar::sampleParseTreeKL(
         rc = distIntR(mt);
         //lc = ((int) rand()%(leftContext2.size()+1));
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin());
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
         std::vector<Symbol> lhs;
         lhs.insert(lhs.end(), leftContext2.begin(), leftContext2.end());
@@ -1226,9 +1227,9 @@ void Grammar::sampleParseTreeKL(
         rc = distIntR(mt);
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin() +i);
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
 
         lhs.clear();
@@ -1254,9 +1255,9 @@ void Grammar::sampleParseTreeKL(
         rc = distIntR(mt);
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin() +i);
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
 
         std::pair<std::vector<Symbol>,std::pair<double, double>> rightProduction;
@@ -1384,7 +1385,7 @@ void Grammar::sampleParseTreeVec(
             std::vector<Symbol>::iterator itSymbol;
             for (itSymbol = (*itRight).first.begin(); itSymbol != (*itRight).first.end(); itSymbol++) {
                 if (!(*itSymbol).terminal && !(*itSymbol).context) {
-                    for (int l = 0; l < jRange; l++) {
+                    for (unsigned int l = 0; l < jRange; l++) {
                         unsigned int indexB = (*itSymbol).id * nNonTerminals * jRange;
                         double pBij = insideTable[(*itSymbol).id][i][i + l];
                         itSymbol++;
@@ -1402,7 +1403,7 @@ void Grammar::sampleParseTreeVec(
 
             }
         }
-        int l = 0;
+        unsigned int l = 0;
         for (l = 1; l < rightRange*jRange; l++)
             jbc[l] = jbc[l] + jbc[l-1];
         std::mt19937 mt(rd());
@@ -1473,19 +1474,19 @@ void Grammar::sampleParseTreeVec(
 double ***Grammar::CYKProbVec(std::vector<Symbol> w) {
     //std::cout <<"IT for " << w << std::endl;
     auto ***p = new double**[nonterminals.size()];
-    for (int i = 0; i < nonterminals.size(); i++) {
+    for (unsigned long i = 0; i < nonterminals.size(); i++) {
         p[i] = new double *[w.size()];
-        for (int j = 0; j < w.size(); j++)
+        for (unsigned long j = 0; j < w.size(); j++)
             p[i][j] = new double[w.size()];
     }
 
-    for (int i = 0; i < nonterminals.size(); i++)
-        for (int j = 0; j < w.size(); j++)
-            for (int k = 0; k < w.size(); k++)
+    for (unsigned long i = 0; i < nonterminals.size(); i++)
+        for (unsigned long j = 0; j < w.size(); j++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 p[i][j][k] = 0.0;
 
     std::vector<Rule>::iterator itRule;
-    for (int i = 0; i < w.size(); i++) {
+    for (unsigned long i = 0; i < w.size(); i++) {
         for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
             std::vector<Symbol>::iterator itLeft;
             Symbol nonterminal =  Symbol("", 0,false);
@@ -1511,9 +1512,9 @@ double ***Grammar::CYKProbVec(std::vector<Symbol> w) {
 
         }
     }
-    for (int i = 1; i < w.size(); i++) {
-        for (int j = 0; j < w.size()-i; j++) {
-            for (int k = 0; k< i; k++) {
+    for (unsigned long i = 1; i < w.size(); i++) {
+        for (unsigned long j = 0; j < w.size()-i; j++) {
+            for (unsigned long k = 0; k< i; k++) {
                 for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
 
                     std::vector<Symbol>::iterator itLeft;
@@ -1555,9 +1556,9 @@ vector<vector<vector<double>>> Grammar::outsideTable(const std::vector<Symbol>& 
     vector<vector<vector<double>>>  outsideTable;
     for (const auto& nt: nonterminals) {
         outsideTable.emplace_back();
-        for (int i = 0; i < w.size(); i++) {
+        for (unsigned long i = 0; i < w.size(); i++) {
             outsideTable[nt.id].push_back(vector<double>());
-            for (int j = 0; j < w.size(); j++) {
+            for (unsigned long j = 0; j < w.size(); j++) {
                 outsideTable[nt.id][i].push_back(0.0);
             }
         }
@@ -1565,8 +1566,8 @@ vector<vector<vector<double>>> Grammar::outsideTable(const std::vector<Symbol>& 
     outsideTable[0][0][w.size()-1] = 1;
     //printOutsideTable(outsideTable);
 
-    for (unsigned int i = w.size()-1; i >=0; i--) {
-        for (int j = 0; j+i< w.size(); j++) {
+    for (int i = (int) w.size()-1; i >=0; i--) {
+        for (int j = 0; j+i< (int) w.size(); j++) {
             for (const auto& nt: nonterminals) {
                 //cout << "B_"<<nt.id<<"_"<<j<<"_"<<j+i<<endl;
 
@@ -1582,7 +1583,7 @@ vector<vector<vector<double>>> Grammar::outsideTable(const std::vector<Symbol>& 
                                      <<outsideTable[r.left[0].id][k][j+i] << " * " << insideTable[ right.first[0].id][k][j-1] << " * " << right.second.first
                                      << " = " << outsideTable[nt.id][j][j+i] << endl;*/
                             }                    }
-                        for (unsigned int k=w.size()-1; k > j+i; k--) {
+                        for (int k= (int) w.size()-1; k > j+i; k--) {
                             if (right.first[0].id ==nt.id) {
                                 outsideTable[nt.id][j][j+i] += outsideTable[r.left[0].id][j][k]*insideTable[ right.first[1].id][j+i+1][k]* right.second.first;
                                 /*cout << "B_" <<r.left[0].id<<"_"<<j<<"_"<<k<< " * " << "I_"<<right.first[1].id<<"_"<<j+i+1<<"_"<<k << " = "
@@ -1780,14 +1781,14 @@ double Grammar::pTiTiMinus1Vec(const std::vector<Symbol>& w) {
     return result;
 }
 
-double Grammar::pTiTiMinus1VecOpt(const std::vector<Symbol>& w, int i) {
+double Grammar::pTiTiMinus1VecOpt(int i) {
     std::vector<Rule>::iterator itRule;
     std::vector<std::vector<std::pair<double, int>>> vecPairs;
     vecPairs.reserve(rules.size());
     for (itRule = rules.begin();itRule < rules.end(); itRule++) {
         vecPairs.push_back(itRule->ruleFrequence);
     }
-    pTiMinus1Frequence(w,i);
+    pTiMinus1Frequence(i);
     double result = 1.0;
     auto vecPairsIt = vecPairs.begin();
     for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
@@ -1798,7 +1799,7 @@ double Grammar::pTiTiMinus1VecOpt(const std::vector<Symbol>& w, int i) {
     return result;
 }
 
-void Grammar::pTiMinus1Frequence(const std::vector<Symbol>& w, int i) {
+void Grammar::pTiMinus1Frequence(int i) {
     if (i == -1)
         return;
     std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>::iterator pTreeIt;
@@ -1812,7 +1813,7 @@ void Grammar::pTiMinus1Frequence(const std::vector<Symbol>& w, int i) {
     }
 }
 
-void Grammar::pTiMinus1PlusFrequence(const std::vector<Symbol>& w, int i) {
+void Grammar::pTiMinus1PlusFrequence( int i) {
     if (i == -1)
         return;
     std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>::iterator pTreeIt;
@@ -1846,7 +1847,7 @@ std::vector<std::pair<double, int>> Grammar::calculateRuleFrequenceVec(Rule &r, 
 double ****Grammar::CYKProbKLVec(std::vector<Symbol> w) {
     int sizeLeftContext = 0;
     int sizeRightContext = 0;
-    for (int i = 0; i <= contextSize.first; i++) {
+    for (unsigned long i = 0; i <= contextSize.first; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, terminals, i, word, true);
@@ -1854,7 +1855,7 @@ double ****Grammar::CYKProbKLVec(std::vector<Symbol> w) {
 
     }
     contextAmount.first = sizeLeftContext;
-    for (int i = 0; i <= contextSize.second; i++) {
+    for (unsigned long i = 0; i <= contextSize.second; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, nonterminals, i, word, true);
@@ -1863,23 +1864,23 @@ double ****Grammar::CYKProbKLVec(std::vector<Symbol> w) {
     }
     contextAmount.second = sizeRightContext;
     auto ****p = new double***[nonterminals.size()*sizeLeftContext];
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
         p[i] = new double **[w.size()];
-        for (int j = 0; j < w.size(); j++) {
+        for (unsigned long j = 0; j < w.size(); j++) {
             p[i][j] = new double *[w.size()];
-            for (int k = 0; k < w.size(); k++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 p[i][j][k] = new double[sizeRightContext];
         }
     }
 
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++)
-        for (int j = 0; j < w.size(); j++)
-            for (int k = 0; k < w.size(); k++)
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++)
+        for (unsigned long j = 0; j < w.size(); j++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 for (int l = 0; l < sizeRightContext; l++)
                     p[i][j][k][l] = 0.0;
 
     std::vector<Rule>::iterator itRule;
-    for (int i = 0; i < w.size(); i++) {
+    for (unsigned long i = 0; i < w.size(); i++) {
         for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
             std::vector<Symbol>::iterator itLeft;
             Symbol nonterminal =  Symbol("", 0,false);
@@ -1917,9 +1918,9 @@ double ****Grammar::CYKProbKLVec(std::vector<Symbol> w) {
 
         }
     }
-    for (int i = 1; i < w.size(); i++) {
-        for (int j = 0; j < w.size()-i; j++) {
-            for (int k = 0; k< i; k++) {
+    for (unsigned long i = 1; i < w.size(); i++) {
+        for (unsigned long j = 0; j < w.size()-i; j++) {
+            for (unsigned long k = 0; k< i; k++) {
                 for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
 
                     std::vector<Symbol>::iterator itLeft;
@@ -2006,7 +2007,7 @@ void Grammar::sampleParseTreeKLVec(
         rightContext.push_back((*itLeft));
         itLeft++;
     }
-    double sumJBC = 0.0;
+    //double sumJBC = 0.0;
     if (jRange > 0) {
         //std::cout << w << std::endl;
         auto *jbc = new double[(jRange+1) * rightRange];
@@ -2027,7 +2028,7 @@ void Grammar::sampleParseTreeKLVec(
                         }
                     }
                     itSymbol--;
-                    for (int l = 0; l < jRange; l++) {
+                    for (unsigned int l = 0; l < jRange; l++) {
                         int unsigned indexB = (*itSymbol).id * nNonTerminals * jRange;
                         double pBij = insideTable[contextAmount.first*(*itSymbol).id+ convertContextToID(0,leftContext)]
                         [i][i + l][convertContextToID(1,rightContextLine)];
@@ -2063,7 +2064,7 @@ void Grammar::sampleParseTreeKLVec(
         }
 
 
-        int l = 0;
+        unsigned int l = 0;
         for (l = 1; l < rightRange*jRange; l++)
             jbc[l] = jbc[l] + jbc[l-1];
         std::mt19937 mt(rd());
@@ -2134,9 +2135,9 @@ void Grammar::sampleParseTreeKLVec(
         rc = distIntR(mt);
         //lc = ((int) rand()%(leftContext2.size()+1));
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin());
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
         std::vector<Symbol> lhs;
         lhs.insert(lhs.end(), leftContext2.begin(), leftContext2.end());
@@ -2157,9 +2158,9 @@ void Grammar::sampleParseTreeKLVec(
         rc = distIntR(mt);
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin() +i);
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
 
         lhs.clear();
@@ -2185,9 +2186,9 @@ void Grammar::sampleParseTreeKLVec(
         rc = distIntR(mt);
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin() +i);
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
         std::pair<std::vector<Symbol>,std::pair<double, double>> rightProduction;
         rightProduction.first.insert(rightProduction.first.end(), leftContext.begin(), leftContext.end());
@@ -2215,7 +2216,7 @@ void Grammar::sampleParseTreeKLVec(
     }
 }
 
-std::pair<double,double> Grammar::perplexity(const std::vector<std::vector<Symbol>>& testData, bool normalized) {
+std::pair<double,double> Grammar::perplexity(const std::vector<std::vector<Symbol>>& testData) {
     std::pair<double,double> pXTheta = std::make_pair(1.0, 0.0);
     for (const auto& w: testData) {
         double ***iTable  = CYKProbVec(w);
@@ -2232,7 +2233,7 @@ std::pair<double,double> Grammar::perplexity(const std::vector<std::vector<Symbo
     return std::make_pair(exp(-(pXTheta.first/testData.size())), exp(-(pXTheta.second/testData.size())));
 }
 
-std::pair<double,double> Grammar::perplexityKL(const std::vector<std::vector<Symbol>>& testData, bool normalized) {
+std::pair<double,double> Grammar::perplexityKL(const std::vector<std::vector<Symbol>>& testData) {
     std::pair<double,double> pXTheta = std::make_pair(1.0, 0.0);
     for (const auto& w: testData) {
         double ****iTable  = CYKProbKLVec(w);
@@ -2251,19 +2252,19 @@ std::pair<double,double> Grammar::perplexityKL(const std::vector<std::vector<Sym
 
 double ***Grammar::CYKProbNVec(const std::vector<Symbol>& w) {
     auto ***p = new double**[nonterminals.size()];
-    for (int i = 0; i < nonterminals.size(); i++) {
+    for (unsigned long i = 0; i < nonterminals.size(); i++) {
         p[i] = new double *[w.size()];
-        for (int j = 0; j < w.size(); j++)
+        for (unsigned long j = 0; j < w.size(); j++)
             p[i][j] = new double[w.size()];
     }
 
-    for (int i = 0; i < nonterminals.size(); i++)
-        for (int j = 0; j < w.size(); j++)
-            for (int k = 0; k < w.size(); k++)
+    for (unsigned long i = 0; i < nonterminals.size(); i++)
+        for (unsigned long j = 0; j < w.size(); j++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 p[i][j][k] = 0.0;
 
     std::vector<Rule>::iterator itRule;
-    for (int i = 0; i < w.size(); i++) {
+    for (unsigned long i = 0; i < w.size(); i++) {
         for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
             std::vector<Symbol>::iterator itLeft;
             Symbol nonterminal =  Symbol("", 0,false);
@@ -2286,9 +2287,9 @@ double ***Grammar::CYKProbNVec(const std::vector<Symbol>& w) {
 
         }
     }
-    for (int i = 1; i < w.size(); i++) {
-        for (int j = 0; j < w.size()-i; j++) {
-            for (int k = 0; k< i; k++) {
+    for (unsigned long i = 1; i < w.size(); i++) {
+        for (unsigned long j = 0; j < w.size()-i; j++) {
+            for (unsigned long k = 0; k< i; k++) {
                 for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
 
                     std::vector<Symbol>::iterator itLeft;
@@ -2329,7 +2330,7 @@ double ***Grammar::CYKProbNVec(const std::vector<Symbol>& w) {
 double ****Grammar::CYKProbKLNVec(const std::vector<Symbol>& w) {
     int sizeLeftContext = 0;
     int sizeRightContext = 0;
-    for (int i = 0; i <= contextSize.first; i++) {
+    for (unsigned long i = 0; i <= contextSize.first; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, terminals, i, word, true);
@@ -2337,7 +2338,7 @@ double ****Grammar::CYKProbKLNVec(const std::vector<Symbol>& w) {
 
     }
     contextAmount.first = sizeLeftContext;
-    for (int i = 0; i <= contextSize.second; i++) {
+    for (unsigned long i = 0; i <= contextSize.second; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, nonterminals, i, word, true);
@@ -2346,23 +2347,23 @@ double ****Grammar::CYKProbKLNVec(const std::vector<Symbol>& w) {
     }
     contextAmount.second = sizeRightContext;
     auto ****p = new double***[nonterminals.size()*sizeLeftContext];
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
         p[i] = new double **[w.size()];
-        for (int j = 0; j < w.size(); j++) {
+        for (unsigned long j = 0; j < w.size(); j++) {
             p[i][j] = new double *[w.size()];
-            for (int k = 0; k < w.size(); k++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 p[i][j][k] = new double[sizeRightContext];
         }
     }
 
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++)
-        for (int j = 0; j < w.size(); j++)
-            for (int k = 0; k < w.size(); k++)
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++)
+        for (unsigned long j = 0; j < w.size(); j++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 for (int l = 0; l < sizeRightContext; l++)
                     p[i][j][k][l] = 0.0;
 
     std::vector<Rule>::iterator itRule;
-    for (int i = 0; i < w.size(); i++) {
+    for (unsigned long i = 0; i < w.size(); i++) {
         for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
             std::vector<Symbol>::iterator itLeft;
             Symbol nonterminal =  Symbol("", 0,false);
@@ -2397,9 +2398,9 @@ double ****Grammar::CYKProbKLNVec(const std::vector<Symbol>& w) {
 
         }
     }
-    for (int i = 1; i < w.size(); i++) {
-        for (int j = 0; j < w.size()-i; j++) {
-            for (int k = 0; k< i; k++) {
+    for (unsigned long i = 1; i < w.size(); i++) {
+        for (unsigned long j = 0; j < w.size()-i; j++) {
+            for (unsigned long k = 0; k< i; k++) {
                 for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
 
                     std::vector<Symbol>::iterator itLeft;
@@ -2481,10 +2482,10 @@ void Grammar::gibbsSamplingPCFG(int iterations) {
             parseTreesVec.push_back(pairTree);
         }
         std::vector<Symbol> a;
-        calculateNewThetaVecOpt(a, -1);
+        calculateNewThetaVecOpt(-1);
         updateParseTressTheta();
         if (j%(iterations/10) == 0) {
-            std::pair<double,  double> pMpP = perplexity(words, true);
+            std::pair<double,  double> pMpP = perplexity(words);
             std::cout << "iteration: " << j <<" - PerplexityM: "<< pMpP.first << " - PerplexityP: "<< pMpP.second << std::endl;
         }
     }
@@ -2499,7 +2500,7 @@ void Grammar::gibbsSamplingPCSG(int iterations) {
     auto perplexityTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
     //srand((unsigned) time(nullptr));
     int sentencesLength = words.size();
-    auto startMetropolis = std::chrono::system_clock::now();
+    //auto startMetropolis = std::chrono::system_clock::now();
     for (int j = 0; j < iterations; j++) {
         parseTreesVec.clear();
         for (int i = 0; i< sentencesLength; i++) {
@@ -2523,7 +2524,7 @@ void Grammar::gibbsSamplingPCSG(int iterations) {
         }
         std::vector<Symbol> a;
         auto startNewTheta = std::chrono::system_clock::now();
-        calculateNewThetaVecOpt(a, -1);
+        calculateNewThetaVecOpt(-1);
         newThetaTime += std::chrono::system_clock::now() - startNewTheta;
         auto startUpdateTheta = std::chrono::system_clock::now();
         updateParseTressTheta();
@@ -2542,7 +2543,7 @@ void Grammar::gibbsSamplingPCSG(int iterations) {
 }
 
 void Grammar::freeInsideTable(double ***p, int wSize) const {
-    for (int i = 0; i < nonterminals.size(); i++) {
+    for (unsigned long i = 0; i < nonterminals.size(); i++) {
         for (int j = 0; j < wSize; j++)
             delete[] p[i][j];
         delete[] p[i];
@@ -2551,7 +2552,7 @@ void Grammar::freeInsideTable(double ***p, int wSize) const {
 }
 
 void Grammar::freeInsideTableKL(double ****p, int wSize) const {
-    for (int i = 0; i < nonterminals.size()*contextAmount.first; i++) {
+    for (unsigned long i = 0; i < nonterminals.size()*contextAmount.first; i++) {
         for (int j = 0; j < wSize; j++) {
             for (int k = 0; k < wSize; k++)
                 delete[] p[i][j][k];
@@ -2586,7 +2587,7 @@ void Grammar::sampleParseTreeKLVecOpt(
         rightContext.push_back((*itLeft));
         itLeft++;
     }
-    double sumJBC = 0.0;
+    //double sumJBC = 0.0;
     if (jRange > 0) {
         //std::cout << w << std::endl;
         auto *jbc = new double[(jRange+1) * rightRange];
@@ -2607,7 +2608,7 @@ void Grammar::sampleParseTreeKLVecOpt(
                         }
                     }
                     itSymbol--;
-                    for (int l = 0; l < jRange; l++) {
+                    for (unsigned int l = 0; l < jRange; l++) {
                         unsigned int indexB = (*itSymbol).id * nNonTerminals * jRange;
                         double pBij = insideTable[contextAmount.first*(*itSymbol).id+ convertContextToID(0,leftContext)]
                         [i][i + l][convertContextToID(1,rightContextLine)];
@@ -2643,7 +2644,7 @@ void Grammar::sampleParseTreeKLVecOpt(
         }
 
 
-        int l = 0;
+        unsigned int l = 0;
         for (l = 1; l < rightRange*jRange; l++)
             jbc[l] = jbc[l] + jbc[l-1];
         std::mt19937 mt(rd());
@@ -2693,9 +2694,9 @@ void Grammar::sampleParseTreeKLVecOpt(
         rc = distIntR(mt);
         //lc = ((int) rand()%(leftContext2.size()+1));
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin());
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
         std::vector<Symbol> lhs;
         lhs.insert(lhs.end(), leftContext2.begin(), leftContext2.end());
@@ -2716,9 +2717,9 @@ void Grammar::sampleParseTreeKLVecOpt(
         rc = distIntR(mt);
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin() +i);
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
 
         lhs.clear();
@@ -2744,9 +2745,9 @@ void Grammar::sampleParseTreeKLVecOpt(
         rc = distIntR(mt);
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
-        for (int i2 = 0; i2 < lc; i2++)
+        for (unsigned int i2 = 0; i2 < lc; i2++)
             leftContext2.erase(leftContext2.begin() +i);
-        for (int i2 = 0; i2 < rc; i2++)
+        for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
         std::pair<std::vector<Symbol>,std::pair<double, double>> rightProduction;
         rightProduction.first.insert(rightProduction.first.end(), leftContext.begin(), leftContext.end());
@@ -2776,7 +2777,7 @@ void Grammar::sampleParseTreeKLVecOpt(
 double ****Grammar::CYKProbKLVecOpt(std::vector<Symbol> w) {
     int sizeLeftContext = 0;
     int sizeRightContext = 0;
-    for (int i = 0; i <= contextSize.first; i++) {
+    for (unsigned long i = 0; i <= contextSize.first; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, terminals, i, word, true);
@@ -2784,7 +2785,7 @@ double ****Grammar::CYKProbKLVecOpt(std::vector<Symbol> w) {
 
     }
     contextAmount.first = sizeLeftContext;
-    for (int i = 0; i <= contextSize.second; i++) {
+    for (unsigned long i = 0; i <= contextSize.second; i++) {
         std::vector<Symbol> word;
         std::vector<std::vector<Symbol>> permutationsTerminals;
         generatePermutation(permutationsTerminals, nonterminals, i, word, true);
@@ -2793,22 +2794,22 @@ double ****Grammar::CYKProbKLVecOpt(std::vector<Symbol> w) {
     }
     contextAmount.second = sizeRightContext;
     auto ****p = new double***[nonterminals.size()*sizeLeftContext];
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++) {
         p[i] = new double **[w.size()];
-        for (int j = 0; j < w.size(); j++) {
+        for (unsigned long j = 0; j < w.size(); j++) {
             p[i][j] = new double *[w.size()];
-            for (int k = 0; k < w.size(); k++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 p[i][j][k] = new double[sizeRightContext];
         }
     }
 
-    for (int i = 0; i < nonterminals.size()*sizeLeftContext; i++)
-        for (int j = 0; j < w.size(); j++)
-            for (int k = 0; k < w.size(); k++)
+    for (unsigned long i = 0; i < nonterminals.size()*sizeLeftContext; i++)
+        for (unsigned long j = 0; j < w.size(); j++)
+            for (unsigned long k = 0; k < w.size(); k++)
                 for (int l = 0; l < sizeRightContext; l++)
                     p[i][j][k][l] = 0.0;
     std::vector<Rule>::iterator itRule;
-    for (int i = 0; i < w.size(); i++) {
+    for (unsigned long i = 0; i < w.size(); i++) {
         for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
             std::vector<Symbol>::iterator itLeft;
             Symbol nonterminal =  Symbol("", 0,false);
@@ -2845,9 +2846,9 @@ double ****Grammar::CYKProbKLVecOpt(std::vector<Symbol> w) {
 
         }
     }
-    for (int i = 1; i < w.size(); i++) {
-        for (int j = 0; j < w.size()-i; j++) {
-            for (int k = 0; k< i; k++) {
+    for (unsigned long i = 1; i < w.size(); i++) {
+        for (unsigned long j = 0; j < w.size()-i; j++) {
+            for (unsigned long k = 0; k< i; k++) {
                 for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
                     std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
                     for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
@@ -2959,7 +2960,7 @@ void Grammar::baumWelchExpectation(std::vector<double> &countNd, std::vector<dou
     }
     for (auto x: words) {
         vector<vector<double>> F, B;
-        for (int i = 0; i <= x.size(); i++) {
+        for (unsigned long i = 0; i <= x.size(); i++) {
             F.emplace_back();
             B.emplace_back();
             for (auto n: nonterminals) {
@@ -2975,7 +2976,7 @@ void Grammar::baumWelchExpectation(std::vector<double> &countNd, std::vector<dou
             //cout << "B[" << x.size() << "][" << n.id << "] = "
             //     << rules[n.id].right[nNonTerminals * nTerminals].second.first << endl;
         }
-        for (int i = 1; i<= x.size(); i++) {
+        for (unsigned long i = 1; i<= x.size(); i++) {
             for (const auto& n: nonterminals) {
                 F[i][n.id] = 0;
                 B[x.size()-i][n.id]=0;
@@ -2990,14 +2991,14 @@ void Grammar::baumWelchExpectation(std::vector<double> &countNd, std::vector<dou
             }
         }
         double total = 0.0;
-        double totalb = B[0][0];
+        //double totalb = B[0][0];
         for (const auto& n: nonterminals) {
             total += F[x.size()][n.id]*rules[n.id].right[nNonTerminals*nTerminals].second.first;
             //cout << " total = " << "total + " <<  F[x.size()][n.id] << "*" << rules[n.id].right[nNonTerminals*nTerminals].second.first << endl;
         }
         //cout << "Total = " << total << endl;
         //cout << "TotalB = " << totalb <<endl;
-        for (int i = 1; i<= x.size(); i++) {
+        for (unsigned long i = 1; i<= x.size(); i++) {
             for (const auto& n: nonterminals) {
                 for (const auto& nl: nonterminals) {
                     double val =(F[i-1][n.id]*  rules[n.id].right[x[i-1].id*nTerminals+nl.id].second.first* B[i][nl.id])/total;
@@ -3078,8 +3079,8 @@ void Grammar::insideOutside(int iterations) {
             vector<vector<vector<double>>> V;
             calculateWV(W,V, w, insideTable, oT);
 
-            for (int s = 0 ; s <w.size()-1; s++) {
-                for (int t = s+1; t <w.size(); t++) {
+            for (unsigned long s = 0 ; s <w.size()-1; s++) {
+                for (unsigned long t = s+1; t <w.size(); t++) {
                     for (int i2 = 0; i2 < nNonTerminals; i2++) {
                         for (int j = 0; j < nNonTerminals; j++) {
                             for (int k = 0; k < nNonTerminals; k++) {
@@ -3094,8 +3095,8 @@ void Grammar::insideOutside(int iterations) {
             for (int i2 = 0; i2 < nNonTerminals; i2++) {
                 for (int j = 0; j < nNonTerminals; j++) {
                     for (int k = 0; k < nNonTerminals; k++) {
-                        for (int s = 0 ; s <w.size(); s++) {
-                            for (int t = s; t <w.size(); t++) {
+                        for (unsigned long s = 0 ; s <w.size(); s++) {
+                            for (unsigned long t = s; t <w.size(); t++) {
                                     newProbsNTd[i2][j][k] += V[s][t][i2];
                                     //cout << "nPNTd["<<i2<<"]["<<j<<"]["<<k<<"] = "<< newProbsNTd[i2][j][k] << endl;
                             }
@@ -3104,7 +3105,7 @@ void Grammar::insideOutside(int iterations) {
                 }
             }
 
-            for (int t = 0; t <w.size(); t++) {
+            for (unsigned long t = 0; t <w.size(); t++) {
                 for (int i2 = 0; i2 < nNonTerminals; i2++) {
                     for (int m = 0; m < nTerminals; m++) {
                         if(terminals[m].id == w[t].id) {
@@ -3138,9 +3139,9 @@ void Grammar::insideOutside(int iterations) {
 void Grammar::calculateWV(vector<std::vector<std::vector<std::vector<std::vector<double>>>>> &W,
                           vector<std::vector<std::vector<double>>> &V, const vector<Symbol>& w,double***insideTable, vector<vector<vector<double>>>oT) {
 
-    for (int s = 0 ; s <w.size(); s++) {
+    for (unsigned long s = 0 ; s <w.size(); s++) {
         W.emplace_back();
-        for (int t = 0; t <w.size(); t++) {
+        for (unsigned long t = 0; t <w.size(); t++) {
             W[s].push_back(vector<vector<vector<double>>>());
             for (int i = 0; i < nNonTerminals; i++) {
                 W[s][t].push_back(vector<vector<double>>());
@@ -3154,9 +3155,9 @@ void Grammar::calculateWV(vector<std::vector<std::vector<std::vector<std::vector
         }
     }
 
-    for (int s = 0 ; s <w.size(); s++) {
+    for (unsigned long s = 0 ; s <w.size(); s++) {
         V.emplace_back();
-        for (int t = 0; t < w.size(); t++) {
+        for (unsigned long t = 0; t < w.size(); t++) {
             V[s].push_back(vector<double>());
             for (int i = 0; i < nNonTerminals; i++) {
                 V[s][t].push_back(0.0);
@@ -3164,12 +3165,12 @@ void Grammar::calculateWV(vector<std::vector<std::vector<std::vector<std::vector
         }
     }
 
-    for (int s = 0 ; s <w.size(); s++) {
-        for (int t = 0; t <w.size(); t++) {
+    for (unsigned long s = 0 ; s <w.size(); s++) {
+        for (unsigned long t = 0; t <w.size(); t++) {
             for (int i = 0; i < nNonTerminals; i++) {
                 for (int j = 0; j < nNonTerminals; j++) {
                     for (int k = 0; k < nNonTerminals; k++) {
-                        for (int r = s; r < t; r++) {
+                        for (unsigned long r = s; r < t; r++) {
                             W[s][t][i][j][k] += (rules[i].right[k+ nNonTerminals * j].second.first *
                                                 insideTable[j][s][r] * insideTable[k][r+1][t] * oT[i][s][t]) / insideTable[0][0][w.size()-1];
                             //cout<< "W["<<s<<"]["<<t<<"]["<<i<<"]["<<j<<"]["<<k<<"] = " << W[s][t][i][j][k] << endl;
@@ -3180,8 +3181,8 @@ void Grammar::calculateWV(vector<std::vector<std::vector<std::vector<std::vector
         }
     }
 
-    for (int s = 0 ; s <w.size(); s++) {
-        for (int t = 0; t < w.size(); t++) {
+    for (unsigned long s = 0 ; s <w.size(); s++) {
+        for (unsigned long t = 0; t < w.size(); t++) {
             for (int i = 0; i < nNonTerminals; i++) {
                 V[s][t][i] = (insideTable[i][s][t]*oT[i][s][t])/insideTable[0][0][w.size()-1];
                 //cout<< "V["<<s<<"]["<<t<<"]["<<i<<"] = " << V[s][t][i] << endl;
@@ -3335,7 +3336,7 @@ void Grammar::stochasticMerge(const Symbol& a, const Symbol& b) {
             if ((*itRight).first[1].id == b.id) {
                 stochasticFold(a,b);
                 std::pair<std::vector<Symbol>,std::pair<double, double>> newRight;
-                int n = (*itRight).second.first;
+                //int n = (*itRight).second.first;
                 newRight.first.push_back((*itRight).first[0]);
                 newRight.first.push_back(a);
                 newRight.second.first = (*itRight).second.first;
@@ -3377,7 +3378,7 @@ void Grammar::removeUnusedNT() {
     vector<Symbol> notUsed;
     vector<Symbol> used;
     used.push_back(rules[0].left[0]);
-    for (int i = 0; i < used.size(); i++) {
+    for (unsigned long i = 0; i < used.size(); i++) {
         Rule r = rules[used[i].id];
         std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
         for (itRight = r.right.begin(); itRight != r.right.end()-1; itRight++) {
@@ -3445,7 +3446,7 @@ void Grammar::sampleRegularRules(
         std::mt19937 mt(rd());
         std::uniform_real_distribution<double> dist(0.0, 1.0);
         double p = dist(mt);
-        int i;
+        unsigned long i;
         for (i = 0; i < probsTerminal.size(); i++) {
             if (p * total < probsTerminal[i])
                 break;
@@ -3504,7 +3505,7 @@ void Grammar::generateNGramRules() {
         rules.push_back(r);
     }
 
-    for (int i = lastSmallRuleI+1; i < nonterminals.size(); i++) {
+    for (unsigned long i = lastSmallRuleI+1; i < nonterminals.size(); i++) {
         vector<Symbol> left;
         left.push_back(nonterminals[i]);
         vector<std::pair<std::vector<Symbol>, std::pair<double, double>>> right;
@@ -3554,8 +3555,8 @@ void Grammar::trainNGram() {
     for (auto w: words) {
         vector<Symbol> nGram;
         Symbol finalLHS = Symbol("NTI", 0, false, false);
-        for(int i = 0; i < w.size(); i++) {
-            if (i == nNonTerminals ) break;
+        for(unsigned long i = 0; i < w.size(); i++) {
+            if (i == (unsigned long) nNonTerminals ) break;
             Symbol nt = Symbol("NTI", 0, false, false);
             if (i >=1)
                 nt.name = "NT";
@@ -3568,7 +3569,7 @@ void Grammar::trainNGram() {
             finalLHS.name += w[i].name;
             nGram.push_back(w[i]);
         }
-        for(int i = nNonTerminals; i < w.size(); i++) {
+        for(unsigned long i = nNonTerminals; i < w.size(); i++) {
             Symbol nt = Symbol("NT", 0, false, false);
             for (const auto& s: nGram)
                 nt.name += s.name;
@@ -3607,10 +3608,9 @@ void Grammar::addNGramRuleFrequency(const Symbol& lhs, const Symbol& nextSymbol)
     }
 }
 
-Grammar::Grammar(Grammar const &grammar) {
+/*Grammar::Grammar(Grammar const &grammar) {
 
-}
-
+}*/
 
 
 

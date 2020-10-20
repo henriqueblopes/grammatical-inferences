@@ -35,19 +35,19 @@ private:
 public:
     InputWords(bool timed, int nTerminals);
     void readWords();
-    void convertFiletoWord (fs::path path, int minSize);
-    void transposeTo(string actualTone, string targetTone, vector<Symbol> & word);
+    void convertFiletoWord (const fs::path& path, unsigned long minSize);
+    static void transposeTo(const string& actualTone, const string& targetTone, vector<Symbol> & word);
     vector<Symbol> generateTerminals();
     void printWordSizes();
     void selectTrainingWords(int nSharesOrAmount, bool byShare);
     void countChords();
     void truncChordWords();
-    void checkEmptyString(string path);
+    void checkEmptyString(const string& path);
     bool nextShareTrainingWords();
     void iterateChords();
-    string buildChordVector(string tone, string mode, string addition, string bass);
+    static string buildChordVector(const string& mode, const string& addition, const string& bass);
 private:
-    string addChordNote(string chord, string note);
+    static string addChordNote(string chord, string note);
 
     void countAndShowReductedChords();
 };

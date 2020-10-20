@@ -20,12 +20,10 @@ public:
 
     Symbol();
 
-    Symbol clone() const;
+    [[nodiscard]] Symbol clone() const;
     void printSymbol() const;
-    bool equalSymbol(const Symbol& s) const;
+    [[nodiscard]] bool equalSymbol(const Symbol& s) const;
 
-protected:
-    static inline void free(Symbol& s);
 };
 
 #endif //GRAMMARINDCTION_SYMBOL_H

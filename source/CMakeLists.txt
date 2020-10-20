@@ -1,11 +1,37 @@
-add_library(source INTERFACE)
+#[[add_library(source INTERFACE)]]
 
-target_include_directories(source
-        INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+add_library(gInfer STATIC
+        Grammar.h
+        Grammar.cpp
+        Rule.h
+        Rule.cpp
+        Symbol.h
+        Symbol.cpp
         )
 
+set_target_properties(gInfer PROPERTIES VERSION ${PROJECT_VERSION})
 
+#[[set_target_properties(gInfer PROPERTIES PUBLIC_HEADER Grammar.h Symbol.h Rule.h)]]
+set(MY_HEADERS Grammar.h Rule.h Symbol.h)
+
+#[[target_include_directories(gInfer PRIVATE .)]]
+
+include(GNUInstallDirs)
+
+install(FILES ${MY_HEADERS}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        COMPONENT devel)
+
+install(TARGETS gInfer
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+#[[target_include_directories(source
+        INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        )]]
+
+
+#[[
 if (BUILD_WITH_PEDANTIC_WARNINGS)
     if (MSVC)
         target_compile_options(source INTERFACE /W4 /WX)
@@ -34,3 +60,4 @@ if(BUILD_INSTALLER)
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/source
             )
 endif()
+]]

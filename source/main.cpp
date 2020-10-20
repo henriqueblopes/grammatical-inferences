@@ -1,16 +1,20 @@
 #include <iostream>
+/*
 #include "Symbol.h"
 #include "Grammar.h"
+*/
 #include <vector>
 #include "InputWords.h"
-//#include <pybind11/stl.h>
+#include "gInfer.h"
+
 
 
 using namespace std;
 
 
 int main(int argc, char** argv) {
-
+    if (argc < 11)
+        exit(1);
     //argv[1] = nTerminals
     //argv[2] = nSharesOrAmount
     //argv[3] = byShare
@@ -24,7 +28,7 @@ int main(int argc, char** argv) {
     //argv[11] = nNonterminals
     int nTerminals = stoi((argv[1]));
     int nSharesOrAmount = stoi((argv[2]));
-    int nInputForTraining = stoi((argv[4]));
+    unsigned long nInputForTraining = stoi((argv[4]));
     int contextLeftSize = stoi((argv[5]));
     int contextRightSize = stoi((argv[6]));
     int iterations = stoi((argv[7]));
@@ -160,10 +164,10 @@ int main(int argc, char** argv) {
         auto start = std::chrono::system_clock::now();
         vector<vector<Symbol>> iWordsLim;
         iWordsLim.reserve(nInputForTraining);
-        for (int i = 0; i < nInputForTraining; i++)
+        for (unsigned long i = 0; i < nInputForTraining; i++)
             iWordsLim.push_back(iw.inputWords[i]);
 
-        Grammar g = Grammar(terminals, contextSize, nNonterminals, iWordsLim, trainingMethod);
+        Grammar g = Grammar(terminals, contextSize, nNonterminals, iWordsLim);
         //Grammar g = Grammar(terminals, contextSize, nNonterminals, iWordsLim, trainingMethod);
 
         g.train(trainingMethod,iterations);
@@ -175,9 +179,9 @@ int main(int argc, char** argv) {
         pair<double,double> p1;
         cout  << " Calcutating perplexity..." << endl;
         if (trainingMethod == 3 || trainingMethod == 1)
-            p1 = g.perplexity(iw.testWords,normalizedPerplexity);
+            p1 = g.perplexity(iw.testWords);
         else if (trainingMethod == 4 || trainingMethod == 2)
-            p1 = g.perplexityKL(iw.testWords,normalizedPerplexity);
+            p1 = g.perplexityKL(iw.testWords);
 
         cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
         cout <<"Share: " << iw.actualShare<<" - Final Perplexity: " <<p1.first <<" - Final NPerplexity: " <<p1.second << endl;

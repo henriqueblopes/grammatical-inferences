@@ -9,6 +9,7 @@
 #include <pybind11/stl.h>
 
 
+
 using namespace std;
 namespace py = pybind11;
 
@@ -26,7 +27,7 @@ PYBIND11_MODULE(klpcsg, m) {
             .def_readwrite("right", &Rule::right);
 
     py::class_<Grammar>(m, "Grammar")
-            .def(py::init<const std::vector<Symbol> &, std::pair<int, int>, int, std::vector<std::vector<Symbol>>, int>())
+            .def(py::init<const std::vector<Symbol> &, std::pair<int, int>, int, std::vector<std::vector<Symbol>>>())
             .def_readwrite("rules", &Grammar::rules)
             .def("train", &Grammar::train)
             .def("grammarToStr", &Grammar::grammarToStr)

@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
-project(grammatical-inferences)
+project(grammatical-inferences VERSION 1.1.0)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+
+#[[set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror -Wno-self-assign-overloaded")]]
+
 
 set(CPM_DOWNLOAD_VERSION 0.27.2)
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
@@ -29,12 +32,9 @@ CPMAddPackage(
         OPTIONS "PYBIND11_TEST OFF" "PYBIND11_INSTALL OFF"
 )
 
-
+#[[list(APPEND CMAKE_MODULE_PATH home/henrique/Downloads/pyfront/pareto-front-1.1.0-Linux/lib/cmake/ParetoFront)]]
 include_directories(${PYTHON_INCLUDE_DIRS})
-
-#[[add_subdirectory(source bindings)]]
-
-
+add_subdirectory(source)
 
 add_executable(grammatical-inferences
         source/Grammar.cpp
@@ -49,6 +49,7 @@ add_executable(grammatical-inferences
 
 find_package(pybind11 REQUIRED)
 
+
 pybind11_add_module(klpcsg
         source/Grammar.cpp
         source/Grammar.h
@@ -59,7 +60,9 @@ pybind11_add_module(klpcsg
         pybinding.cpp)
 
 
-target_link_libraries(grammatical-inferences stdc++fs ${PYTHON_LIBRARIES} pybind11::embed)
+
+target_link_libraries(grammatical-inferences stdc++fs  ${PYTHON_LIBRARIES} pybind11::embed )
+
 
 if (BUILD_INSTALLER)
     set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/source)

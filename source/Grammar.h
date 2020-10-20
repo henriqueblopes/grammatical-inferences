@@ -15,8 +15,7 @@ class Grammar
 {
 
 public:
-    Grammar(Grammar const &grammar);
-
+    //Grammar();
     const double ALFA = 0.1;
     std::vector<Symbol> terminals;
     std::vector<Symbol> nonterminals;
@@ -25,9 +24,9 @@ public:
     std::vector<std::pair<std::vector<Symbol>, std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>>>> parseTreesVec;
     Symbol start;
     int nTerminals{};
-    int nNonTerminals;
+    int nNonTerminals{};
     std::pair<int, int> contextAmount;
-    std::pair<int,int> contextSize;
+    std::pair<unsigned long, unsigned long> contextSize;
     std::vector<Symbol> actualProduction;
     std::vector<std::vector<Symbol>> words;
     int type{};
@@ -42,21 +41,21 @@ public:
     Grammar(const std::vector<Symbol> &terminals, int nNonTerminals, std::vector<std::vector<Symbol>> words, int type);
 
     Grammar(std::vector<Symbol> terminals, std::vector<Symbol> nonterminals,
-            std::vector<Rule> rules, Symbol start, int maxRightHandSize, int maxProductionRules,
+            std::vector<Rule> rules, Symbol start,
             int nTerminals, int nNonTerminals);
 
     Grammar(const std::vector <Symbol> &terminals, std::vector<std::vector<Symbol>> words, int type,
             int nNonTerminals);
 
-    Grammar(std::vector<Symbol> terminals, std::pair<int,int> contextSize, int nNonTerminals, std::vector<std::vector<Symbol>> words, int trainingMethod);
+    Grammar(std::vector<Symbol> terminals, std::pair<int,int> contextSize, int nNonTerminals, std::vector<std::vector<Symbol>> words);
 
     void printGrammar();
     std::string grammarToStr();
     void printRules();
     std::string rulesToString();
     void train(int algorithm, int iterations);
-    std::pair<double,double> perplexity(const std::vector<std::vector<Symbol>>& testData, bool normalized);
-    std::pair<double,double> perplexityKL(const std::vector<std::vector<Symbol>>& testData, bool normalized);
+    std::pair<double,double> perplexity(const std::vector<std::vector<Symbol>>& testData);
+    std::pair<double,double> perplexityKL(const std::vector<std::vector<Symbol>>& testData);
     void baumWelch(int iteration);
     void insideOutside(int iterations);
     void genFPTA();
@@ -65,7 +64,7 @@ public:
     void trainNGram();
 private:
     void generateNonTermnals();
-    void generatePermutation(std::vector<std::vector<Symbol>> & permutations, std::vector<Symbol> symbols, int size, std::vector<Symbol> word, bool context);
+    void generatePermutation(std::vector<std::vector<Symbol>> & permutations, std::vector<Symbol> symbols, unsigned long size, std::vector<Symbol> word, bool context);
     void generateRulesCNF();
     void generateRulesRegular();
     void generateNGramRules();
@@ -91,7 +90,7 @@ private:
     void sampleParseTreeKLVecOpt(std::vector<std::pair<std::vector<Symbol>,std::pair<std::vector<Symbol>,std::pair<double, double>>>> &vr, Rule r, std::vector<Symbol> w, double ****insideTable, unsigned int i, unsigned int k);
 
     void calculateNewTheta(const std::string& w);
-    void calculateNewThetaVecOpt(const std::vector<Symbol>& w, int i);
+    void calculateNewThetaVecOpt(int i);
     int calculateProductonCounts (const std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>,std::pair<double, double>>>& production, const std::string& w);
     std::vector<std::pair<double, int>> calculateRuleFrequence(Rule r, const std::string& w);
     static double cConstant(std::vector<std::pair<double, int>> ruleFrequence);
@@ -106,7 +105,7 @@ private:
     static void printProduction(
             std::vector<std::pair<std::vector<Symbol>, std::pair<std::vector<Symbol>, std::pair<double, double>>>> tree);
 
-    int convertContextToID(int side, std::vector<Symbol> context) const;
+    [[nodiscard]] int convertContextToID(int side, std::vector<Symbol> context) const;
     void getActualContext(std::vector<Symbol> & leftContext, std::vector<Symbol> & rightContext);
 
     static void
@@ -129,11 +128,11 @@ private:
     static bool equalWord(std::vector<Symbol> w1, std::vector<Symbol> w2);
 
     double pTiTiMinus1Vec(const std::vector<Symbol>& w);
-    double pTiTiMinus1VecOpt(const std::vector<Symbol>& w, int i) ;
+    double pTiTiMinus1VecOpt(int i) ;
 
     std::vector<std::pair<double, int>> calculateRuleFrequenceVec(Rule &rule, const std::vector<Symbol>& w);
-    void pTiMinus1Frequence(const std::vector<Symbol>& w, int i);
-    void pTiMinus1PlusFrequence(const std::vector<Symbol>& w, int i);
+    void pTiMinus1Frequence(int i);
+    void pTiMinus1PlusFrequence(int i);
     void freeInsideTable(double ***p, int wSize) const;
     void freeInsideTableKL(double ****p, int wSize) const;
     void baumWelchExpectation(std::vector<double> &countNd, std::vector<double> &countNl, std::vector<std::vector<std::vector<double>>> &countNT);

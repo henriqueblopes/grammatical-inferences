@@ -5,10 +5,6 @@
 #include <utility>
 #include "Symbol.h"
 
-void Symbol::free(Symbol &s) {
-    //free(s.name);
-    //free(s.id);
-}
 
 void Symbol::printSymbol() const {
     std::cout << "nome: " << name << " id: " << id;
