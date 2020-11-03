@@ -1,11 +1,7 @@
 #include <iostream>
-/*
-#include "Symbol.h"
-#include "Grammar.h"
-*/
 #include <vector>
 #include "InputWords.h"
-#include "gInfer.h"
+#include "Grammar.h"
 
 
 
@@ -137,13 +133,10 @@ int main(int argc, char** argv) {
                                      {Symbol("0", 0, true, false),Symbol("1", 1, true, false),Symbol("1", 1, true, false),Symbol("0", 0, true, false),Symbol("0", 0, true, false)},
                                      {Symbol("0", 0, true, false),Symbol("1", 1, true, false),Symbol("1", 1, true, false),Symbol("0", 0, true, false),Symbol("1", 1, true, false)}};
 
-    //Grammar g = Grammar(terms, 3, words2, 4);
-    //Grammar g = Grammar(terms, words2, 3);
+
     //g.printGrammar();
     //g.trainNGram();
     //g.printGrammar();
-
-
     //g.insideOutside(20);
     //g.printGrammar();
 
@@ -166,10 +159,7 @@ int main(int argc, char** argv) {
         iWordsLim.reserve(nInputForTraining);
         for (unsigned long i = 0; i < nInputForTraining; i++)
             iWordsLim.push_back(iw.inputWords[i]);
-
-        Grammar g = Grammar(terminals, contextSize, nNonterminals, iWordsLim);
-        //Grammar g = Grammar(terminals, contextSize, nNonterminals, iWordsLim, trainingMethod);
-
+        Grammar g = Grammar(terms, 3, words2, 4, make_pair(0,0));
         g.train(trainingMethod,iterations);
 
         g.printGrammar();

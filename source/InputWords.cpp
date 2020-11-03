@@ -163,11 +163,8 @@ void InputWords::transposeTo(const string& actualTone, const string& targetTone,
         rotate(tones.begin(), tones.begin()+1, tones.end());
     int posTone;
     for (unsigned long i = 0; i< tones.size(); i++) {
-        if (tones[i] == actualTone) {
-            posTone = ((int) tones.size()) - i;
-            break;
-        } else if (tonesS[i] == actualTone) {
-            posTone = tones.size() -i;
+        if (tones[i] == actualTone || tonesS[i] == actualTone) {
+            posTone = (int) (tones.size() - i);
             break;
         }
     }
@@ -225,12 +222,12 @@ vector<Symbol> InputWords::generateTerminals() {
 }
 
 void InputWords::truncChordWords() {
-    for (auto itIW = inputWords.begin(); itIW != inputWords.end(); itIW++) {
-        for (auto itS = (*itIW).begin(); itS != (*itIW).end(); itS++) {
-            if (chordMap.find((*itS).name) == chordMap.end()) {
-                (*itS) = chordMap["Other"];
+    for (auto & inputWord : inputWords) {
+        for (auto & itS : inputWord) {
+            if (chordMap.find(itS.name) == chordMap.end()) {
+                itS = chordMap["Other"];
             } else {
-                (*itS) = chordMap[(*itS).name];
+                itS = chordMap[itS.name];
             }
         }
     }
@@ -364,12 +361,10 @@ string InputWords::buildChordVector(const string& mode, const string& addition, 
                 chord[11] = '1';
             } else if (mode.substr(mode.size() - 4, mode.size()) == "min7") {
                 chord[10] = '1';
-            } else if (mode == "dim7") {
+            } else if (mode == "dim7" || mode.substr(mode.size() - 1, mode.size()) == "6") {
                 chord[9] = '1';
             } else if (mode == "hdim7") {
                 chord[3] = chord[6] = chord[10] = '1';
-            } else if (mode.substr(mode.size() - 1, mode.size()) == "6") {
-                chord[9] = '1';
             } else if (mode == "maj9") {
                 chord[11] = chord[2] = '1';
             } else if (mode == "min9") {

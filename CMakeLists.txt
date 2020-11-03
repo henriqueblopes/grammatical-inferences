@@ -3,7 +3,7 @@ project(grammatical-inferences VERSION 1.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-#[[set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror -Wno-self-assign-overloaded")]]
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror -Wno-self-assign-overloaded")
 
 
 set(CPM_DOWNLOAD_VERSION 0.27.2)
@@ -32,8 +32,17 @@ CPMAddPackage(
         OPTIONS "PYBIND11_TEST OFF" "PYBIND11_INSTALL OFF"
 )
 
-#[[list(APPEND CMAKE_MODULE_PATH home/henrique/Downloads/pyfront/pareto-front-1.1.0-Linux/lib/cmake/ParetoFront)]]
 include_directories(${PYTHON_INCLUDE_DIRS})
+
+Include(FetchContent)
+FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        v2.13.1)
+FetchContent_MakeAvailable(Catch2)
+
+#[[include(Catch)]]
+
 add_subdirectory(source)
 
 add_executable(grammatical-inferences
@@ -50,7 +59,7 @@ add_executable(grammatical-inferences
 find_package(pybind11 REQUIRED)
 
 
-pybind11_add_module(klpcsg
+pybind11_add_module(pyGInfer
         source/Grammar.cpp
         source/Grammar.h
         source/Rule.cpp
@@ -61,8 +70,25 @@ pybind11_add_module(klpcsg
 
 
 
-target_link_libraries(grammatical-inferences stdc++fs  ${PYTHON_LIBRARIES} pybind11::embed )
+target_link_libraries(grammatical-inferences stdc++fs  ${PYTHON_LIBRARIES} pybind11::embed Catch2::Catch2)
 
+
+add_library(CATCH INTERFACE)
+target_include_directories(CATCH
+        INTERFACE
+            test/)
+
+add_executable(unit_tests
+        test/main.cpp
+        test/testGrammar.cpp)
+target_link_libraries(unit_tests
+        Catch2::Catch2
+        gInfer
+        )
+
+include(CTest)
+#[[include(ParseAndAddCatchTests)
+ParseAndAddCatchTests(unit_tests)]]
 
 if (BUILD_INSTALLER)
     set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/source)
