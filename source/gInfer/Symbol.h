@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-
+namespace Symbol {
 class Symbol{
 public:
     std::string name;
@@ -21,9 +21,9 @@ public:
     Symbol();
 
     [[nodiscard]] Symbol clone() const;
-    void printSymbol() const;
-    [[nodiscard]] bool equalSymbol(const Symbol& s) const;
+    [[maybe_unused]] void print_symbol() const;
+    [[nodiscard]] bool equal_symbol(const Symbol& s) const;
 
 };
-
+}
 #endif //GRAMMARINDCTION_SYMBOL_H

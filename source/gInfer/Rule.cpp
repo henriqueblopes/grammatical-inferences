@@ -7,14 +7,14 @@
 #include <utility>
 #include "Rule.h"
 
-Rule::Rule(std::vector<Symbol> left, std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>> right) : left(std::move(left)),
+Rule::Rule::Rule(std::vector<Symbol::Symbol> left, std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> right) : left(std::move(left)),
                                                                                                                 right(std::move(right)) {}
 
-void Rule::printRule() {
-    std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>>::iterator itVector;
-    std::vector<Symbol>::iterator itRule;
+void Rule::Rule::print_rule() {
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>::iterator itVector;
+    std::vector<Symbol::Symbol>::iterator itRule;
 
-    //std::cout << "P_D_A: " << probDirichletTheta << " ";
+    //std::cout << "P_D_A: " << prob_dirichlet_theta << " ";
     for (itRule = left.begin(); itRule != left.end(); itRule++)
         std::cout << (*itRule).name << " ";
     std::cout << " <- ";
@@ -35,11 +35,11 @@ void Rule::printRule() {
 
 }
 
-std::string Rule::ruleToStr() {
+std::string Rule::Rule::rule_to_str() {
     std::string ruleStr;
     ruleStr = R"()";
-    std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>>::iterator itVector;
-    std::vector<Symbol>::iterator itRule;
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>::iterator itVector;
+    std::vector<Symbol::Symbol>::iterator itRule;
 
     for (itRule = left.begin(); itRule != left.end(); itRule++)
         ruleStr += (*itRule).name;
@@ -60,11 +60,11 @@ std::string Rule::ruleToStr() {
 
 }
 
-std::string Rule::ruleToStrLALR() {
+std::string Rule::Rule::rule_to_str_lalr() {
     std::string ruleStr;
 
-    std::vector<std::pair<std::vector<Symbol>, std::pair<double, double>>>::iterator itVector;
-    std::vector<Symbol>::iterator itRule;
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>::iterator itVector;
+    std::vector<Symbol::Symbol>::iterator itRule;
 
     for (itRule = left.begin(); itRule != left.end(); itRule++)
         ruleStr += (*itRule).name;
@@ -94,24 +94,24 @@ std::string Rule::ruleToStrLALR() {
 
 
 
-Rule Rule::clone() {
-    std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>> ps;
-    for (const std::pair<std::vector<Symbol>,std::pair<double, double>>& p : right) {
-        std::pair<std::vector<Symbol>,std::pair<double, double>> pc;
+Rule::Rule Rule::Rule::clone() {
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> ps;
+    for (const std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>& p : right) {
+        std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> pc;
         pc.second = p.second;
-        for (const Symbol& s: p.first)
+        for (const Symbol::Symbol& s: p.first)
             pc.first.push_back(s.clone());
         ps.push_back(pc);
     }
-    std::vector<Symbol> l;
-    for (const Symbol& s : left)
+    std::vector<Symbol::Symbol> l;
+    for (const Symbol::Symbol& s : left)
         l.push_back(s.clone());
     return Rule(l,ps);
 }
 
-void Rule::generatePiorDirichlet(double alfa) {
+void Rule::Rule::generate_pior_dirichlet(double alfa) {
     //alfa = 10E-4 and theta uniform suggested
-    std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
     double theta = 1.0/right.size();
     for (itRight = right.begin(); itRight != right.end(); itRight++) {
         (*itRight).second.first = theta;
@@ -119,10 +119,10 @@ void Rule::generatePiorDirichlet(double alfa) {
     }
 }
 
-double Rule::cConstant() {
+double Rule::Rule::c_constant() {
     double numerator = 1.0;
     double denominator = 0.0;
-    std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
     for (itRight = right.begin(); itRight != right.end(); itRight++) {
         numerator = numerator * tgamma((*itRight).second.second);
         denominator = denominator + (*itRight).second.second;
@@ -130,24 +130,24 @@ double Rule::cConstant() {
     return numerator/tgamma(denominator);
 }
 
-void Rule::updateProbDirichletTheta() {
-    std::vector<std::pair<std::vector<Symbol>,std::pair<double, double>>>::iterator itRight;
+void Rule::Rule::update_prob_dirichlet_theta() {
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
     double prodThetaAlfa = 1.0;
     for (itRight = right.begin(); itRight != right.end(); itRight++) {
         prodThetaAlfa = prodThetaAlfa * pow((*itRight).second.first, (*itRight).second.second-1);
     }
-    //TO DO: talvez colocar cConstant como atributo
-    probDirichletTheta = prodThetaAlfa/cConstant();
+    //TO DO: talvez colocar c_constant como atributo
+    prob_dirichlet_theta = prodThetaAlfa / c_constant();
 }
 
-std::pair<std::vector<Symbol>, std::pair<double, double>> Rule::getRightSidebyId(unsigned int id1stNonContext, unsigned int id2ndNonContext, bool terminal, int nNonterminals) {
+std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> Rule::Rule::get_right_side_by_id(unsigned int id_1st_non_context, unsigned int id_2nd_non_context, bool terminal, int n_non_terminals) {
     if (terminal)
-        return right[nNonterminals*nNonterminals + id1stNonContext];
+        return right[n_non_terminals * n_non_terminals + id_1st_non_context];
     else
-        return right[nNonterminals*id1stNonContext + id2ndNonContext];
+        return right[n_non_terminals * id_1st_non_context + id_2nd_non_context];
 }
 
-double Rule::freq() {
+double Rule::Rule::freq() {
     double freq = 0.0;
     for (const auto& a: right) {
         freq += a.second.first;

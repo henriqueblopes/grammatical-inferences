@@ -1,12 +1,12 @@
 #[[add_library(source INTERFACE)]]
 
 add_library(gInfer STATIC
-        Grammar.h
-        Grammar.cpp
-        Rule.h
-        Rule.cpp
-        Symbol.h
-        Symbol.cpp
+        gInfer/Grammar.h
+        gInfer/Grammar.cpp
+        gInfer/Rule.h
+        gInfer/Rule.cpp
+        gInfer/Symbol.h
+        gInfer/Symbol.cpp
         )
 
 set_target_properties(gInfer PROPERTIES VERSION ${PROJECT_VERSION})
@@ -14,7 +14,7 @@ set_target_properties(gInfer PROPERTIES VERSION ${PROJECT_VERSION})
 #[[set_target_properties(gInfer PROPERTIES PUBLIC_HEADER Grammar.h Symbol.h Rule.h)]]
 set(MY_HEADERS Grammar.h Rule.h Symbol.h)
 
-#[[target_include_directories(gInfer PRIVATE .)]]
+target_include_directories(gInfer PUBLIC .)
 
 include(GNUInstallDirs)
 

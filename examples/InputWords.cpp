@@ -12,22 +12,22 @@
 using namespace std;
 namespace fs = std::experimental::filesystem;
 
-InputWords::InputWords(bool timed, int nTerminals) : timed(timed), nTerminals(nTerminals) {}
+InputWords::InputWords(bool timed, int n) : timed(timed), n_terminals(n) {}
 
-void InputWords::readWords() {
+void InputWords::read_words() {
     fs::path p = fs::current_path().parent_path();
-    fs::path p1 = (p /= "McGill-Billboard");
+    fs::path p1 = (p /= "resources/McGill-Billboard");
     for(auto& pl: fs::recursive_directory_iterator(p1)) {
         if (!fs::is_directory(pl)) {
             //std::cout << p.path() << '\n';
-            convertFiletoWord(pl.path(), 7);
+            convert_file_to_word(pl.path(), 7);
         }
     }
-    //cout << "nSequences: " << inputWords.size() << endl;
+    //cout << "nSequences: " << input_words.size() << endl;
 }
 
 //TO DO Ver como Tratar o acorde N
-void InputWords::convertFiletoWord(const fs::path& path, unsigned long minSize) {
+void InputWords::convert_file_to_word(const fs::path& path, unsigned long minSize) {
     string targeTone = "C";
     std::ifstream ifs (path, std::ifstream::in);
     string s;
@@ -50,11 +50,11 @@ void InputWords::convertFiletoWord(const fs::path& path, unsigned long minSize) 
         if (tokenPos != string::npos) {
             if (!noTimedWord.empty()) {
                 if (noTimedWord.size() >= minSize) {
-                    transposeTo(tone, targeTone, noTimedWord);
-                    transposeTo(tone, targeTone, timedWord);
+                    transpose_to(tone, targeTone, noTimedWord);
+                    transpose_to(tone, targeTone, timedWord);
                     if(timed)
-                        inputWords.push_back(timedWord);
-                    else inputWords.push_back(noTimedWord);
+                        input_words.push_back(timedWord);
+                    else input_words.push_back(noTimedWord);
                 }
                 noTimedWord.clear();
                 timedWord.clear();
@@ -71,11 +71,11 @@ void InputWords::convertFiletoWord(const fs::path& path, unsigned long minSize) 
                     if (comma < initPipe) {
                         if (!noTimedWord.empty()) {
                             if (noTimedWord.size() >= minSize) {
-                                transposeTo(tone, targeTone, noTimedWord);
-                                transposeTo(tone, targeTone, timedWord);
+                                transpose_to(tone, targeTone, noTimedWord);
+                                transpose_to(tone, targeTone, timedWord);
                                 if(timed)
-                                    inputWords.push_back(timedWord);
-                                else inputWords.push_back(noTimedWord);
+                                    input_words.push_back(timedWord);
+                                else input_words.push_back(noTimedWord);
                             }
                             noTimedWord.clear();
                             timedWord.clear();
@@ -137,11 +137,11 @@ void InputWords::convertFiletoWord(const fs::path& path, unsigned long minSize) 
         if (s.find("end") != string::npos) {
             if (!noTimedWord.empty()) {
                 if (noTimedWord.size() >= minSize) {
-                    transposeTo(tone, targeTone, noTimedWord);
-                    transposeTo(tone, targeTone, timedWord);
+                    transpose_to(tone, targeTone, noTimedWord);
+                    transpose_to(tone, targeTone, timedWord);
                     if(timed)
-                        inputWords.push_back(timedWord);
-                    else inputWords.push_back(noTimedWord);
+                        input_words.push_back(timedWord);
+                    else input_words.push_back(noTimedWord);
                 }
                 noTimedWord.clear();
                 timedWord.clear();
@@ -156,14 +156,14 @@ void InputWords::convertFiletoWord(const fs::path& path, unsigned long minSize) 
     ifs.close();
 }
 
-void InputWords::transposeTo(const string& actualTone, const string& targetTone, vector<Symbol> & word) {
+void InputWords::transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol> & word) {
     std::vector<string> tones = {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
     std::vector<string> tonesS = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-    while (tones[0] != targetTone)
+    while (tones[0] != target_tone)
         rotate(tones.begin(), tones.begin()+1, tones.end());
     int posTone;
     for (unsigned long i = 0; i< tones.size(); i++) {
-        if (tones[i] == actualTone || tonesS[i] == actualTone) {
+        if (tones[i] == actual_tone || tonesS[i] == actual_tone) {
             posTone = (int) (tones.size() - i);
             break;
         }
@@ -186,48 +186,48 @@ void InputWords::transposeTo(const string& actualTone, const string& targetTone,
     }
 }
 
-void InputWords::countChords() {
-    for (const vector<Symbol>& w: inputWords) {
+void InputWords::count_chords() {
+    for (const vector<Symbol>& w: input_words) {
         for (const Symbol& s: w) {
-            if (chordCounts.find(s.name) == chordCounts.end())
-                chordCounts[s.name] = 1;
+            if (chord_counts.find(s.name) == chord_counts.end())
+                chord_counts[s.name] = 1;
             else
-                chordCounts[s.name]++;
+                chord_counts[s.name]++;
         }
     }
 }
 
-vector<Symbol> InputWords::generateTerminals() {
-    countChords();
+vector<Symbol> InputWords::generate_terminals() {
+    count_chords();
     vector<Symbol> terminals;
     pair<string,int> maxChord;
     int i =0;
-    while (i < nTerminals-1) {
+    while (i < n_terminals - 1) {
         maxChord = make_pair("", 0);
-        for (const auto& a: chordCounts) {
+        for (const auto& a: chord_counts) {
             if(a.second > maxChord.second)
                 maxChord = a;
         }
         Symbol aux = Symbol(maxChord.first, i, true, false);
         terminals.push_back(aux);
-        chordMap[aux.name] = aux;
-        chordCounts.erase(maxChord.first);
+        chord_map[aux.name] = aux;
+        chord_counts.erase(maxChord.first);
         i++;
     }
-    Symbol aux = Symbol("Other", nTerminals-1, true, false);
+    Symbol aux = Symbol("Other", n_terminals - 1, true, false);
     terminals.push_back(aux);
-    chordMap["Other"] = aux;
-    truncChordWords();
+    chord_map["Other"] = aux;
+    trunc_chord_words();
     return terminals;
 }
 
-void InputWords::truncChordWords() {
-    for (auto & inputWord : inputWords) {
+void InputWords::trunc_chord_words() {
+    for (auto & inputWord : input_words) {
         for (auto & itS : inputWord) {
-            if (chordMap.find(itS.name) == chordMap.end()) {
-                itS = chordMap["Other"];
+            if (chord_map.find(itS.name) == chord_map.end()) {
+                itS = chord_map["Other"];
             } else {
-                itS = chordMap[itS.name];
+                itS = chord_map[itS.name];
             }
         }
     }
@@ -235,8 +235,8 @@ void InputWords::truncChordWords() {
 
 
 
-void InputWords::checkEmptyString(const string& path) {
-    for (const auto& w: inputWords) {
+void InputWords::check_empty_string(const string& path) {
+    for (const auto& w: input_words) {
         for (const auto& s: w) {
             if (s.name.empty()) {
                 cout <<" some error in " << path << endl;
@@ -246,59 +246,59 @@ void InputWords::checkEmptyString(const string& path) {
     }
 }
 
-void InputWords::printWordSizes() {
+void InputWords::print_word_sizes() {
     double sum = 0.0;
     unsigned long max = 0;
-    for (const auto& w: inputWords) {
+    for (const auto& w: input_words) {
         //cout << "Size:  " << w.size() << endl;
         sum += w.size();
         if (w.size() > max)
             max = w.size();
     }
-    cout << "MaxSize: " << max << " MeanSize: " << sum/inputWords.size() << endl;
+    cout << "MaxSize: " << max << " MeanSize: " << sum / input_words.size() << endl;
 }
 
-void InputWords::selectTrainingWords(int nSharesOrAmount, bool byShare) {
-    if (byShare)
-        nTestShares = nSharesOrAmount;
+void InputWords::select_training_words(int n_shares_or_amount, bool by_share) {
+    if (by_share)
+        n_test_shares = n_shares_or_amount;
     else
-        nTestShares = ((int) inputWords.size())/nSharesOrAmount;
-    actualShare = 0;
-    //std::random_shuffle ( inputWords.begin(), inputWords.end());
-    int tAmount = (int) inputWords.size()/nTestShares;
+        n_test_shares = ((int) input_words.size()) / n_shares_or_amount;
+    actual_share = 0;
+    //std::random_shuffle ( input_words.begin(), input_words.end());
+    int tAmount = (int) input_words.size() / n_test_shares;
     vector<vector<Symbol>> tWords;
     for (int i = 0; i< tAmount; i++) {
-        testWords.push_back(inputWords[0]);
-        inputWords.erase(inputWords.begin());
+        test_words.push_back(input_words[0]);
+        input_words.erase(input_words.begin());
     }
 }
 
-bool InputWords::nextShareTrainingWords() {
-    actualShare++;
-    if (actualShare >= nTestShares)
+bool InputWords::next_share_training_words() {
+    actual_share++;
+    if (actual_share >= n_test_shares)
         return false;
-    inputWords.insert(inputWords.end(), testWords.begin(), testWords.end());
-    testWords.clear();
-    int tAmount = (int) inputWords.size()/nTestShares;
+    input_words.insert(input_words.end(), test_words.begin(), test_words.end());
+    test_words.clear();
+    int tAmount = (int) input_words.size() / n_test_shares;
     for (int i = 0; i< tAmount; i++) {
-        testWords.push_back(inputWords[0]);
-        inputWords.erase(inputWords.begin());
+        test_words.push_back(input_words[0]);
+        input_words.erase(input_words.begin());
     }
     return true;
 }
 
-void InputWords::iterateChords() {
+void InputWords::iterate_chords() {
     string minor = "10110101101";
     string major = "10101101010";
     string chordNotes = "00000000000";
-    countChords();
+    count_chords();
     std::unordered_map<string, int>::iterator chordCountsIt;
     size_t tokenPos;
     string tone;
     string mode;
     string bass;
     string addition;
-    for (chordCountsIt = chordCounts.begin(); chordCountsIt != chordCounts.end(); chordCountsIt++) {
+    for (chordCountsIt = chord_counts.begin(); chordCountsIt != chord_counts.end(); chordCountsIt++) {
         //cout << (*chordCountsIt).first << endl;
         if ((*chordCountsIt).first !="N" && (*chordCountsIt).first !="&pause" && (*chordCountsIt).first !="*") {
             tokenPos = (*chordCountsIt).first.find(":");
@@ -324,7 +324,7 @@ void InputWords::iterateChords() {
             }
 
 
-            chordNotes = buildChordVector(mode, addition, bass);
+            chordNotes = build_chord_vector(mode, addition, bass);
 
             std::vector<string> tones = {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
             std::vector<string> tonesS = {"B#", "C#", "D", "D#", "Fb", "E#", "F#", "G", "G#", "A", "A#", "Cb"};
@@ -334,15 +334,15 @@ void InputWords::iterateChords() {
                 rotate(tonesS.begin(), tonesS.begin()+1, tonesS.end());
             }
 
-            chordMapReduction.insert(make_pair((*chordCountsIt).first, chordNotes));
+            chord_map_reduction.insert(make_pair((*chordCountsIt).first, chordNotes));
         } else {
-            chordMapReduction.insert(make_pair((*chordCountsIt).first, "00000000000"));
+            chord_map_reduction.insert(make_pair((*chordCountsIt).first, "00000000000"));
         }
     }
-    countAndShowReductedChords();
+    count_and_show_reducted_chords();
 
 }
-string InputWords::buildChordVector(const string& mode, const string& addition, const string& bass) {
+string InputWords::build_chord_vector(const string& mode, const string& addition, const string& bass) {
     string chord = "00000000000";
     chord[0] = '1';
 
@@ -412,19 +412,19 @@ string InputWords::buildChordVector(const string& mode, const string& addition, 
                 note = addition.substr(commaBefore, addition.size()-commaBefore);
             else
                 note = addition.substr(commaBefore, commaPos-commaBefore);
-            chord = addChordNote(chord, note);
+            chord = add_chord_note(chord, note);
             commaBefore = commaPos+1;
             commaPos = addition.find(',', commaPos+1);
         } while (commaPos != string::npos);
     }
 
     if(!bass.empty()) {
-        chord = addChordNote(chord, bass);
+        chord = add_chord_note(chord, bass);
     }
     return chord;
 }
 
-string InputWords::addChordNote(string chord, string note) {
+string InputWords::add_chord_note(string chord, string note) {
     vector<int> intervals = {0,2,4,5,7,9,11};
     int accident = 0;
     while (note[0] =='b') {
@@ -441,15 +441,15 @@ string InputWords::addChordNote(string chord, string note) {
     return chord;
 }
 
-void InputWords::countAndShowReductedChords() {
+void InputWords::count_and_show_reducted_chords() {
     std::unordered_map<string, string>::iterator chordMRIt;
-    for (chordMRIt = chordMapReduction.begin(); chordMRIt != chordMapReduction.end(); chordMRIt++) {
-        if (reductedChordCounts.find((*chordMRIt).second) == chordCounts.end())
-            reductedChordCounts[(*chordMRIt).second] = 1;
+    for (chordMRIt = chord_map_reduction.begin(); chordMRIt != chord_map_reduction.end(); chordMRIt++) {
+        if (reducted_chord_counts.find((*chordMRIt).second) == chord_counts.end())
+            reducted_chord_counts[(*chordMRIt).second] = 1;
         else
-            reductedChordCounts[(*chordMRIt).second]++;
+            reducted_chord_counts[(*chordMRIt).second]++;
     }
-    for (const auto& a: reductedChordCounts) {
+    for (const auto& a: reducted_chord_counts) {
         cout <<a.first << " " << a.second << endl;
     }
 }
