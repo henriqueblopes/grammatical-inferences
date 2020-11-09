@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 project(grammatical-inferences VERSION 1.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror -Wno-self-assign-overloaded")
+#[[set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror -Wno-self-assign-overloaded")]]
 
 set(CPM_DOWNLOAD_VERSION 0.27.2)
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")

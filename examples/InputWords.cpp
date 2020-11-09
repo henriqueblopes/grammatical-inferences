@@ -161,7 +161,7 @@ void InputWords::transpose_to(const string& actual_tone, const string& target_to
     std::vector<string> tonesS = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     while (tones[0] != target_tone)
         rotate(tones.begin(), tones.begin()+1, tones.end());
-    int posTone;
+    int posTone = 0;
     for (unsigned long i = 0; i< tones.size(); i++) {
         if (tones[i] == actual_tone || tonesS[i] == actual_tone) {
             posTone = (int) (tones.size() - i);
