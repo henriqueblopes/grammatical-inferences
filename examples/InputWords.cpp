@@ -32,10 +32,10 @@ void InputWords::convert_file_to_word(const fs::path& path, unsigned long minSiz
     std::ifstream ifs (path, std::ifstream::in);
     string s;
     getline(ifs,s);
-    vector<Symbol> timedWord;
-    vector<Symbol> noTimedWord;
-    vector<Symbol> timedChordLine;
-    vector<Symbol> noTimedChordLine;
+    vector<Symbol::Symbol> timedWord;
+    vector<Symbol::Symbol> noTimedWord;
+    vector<Symbol::Symbol> timedChordLine;
+    vector<Symbol::Symbol> noTimedChordLine;
     int beat = 0 ;
     string tone;
     tone = "";
@@ -88,8 +88,8 @@ void InputWords::convert_file_to_word(const fs::path& path, unsigned long minSiz
                     if (nextPipe == string::npos && initPipe != string::npos && initPipe+1 < s.size()) {
                         if (s.substr(initPipe+2,initPipe+3 - (initPipe+2)) == "x") {
                             int times = stoi(s.substr(initPipe+3, 1));
-                            vector<Symbol> aux = noTimedChordLine;
-                            vector<Symbol> aux2 = timedChordLine;
+                            vector<Symbol::Symbol> aux = noTimedChordLine;
+                            vector<Symbol::Symbol> aux2 = timedChordLine;
                             for (int i = 0; i < times; i++) {
                                 noTimedChordLine.insert(noTimedChordLine.end(), aux.begin(), aux.end());
                                 timedChordLine.insert(timedChordLine.end(), aux2.begin(), aux2.end());
@@ -100,8 +100,8 @@ void InputWords::convert_file_to_word(const fs::path& path, unsigned long minSiz
                     size_t initBlank = s.find(' ', initPipe+1);
                     int chordAmanout = 0;
                     int tempBeat = beat;
-                    vector<Symbol> chords;
-                    vector<Symbol> timedChords;
+                    vector<Symbol::Symbol> chords;
+                    vector<Symbol::Symbol> timedChords;
                     string currentSymbol;
                     string currentChord;
                     if(initBlank != string::npos && nextPipe != string::npos) {
@@ -124,7 +124,7 @@ void InputWords::convert_file_to_word(const fs::path& path, unsigned long minSiz
                             }
                             initBlank = nextBlank;
                         }
-                        vector<Symbol>::iterator itTimedChords;
+                        vector<Symbol::Symbol>::iterator itTimedChords;
                         for (itTimedChords = timedChords.begin(); itTimedChords != timedChords.end(); itTimedChords++)
                             for (int i = 0; i < tempBeat/chordAmanout; i++)
                                 timedChordLine.push_back((*itTimedChords));
@@ -156,7 +156,7 @@ void InputWords::convert_file_to_word(const fs::path& path, unsigned long minSiz
     ifs.close();
 }
 
-void InputWords::transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol> & word) {
+void InputWords::transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol::Symbol> & word) {
     std::vector<string> tones = {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
     std::vector<string> tonesS = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     while (tones[0] != target_tone)
@@ -187,8 +187,8 @@ void InputWords::transpose_to(const string& actual_tone, const string& target_to
 }
 
 void InputWords::count_chords() {
-    for (const vector<Symbol>& w: input_words) {
-        for (const Symbol& s: w) {
+    for (const vector<Symbol::Symbol>& w: input_words) {
+        for (const Symbol::Symbol& s: w) {
             if (chord_counts.find(s.name) == chord_counts.end())
                 chord_counts[s.name] = 1;
             else
@@ -197,9 +197,9 @@ void InputWords::count_chords() {
     }
 }
 
-vector<Symbol> InputWords::generate_terminals() {
+vector<Symbol::Symbol> InputWords::generate_terminals() {
     count_chords();
-    vector<Symbol> terminals;
+    vector<Symbol::Symbol> terminals;
     pair<string,int> maxChord;
     int i =0;
     while (i < n_terminals - 1) {
@@ -208,13 +208,13 @@ vector<Symbol> InputWords::generate_terminals() {
             if(a.second > maxChord.second)
                 maxChord = a;
         }
-        Symbol aux = Symbol(maxChord.first, i, true, false);
+        Symbol::Symbol aux = Symbol::Symbol(maxChord.first, i, true, false);
         terminals.push_back(aux);
         chord_map[aux.name] = aux;
         chord_counts.erase(maxChord.first);
         i++;
     }
-    Symbol aux = Symbol("Other", n_terminals - 1, true, false);
+    Symbol::Symbol aux = Symbol::Symbol("Other", n_terminals - 1, true, false);
     terminals.push_back(aux);
     chord_map["Other"] = aux;
     trunc_chord_words();
@@ -266,7 +266,7 @@ void InputWords::select_training_words(int n_shares_or_amount, bool by_share) {
     actual_share = 0;
     //std::random_shuffle ( input_words.begin(), input_words.end());
     int tAmount = (int) input_words.size() / n_test_shares;
-    vector<vector<Symbol>> tWords;
+    vector<vector<Symbol::Symbol>> tWords;
     for (int i = 0; i< tAmount; i++) {
         test_words.push_back(input_words[0]);
         input_words.erase(input_words.begin());
@@ -288,8 +288,8 @@ bool InputWords::next_share_training_words() {
 }
 
 void InputWords::iterate_chords() {
-    string minor = "10110101101";
-    string major = "10101101010";
+    /*string minor = "10110101101";
+    string major = "10101101010";*/
     string chordNotes = "00000000000";
     count_chords();
     std::unordered_map<string, int>::iterator chordCountsIt;

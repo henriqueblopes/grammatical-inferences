@@ -19,14 +19,14 @@ using namespace std;
 
 class InputWords {
 public:
-    vector<vector<Symbol>> input_words;
-    vector<vector<Symbol>> test_words;
+    vector<vector<Symbol::Symbol>> input_words;
+    vector<vector<Symbol::Symbol>> test_words;
     int actual_share;
 
 private:
     bool timed;
     std::unordered_map<string, int> chord_counts;
-    std::unordered_map<string, Symbol> chord_map;
+    std::unordered_map<string, Symbol::Symbol> chord_map;
     std::unordered_map<string, string> chord_map_reduction;
     std::unordered_map<string, int> reducted_chord_counts;
     int n_terminals;
@@ -36,8 +36,8 @@ public:
     InputWords(bool timed, int n);
     void read_words();
     void convert_file_to_word (const fs::path& path, unsigned long minSize);
-    static void transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol> & word);
-    vector<Symbol> generate_terminals();
+    static void transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol::Symbol> & word);
+    vector<Symbol::Symbol> generate_terminals();
     void print_word_sizes();
     void select_training_words(int n_shares_or_amount, bool by_share);
     void count_chords();
