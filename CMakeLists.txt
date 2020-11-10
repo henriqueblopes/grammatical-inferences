@@ -15,7 +15,7 @@ endif()
 include(${CPM_DOWNLOAD_LOCATION})
 option(CPM_USE_LOCAL_PACKAGES "Try `find_package` before downloading dependencies" ON)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -static-libgcc")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc")
 
 option(BUILD_WITH_PEDANTIC_WARNINGS "Use pedantic warnings. This is useful for developers because many of these warnings will be in continuous integration anyway." ${DEBUG_MODE})
 option(BUILD_INSTALLER "Build an installation package" ${MASTER_PROJECT})
@@ -30,12 +30,16 @@ CPMAddPackage(
         OPTIONS "PYBIND11_TEST OFF" "PYBIND11_INSTALL OFF"
 )
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+message("CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}")
 
 include_directories(${PYTHON_INCLUDE_DIRS})
 
 add_subdirectory(test)
 add_subdirectory(source)
 add_subdirectory(bindings)
+
+find_package(Filesystem REQUIRED)
 
 add_executable(grammatical-inferences
         source/gInfer/Grammar.cpp
@@ -51,14 +55,45 @@ add_executable(grammatical-inferences
 
 
 
-target_link_libraries(grammatical-inferences stdc++fs  ${PYTHON_LIBRARIES} pybind11::embed Catch2::Catch2 gInfer)
+target_link_libraries(grammatical-inferences ${PYTHON_LIBRARIES} pybind11::embed Catch2::Catch2 gInfer std::filesystem)
+target_compile_features(grammatical-inferences PRIVATE cxx_std_17)
+
+include(CTest)
+enable_testing()
 
 
 #[[include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(unit_tests)]]
 
+
+set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/GrammaticalInferences)
+message("CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
+message("CMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}")
+
+# Create Matplot++ConfigVersion.cmake and install it
+write_basic_package_version_file(
+        GrammaticalInferencesConfigVersion.cmake
+        VERSION ${PACKAGE_VERSION}
+        COMPATIBILITY AnyNewerVersion
+)
+
+# Create matplot++-config.cmake from matplot++-config.cmake.in
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/GrammaticalInferences-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/GrammaticalInferences-config.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GrammaticalInferences)
+
+# Install the file matplot++-config.cmake
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/GrammaticalInferences-config.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GrammaticalInferences)
+
+# Install cmake to find filesystem as a dependency
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindFilesystem.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GrammaticalInferences)
+
+
+
 if (BUILD_INSTALLER)
-    set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/source)
+    set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/source/gInfer)
     write_basic_package_version_file(
             sourceConfigVersion.cmake
             VERSION ${PACKAGE_VERSION}
@@ -66,20 +101,20 @@ if (BUILD_INSTALLER)
     )
     configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/sourceConfig.cmake.in
             ${CMAKE_CURRENT_BINARY_DIR}/sourceConfig.cmake
-            INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/source)
+            INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/source/gInfer)
 
     install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/sourceConfig.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/sourceConfigVersion.cmake
             COMPONENT "CPP_Library"
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/source
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/source/gInfer
             )
 endif()
 
 
 if (BUILD_INSTALLER AND BUILD_PACKAGE)
     set(CPACK_PACKAGE_NAME "grammatical-inferences")
-    set(CPACK_PACKAGE_VENDOR "https://gitlab.com/alandefreitas")
+    set(CPACK_PACKAGE_VENDOR "https://github.com/henriqueblopes")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Grammatical Inferences for for C++/Python")
     set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
     set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})

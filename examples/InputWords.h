@@ -8,12 +8,21 @@
 
 #include <vector>
 #include <gInfer/Symbol.h>
-#include <experimental/filesystem>
+#ifdef CXX_FILESYSTEM_IS_EXPERIMENTAL
+    #include <experimental/filesystem>
+#else
+    #include <filesystem>
+#endif
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
 
-namespace fs = std::experimental::filesystem;
+#ifdef CXX_FILESYSTEM_IS_EXPERIMENTAL
+    namespace fs = std::experimental::filesystem;
+#else
+    namespace fs = std::filesystem;
+#endif
+
 
 using namespace std;
 

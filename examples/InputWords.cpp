@@ -4,13 +4,8 @@
 
 #include "InputWords.h"
 #include <string>
-#include <iostream>
-#include <experimental/filesystem>
-#include <fstream>
 #include <algorithm>
 
-using namespace std;
-namespace fs = std::experimental::filesystem;
 
 InputWords::InputWords(bool timed, int n) : timed(timed), n_terminals(n) {}
 
