@@ -53,10 +53,8 @@ add_executable(grammatical-inferences
         examples/InputWords.h)
 
 
-
-
 target_link_libraries(grammatical-inferences ${PYTHON_LIBRARIES} pybind11::embed Catch2::Catch2 gInfer std::filesystem)
-target_compile_features(grammatical-inferences PRIVATE cxx_std_17)
+#[[target_compile_features(grammatical-inferences PRIVATE cxx_std_17)]]
 
 include(CTest)
 enable_testing()
