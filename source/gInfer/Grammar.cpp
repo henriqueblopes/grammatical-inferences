@@ -13,14 +13,6 @@
 using namespace std;
 
 
-/*Grammar::Grammar(const std::vector<Symbol::Symbol> &terminals, std::pair<int, int> context_size,
-                 int n_non_terminals, std::vector<std::vector<Symbol::Symbol>> words, int trainingM) : terminals(terminals), context_size(std::move(std::move(context_size))), n_non_terminals(n_non_terminals), words(std::move(words)) {
-    n_terminals = terminals.size();
-    generate_non_termnals();
-    generate_rules_cnf();
-    start = rules[0].left.front();
-}*/
-
 Grammar::Grammar::Grammar(const std::vector<Symbol::Symbol> &terminals, int nNonTerminals, std::vector<std::vector<Symbol::Symbol>> words,
                  enum grammar_type g_tp, pair<int,int> contextSize) : terminals(terminals), n_non_terminals(nNonTerminals), words(std::move(std::move(words))), g_tp(g_tp) {
     n_terminals = terminals.size();
