@@ -69,7 +69,7 @@ private:
     /*void printInsideTableKL(double ****p, int wSize);*/
     static void print_outside_table(const std::vector<std::vector<std::vector<double>>>& p);
     void sample_parse_tree(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ***inside_table, unsigned int i, unsigned int k);
-    void sample_parse_tree_kl(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ****inside_table, unsigned int i, unsigned int k);
+    void sample_parse_tree_kl(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ****inside_table, size_t i, size_t k);
     void sample_parse_tree_kl_vec(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, size_t i, size_t k);
     void sample_parse_tree_kl_vec_opt(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, unsigned int i, unsigned int k);
     void calculate_new_theta_vec_opt(int i);
@@ -90,7 +90,7 @@ private:
     printOneProduction(std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> prd);*/
     void sample_parse_tree_vec(
             std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>> & vr,
-            Rule::Rule r, std::vector<Symbol::Symbol> w, double ***p_double, unsigned int i, unsigned int k);
+            Rule::Rule r, std::vector<Symbol::Symbol> w, double ***p_double, size_t i, size_t k);
     double ***cyk_prob_vec(std::vector<Symbol::Symbol> w);
     std::vector<std::vector<std::vector<double>>> outside_table(const std::vector<Symbol::Symbol>& w, double ***inside_table);
     double ***cyk_prob_n_vec(const std::vector<Symbol::Symbol>& w);
@@ -104,7 +104,7 @@ private:
     std::vector<std::pair<double, int>> calculate_rule_frequence_vec(Rule::Rule &rule, const std::vector<Symbol::Symbol>& w);
     void p_ti_minus_1_frequence(int i);
     void p_ti_minus_1_plus_frequence(int i);
-    void free_inside_table(double ***p, int wSize) const;
+    void free_inside_table(double ***p, size_t wSize) const;
     void free_inside_table_kl(double ****p, size_t wSize) const;
     void baum_welch_expectation(std::vector<double> &count_nd, std::vector<double> &count_nl, std::vector<std::vector<std::vector<double>>> &count_nt);
     void baum_welch_maximization(std::vector<double> &count_nd_r, std::vector<double> &count_nl_r, std::vector<std::vector<std::vector<double>>> &count_ntr);

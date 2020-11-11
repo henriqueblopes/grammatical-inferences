@@ -11,7 +11,7 @@ namespace Symbol {
 class Symbol{
 public:
     std::string name;
-    unsigned int id{};
+    size_t id{};
     bool terminal{};
     bool context{};
 public:

@@ -13,7 +13,7 @@ public:
     std::vector<Symbol::Symbol> left;
     std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right;
     double prob_dirichlet_theta{};
-    int index_1st_non_context{};
+    size_t index_1st_non_context{};
     std::vector<Symbol::Symbol> left_context;
     std::vector<Symbol::Symbol> right_context;
     std::vector<std::pair<double, int>> rule_frequence;

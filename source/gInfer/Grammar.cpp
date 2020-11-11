@@ -295,12 +295,12 @@ void Grammar::Grammar::sample_parse_tree(std::vector<std::pair<std::vector<Symbo
             for (itSymbol = (*itRight).first.begin(); itSymbol != (*itRight).first.end(); itSymbol++) {
                 if (!(*itSymbol).terminal && !(*itSymbol).context) {
                     for (unsigned long l = 0; l < jRange; l++) {
-                        unsigned int indexB;
+                        size_t indexB;
                         indexB = (*itSymbol).id * n_non_terminals * jRange;
                         double pBij = inside_table[(*itSymbol).id][i][i + l];
                         itSymbol++;
                         double pCjk = inside_table[(*itSymbol).id][i + l + 1][k];
-                        unsigned int indexC = (*itSymbol).id * jRange;
+                        size_t indexC = (*itSymbol).id * jRange;
                         jbc[indexB + indexC + l] = ((*itRight).second.first * pBij * pCjk) / inside_table[(r.left[0].id)][i][k];
                         itSymbol--;
                         /*std::cout << "jbc[" <<indexB+indexC+l<<"] = " << (*itRight).second.first << " * " <<
@@ -612,7 +612,9 @@ void Grammar::Grammar::metropolis_hastings_pcfg(int iterations) {
         double pTiLineWi = prob_tree(vProds) / insideTable[0][0][words[i].size() - 1];
         double pTiLineTiMinis1 = p_ti_ti_minus_1_vec(words[i]);
         double funcA = std::min(1.0,(pTiLineTiMinis1*pTiWi)/(pTiTiMinis1*pTiLineWi));
-        double r = dist(mt);
+        std::mt19937 md(rd());
+        std::uniform_real_distribution<double> dd(0, 1);
+        double r = dd(md);
         free_inside_table(insideTable, words[i].size());
 
         if (funcA >= r)
@@ -639,8 +641,8 @@ void Grammar::Grammar::metropolis_hastings_pcsg(int iterations) {
     std::chrono::duration<double> perplexityTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
     std::chrono::duration<double> remainingTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
     //srand((unsigned) time(nullptr));
-    int sentencesLength = words.size();
-    for (int i = 0; i< sentencesLength; i++) {
+    size_t sentencesLength = words.size();
+    for (size_t i = 0; i< sentencesLength; i++) {
         if (sentencesLength >= 10)
             if (i%(sentencesLength/10) ==0)
                 std::cout << 100*(i/(1.0*sentencesLength))<< "% of trees parsed" << std::endl;
@@ -804,7 +806,7 @@ void Grammar::Grammar::generate_rules_cnf() {
 
 
 int Grammar::Grammar::convert_context_to_id(int side, std::vector<Symbol::Symbol> context) {
-    int nSymbols;
+    size_t nSymbols;
     int id = 0;
     if (context.empty())
         return id;
@@ -825,8 +827,8 @@ int Grammar::Grammar::convert_context_to_id(int side, std::vector<Symbol::Symbol
 
 void Grammar::Grammar::sample_parse_tree_kl(
         std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>> &vr,
-        Rule::Rule r, const std::string& w, double ****inside_table, unsigned int i, unsigned int k) {
-    unsigned int jRange = k - i;
+        Rule::Rule r, const std::string& w, double ****inside_table, size_t i, size_t k) {
+    size_t jRange = k - i;
     size_t rightRange = n_non_terminals * n_non_terminals;
 
     Symbol::Symbol nonterminal =  Symbol::Symbol("", 0,false);
@@ -869,7 +871,7 @@ void Grammar::Grammar::sample_parse_tree_kl(
                     }
                     itSymbol--;
                     for (unsigned long l = 0; l < jRange; l++) {
-                        unsigned int indexB = (*itSymbol).id * n_non_terminals * jRange;
+                        size_t indexB = (*itSymbol).id * n_non_terminals * jRange;
                         double pBij = inside_table[context_amount.first * (*itSymbol).id +
                                 convert_context_to_id(0, leftContext)]
                                 [i][i + l][convert_context_to_id(1, rightContextLine)];
@@ -877,7 +879,7 @@ void Grammar::Grammar::sample_parse_tree_kl(
                         double pCjk = inside_table[context_amount.first * (*itSymbol).id +
                                 convert_context_to_id(0, leftContext)]
                                 [i + l + 1][k][convert_context_to_id(1, rightContext)];
-                        unsigned int indexC = (*itSymbol).id * jRange;
+                        size_t indexC = (*itSymbol).id * jRange;
                         jbc[indexB + indexC + l] = ((*itRight).second.first * pBij * pCjk) / inside_table
                                 [context_amount.first * nonterminal.id + convert_context_to_id(0, leftContext)]
                                 [i][k][convert_context_to_id(1, rightContext)];
@@ -916,7 +918,7 @@ void Grammar::Grammar::sample_parse_tree_kl(
         for (l = 0; l < rightRange*jRange; l++)
             if (p < jbc[l])
                 break;
-        unsigned int j = 0;
+        size_t j = 0;
 
         delete[]jbc;
         Symbol::Symbol rightB = Symbol::Symbol("", 0,false);
@@ -1144,8 +1146,8 @@ void Grammar::Grammar::get_actual_context(std::vector<Symbol::Symbol> &leftConte
 
 void Grammar::Grammar::sample_parse_tree_vec(
         std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>> & vr,
-        Rule::Rule r, std::vector<Symbol::Symbol> w, double ***p_double, unsigned int i, unsigned int k) {
-    unsigned int jRange = k - i;
+        Rule::Rule r, std::vector<Symbol::Symbol> w, double ***p_double, size_t i, size_t k) {
+    size_t jRange = k - i;
     size_t rightRange = n_non_terminals * n_non_terminals;
 
     if (jRange > 0) {
@@ -1158,11 +1160,11 @@ void Grammar::Grammar::sample_parse_tree_vec(
             for (itSymbol = (*itRight).first.begin(); itSymbol != (*itRight).first.end(); itSymbol++) {
                 if (!(*itSymbol).terminal && !(*itSymbol).context) {
                     for (unsigned int l = 0; l < jRange; l++) {
-                        unsigned int indexB = (*itSymbol).id * n_non_terminals * jRange;
+                        size_t indexB = (*itSymbol).id * n_non_terminals * jRange;
                         double pBij = p_double[(*itSymbol).id][i][i + l];
                         itSymbol++;
                         double pCjk = p_double[(*itSymbol).id][i + l + 1][k];
-                        unsigned int indexC = (*itSymbol).id * jRange;
+                        size_t indexC = (*itSymbol).id * jRange;
                         jbc[indexB + indexC + l] = ((*itRight).second.first * pBij * pCjk) / p_double[(r.left[0].id)][i][k];
                         itSymbol--;
                         /*std::cout << "jbc[" <<indexB+indexC+l<<"] = " << (*itRight).second.first << " * " <<
@@ -1185,7 +1187,7 @@ void Grammar::Grammar::sample_parse_tree_vec(
         for (l = 0; l < rightRange*jRange; l++)
             if (p < jbc[l])
                 break;
-        unsigned int j = 0;
+        size_t j = 0;
         delete[]jbc;
         //std::vector<Symbol::Symbol> rightProduction;
         std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rightProduction;
@@ -1202,8 +1204,6 @@ void Grammar::Grammar::sample_parse_tree_vec(
                             rightProduction.first.push_back((*itSymbol));
                             j = l - n_non_terminals * jRange * (*itSymbol).id;
                             itSymbol++;
-                            if (itSymbol == (*itRight).first.end())
-                                std::cout << "Error\n";
                             rightProduction.first.push_back((*itSymbol));
                             if ((*itSymbol).id > 0)
                                 j = j % (*itSymbol).id;
@@ -1618,8 +1618,8 @@ std::vector<std::pair<double, int>> Grammar::Grammar::calculate_rule_frequence_v
 
 
 double ****Grammar::Grammar::cyk_prob_kl_vec(std::vector<Symbol::Symbol> w) {
-    int sizeLeftContext = 0;
-    int sizeRightContext = 0;
+    size_t sizeLeftContext = 0;
+    size_t sizeRightContext = 0;
     for (unsigned long i = 0; i <= context_size.first; i++) {
         std::vector<Symbol::Symbol> word;
         std::vector<std::vector<Symbol::Symbol>> permutationsTerminals;
@@ -1649,7 +1649,7 @@ double ****Grammar::Grammar::cyk_prob_kl_vec(std::vector<Symbol::Symbol> w) {
     for (unsigned long i = 0; i < non_terminals.size() * sizeLeftContext; i++)
         for (unsigned long j = 0; j < w.size(); j++)
             for (unsigned long k = 0; k < w.size(); k++)
-                for (int l = 0; l < sizeRightContext; l++)
+                for (size_t l = 0; l < sizeRightContext; l++)
                     p[i][j][k][l] = 0.0;
 
     std::vector<Rule::Rule>::iterator itRule;
@@ -1761,7 +1761,7 @@ double ****Grammar::Grammar::cyk_prob_kl_vec(std::vector<Symbol::Symbol> w) {
 void Grammar::Grammar::sample_parse_tree_kl_vec(
         std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>> &vr,
         Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, size_t i, size_t k) {
-    unsigned int jRange = k - i;
+    size_t jRange = k - i;
     size_t rightRange = n_non_terminals * n_non_terminals;
 
     Symbol::Symbol nonterminal =  Symbol::Symbol("", 0,false);
@@ -1804,7 +1804,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec(
                     }
                     itSymbol--;
                     for (unsigned int l = 0; l < jRange; l++) {
-                        int unsigned indexB = (*itSymbol).id * n_non_terminals * jRange;
+                        size_t indexB = (*itSymbol).id * n_non_terminals * jRange;
                         double pBij = inside_table[context_amount.first * (*itSymbol).id +
                                 convert_context_to_id(0, leftContext)]
                         [i][i + l][convert_context_to_id(1, rightContextLine)];
@@ -1812,7 +1812,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec(
                         double pCjk = inside_table[context_amount.first * (*itSymbol).id +
                                 convert_context_to_id(0, leftContext)]
                         [i + l + 1][k][convert_context_to_id(1, rightContext)];
-                        int unsigned indexC = (*itSymbol).id * jRange;
+                        size_t indexC = (*itSymbol).id * jRange;
                         jbc[indexB + indexC + l] = ((*itRight).second.first * pBij * pCjk) / inside_table
                         [context_amount.first * nonterminal.id + convert_context_to_id(0, leftContext)]
                         [i][k][convert_context_to_id(1, rightContext)];
@@ -1851,7 +1851,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec(
         for (l = 0; l < rightRange*jRange; l++)
             if (p < jbc[l])
                 break;
-        unsigned int j = 0;
+        size_t j = 0;
 
         delete[]jbc;
         Symbol::Symbol rightB = Symbol::Symbol("", 0,false);
@@ -2105,8 +2105,8 @@ double ***Grammar::Grammar::cyk_prob_n_vec(const std::vector<Symbol::Symbol>& w)
 }
 
 double ****Grammar::Grammar::cyk_prob_kln_vec(const std::vector<Symbol::Symbol>& w) {
-    int sizeLeftContext = 0;
-    int sizeRightContext = 0;
+    size_t sizeLeftContext = 0;
+    size_t sizeRightContext = 0;
     for (unsigned long i = 0; i <= context_size.first; i++) {
         std::vector<Symbol::Symbol> word;
         std::vector<std::vector<Symbol::Symbol>> permutationsTerminals;
@@ -2136,7 +2136,7 @@ double ****Grammar::Grammar::cyk_prob_kln_vec(const std::vector<Symbol::Symbol>&
     for (unsigned long i = 0; i < non_terminals.size() * sizeLeftContext; i++)
         for (unsigned long j = 0; j < w.size(); j++)
             for (unsigned long k = 0; k < w.size(); k++)
-                for (int l = 0; l < sizeRightContext; l++)
+                for (size_t l = 0; l < sizeRightContext; l++)
                     p[i][j][k][l] = 0.0;
 
     std::vector<Rule::Rule>::iterator itRule;
@@ -2246,10 +2246,10 @@ Grammar::Grammar::~Grammar() = default;
 
 void Grammar::Grammar::gibbs_sampling_pcfg(int iterations) {
     //srand((unsigned) time(nullptr));
-    int sentencesLength = words.size();
+    size_t sentencesLength = words.size();
     for (int j = 0; j < iterations; j++) {
         parse_trees_vec.clear();
-        for (int i = 0; i< sentencesLength; i++) {
+        for (size_t i = 0; i< sentencesLength; i++) {
             std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> vProds;
             double ***insideTable;
             insideTable = cyk_prob_vec(words[i]);
@@ -2278,11 +2278,11 @@ void Grammar::Grammar::gibbs_sampling_pcsg(int iterations) {
     auto updateThetaTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
     auto perplexityTime = std::chrono::system_clock::now() -  std::chrono::system_clock::now();
     //srand((unsigned) time(nullptr));
-    int sentencesLength = words.size();
+    size_t sentencesLength = words.size();
     //auto startMetropolis = std::chrono::system_clock::now();
     for (int j = 0; j < iterations; j++) {
         parse_trees_vec.clear();
-        for (int i = 0; i< sentencesLength; i++) {
+        for (size_t i = 0; i< sentencesLength; i++) {
             auto startIt = std::chrono::system_clock::now();
             actual_production.clear();
             actual_production.push_back(non_terminals[0]);
@@ -2321,9 +2321,9 @@ void Grammar::Grammar::gibbs_sampling_pcsg(int iterations) {
     }
 }
 
-void Grammar::Grammar::free_inside_table(double ***p, int wSize) const {
+void Grammar::Grammar::free_inside_table(double ***p, size_t wSize) const {
     for (unsigned long i = 0; i < non_terminals.size(); i++) {
-        for (int j = 0; j < wSize; j++)
+        for (size_t j = 0; j < wSize; j++)
             delete[] p[i][j];
         delete[] p[i];
     }
@@ -2345,7 +2345,7 @@ void Grammar::Grammar::free_inside_table_kl(double ****p, size_t wSize) const {
 void Grammar::Grammar::sample_parse_tree_kl_vec_opt(
         std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>> &vr,
         Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, unsigned int i, unsigned int k) {
-    unsigned int jRange = k - i;
+    size_t jRange = k - i;
     size_t rightRange = n_non_terminals * n_non_terminals;
 
     Symbol::Symbol nonterminal =  Symbol::Symbol("", 0,false);
@@ -2388,7 +2388,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec_opt(
                     }
                     itSymbol--;
                     for (unsigned int l = 0; l < jRange; l++) {
-                        unsigned int indexB = (*itSymbol).id * n_non_terminals * jRange;
+                        size_t indexB = (*itSymbol).id * n_non_terminals * jRange;
                         double pBij = inside_table[context_amount.first * (*itSymbol).id +
                                 convert_context_to_id(0, leftContext)]
                         [i][i + l][convert_context_to_id(1, rightContextLine)];
@@ -2396,7 +2396,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec_opt(
                         double pCjk = inside_table[context_amount.first * (*itSymbol).id +
                                 convert_context_to_id(0, leftContext)]
                         [i + l + 1][k][convert_context_to_id(1, rightContext)];
-                        unsigned int indexC = (*itSymbol).id * jRange;
+                        size_t indexC = (*itSymbol).id * jRange;
                         jbc[indexB + indexC + l] = ((*itRight).second.first * pBij * pCjk) / inside_table
                         [context_amount.first * nonterminal.id + convert_context_to_id(0, leftContext)]
                         [i][k][convert_context_to_id(1, rightContext)];
@@ -2425,7 +2425,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec_opt(
         }
 
 
-        unsigned int l = 0;
+        size_t l = 0;
         for (l = 1; l < rightRange*jRange; l++)
             jbc[l] = jbc[l] + jbc[l-1];
         std::mt19937 mt(rd());
@@ -2435,7 +2435,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec_opt(
         for (l = 0; l < rightRange*jRange; l++)
             if (p < jbc[l])
                 break;
-        unsigned int j = 0;
+        size_t j = 0;
 
         delete[]jbc;
         Symbol::Symbol rightB = Symbol::Symbol("", 0,false);
@@ -3231,7 +3231,7 @@ void Grammar::Grammar::sample_regular_rules(
     for (const auto& s: w) {
         double total = 0.0;
         vector<double> probsTerminal;
-        for (unsigned int i = n_terminals * s.id; i < n_terminals * s.id + n_non_terminals; i++) {
+        for (size_t i = n_terminals * s.id; i < n_terminals * s.id + n_non_terminals; i++) {
             probsTerminal.push_back(total + actualState.right[i].second.first);
             total += actualState.right[i].second.first;
         }
@@ -3254,10 +3254,10 @@ void Grammar::Grammar::sample_regular_rules(
 
 void Grammar::Grammar::collapsed_gibbs_sample_pfa(int iterations) {
     //srand((unsigned) time(nullptr));
-    int sentencesLength = words.size();
+    size_t sentencesLength = words.size();
     for (int j = 0; j < iterations; j++) {
         parse_trees_vec.clear();
-        for (int i = 0; i< sentencesLength; i++) {
+        for (size_t i = 0; i< sentencesLength; i++) {
             std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> vProds;
             sample_regular_rules(vProds, words[i]);
             std::pair<std::vector<Symbol::Symbol>, std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>>> pairTree;
@@ -3271,12 +3271,12 @@ void Grammar::Grammar::collapsed_gibbs_sample_pfa(int iterations) {
 }
 
 void Grammar::Grammar::generate_n_gram_rules() {
-    int lastSmallRuleI = 0;
+    size_t lastSmallRuleI = 0;
     for (size_t i = 1; i < n_non_terminals; i++) {
-        lastSmallRuleI += pow(terminals.size(), i);
+        lastSmallRuleI += (int) pow(terminals.size(), i);
     }
 
-    for (int i = 0; i <= lastSmallRuleI; i++) {
+    for (size_t i = 0; i <= lastSmallRuleI; i++) {
         vector<Symbol::Symbol> left;
         left.push_back(non_terminals[i]);
         vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> right;
@@ -3297,7 +3297,7 @@ void Grammar::Grammar::generate_n_gram_rules() {
         rules.push_back(r);
     }
 
-    for (unsigned long i = lastSmallRuleI+1; i < non_terminals.size(); i++) {
+    for (size_t i = lastSmallRuleI+1; i < non_terminals.size(); i++) {
         vector<Symbol::Symbol> left;
         left.push_back(non_terminals[i]);
         vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> right;
@@ -3361,7 +3361,7 @@ void Grammar::Grammar::train_n_gram() {
             finalLHS.name += w[i].name;
             nGram.push_back(w[i]);
         }
-        for(unsigned long i = n_non_terminals; i < w.size(); i++) {
+        for(size_t i = n_non_terminals; i < w.size(); i++) {
             Symbol::Symbol nt = Symbol::Symbol("NT", 0, false, false);
             for (const auto& s: nGram)
                 nt.name += s.name;
