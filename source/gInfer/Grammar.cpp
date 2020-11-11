@@ -135,7 +135,7 @@ void Grammar::Grammar::generate_non_termnals() {
 
 
 
-void Grammar::Grammar::generate_permutation(std::vector<std::vector<Symbol::Symbol>> & permutations, std::vector<Symbol::Symbol> symbols, unsigned long size, std::vector<Symbol::Symbol> word, bool context) {
+void Grammar::Grammar::generate_permutation(std::vector<std::vector<Symbol::Symbol>> & permutations, std::vector<Symbol::Symbol> symbols, size_t size, std::vector<Symbol::Symbol> word, bool context) {
     if (size == 0 )
         permutations.push_back(word);
     else {
@@ -281,8 +281,8 @@ void Grammar::printInsideTableKL(double ****p, int wSize) {
 }
 */
 
-void Grammar::Grammar::sample_parse_tree(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ***inside_table, unsigned int i, unsigned int k) {
-    unsigned int jRange = k - i;
+void Grammar::Grammar::sample_parse_tree(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ***inside_table, size_t i, size_t k) {
+    size_t jRange = k - i;
     size_t rightRange = n_non_terminals * n_non_terminals;
 
     if (jRange > 0) {
@@ -313,7 +313,7 @@ void Grammar::Grammar::sample_parse_tree(std::vector<std::pair<std::vector<Symbo
 
             }
         }
-        unsigned long l = 0;
+        size_t l = 0;
         for (l = 1; l < rightRange*jRange; l++)
             jbc[l] = jbc[l] + jbc[l-1];
         std::mt19937 mt(rd());

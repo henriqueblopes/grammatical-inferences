@@ -53,7 +53,7 @@ private:
     void collapsed_gibbs_sample_pfa(int iterations);
     void train_n_gram();
     void generate_non_termnals();
-    void generate_permutation(std::vector<std::vector<Symbol::Symbol>> & permutations, std::vector<Symbol::Symbol> symbols, unsigned long size, std::vector<Symbol::Symbol> word, bool context);
+    void generate_permutation(std::vector<std::vector<Symbol::Symbol>> & permutations, std::vector<Symbol::Symbol> symbols, size_t size, std::vector<Symbol::Symbol> word, bool context);
     void generate_rules_cnf();
     void generate_rules_regular();
     void generate_n_gram_rules();
@@ -68,7 +68,7 @@ private:
     void print_inside_table(double ***p, int wSize) const;
     /*void printInsideTableKL(double ****p, int wSize);*/
     static void print_outside_table(const std::vector<std::vector<std::vector<double>>>& p);
-    void sample_parse_tree(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ***inside_table, unsigned int i, unsigned int k);
+    void sample_parse_tree(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ***inside_table, size_t i, size_t k);
     void sample_parse_tree_kl(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ****inside_table, size_t i, size_t k);
     void sample_parse_tree_kl_vec(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, size_t i, size_t k);
     void sample_parse_tree_kl_vec_opt(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, size_t i, size_t k);
