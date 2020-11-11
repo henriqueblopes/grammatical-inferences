@@ -15,9 +15,9 @@ endif()
 include(${CPM_DOWNLOAD_LOCATION})
 option(CPM_USE_LOCAL_PACKAGES "Try `find_package` before downloading dependencies" ON)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc")
+#[[set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc")]]
 
-option(BUILD_WITH_PEDANTIC_WARNINGS "Use pedantic warnings. This is useful for developers because many of these warnings will be in continuous integration anyway." OFF)
+option(BUILD_WITH_PEDANTIC_WARNINGS "Use pedantic warnings. This is useful for developers because many of these warnings will be in continuous integration anyway." ON)
 option(BUILD_INSTALLER "Build an installation package" ON)
 option(BUILD_PACKAGE "Build an installation package" ON)
 option(BUILD_TESTS "Compile the tests" ON)

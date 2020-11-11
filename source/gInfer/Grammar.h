@@ -25,8 +25,8 @@ public:
     std::vector<std::pair<std::string, std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>>>> parse_trees;
     std::vector<std::pair<std::vector<Symbol::Symbol>, std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>>>> parse_trees_vec;
     Symbol::Symbol start;
-    int n_terminals{};
-    int n_non_terminals{};
+    size_t n_terminals{};
+    size_t n_non_terminals{};
     std::pair<int, int> context_amount;
     std::pair<unsigned long, unsigned long> context_size;
     std::vector<Symbol::Symbol> actual_production;
@@ -70,7 +70,7 @@ private:
     static void print_outside_table(const std::vector<std::vector<std::vector<double>>>& p);
     void sample_parse_tree(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ***inside_table, unsigned int i, unsigned int k);
     void sample_parse_tree_kl(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ****inside_table, unsigned int i, unsigned int k);
-    void sample_parse_tree_kl_vec(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, unsigned int i, unsigned int k);
+    void sample_parse_tree_kl_vec(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, size_t i, size_t k);
     void sample_parse_tree_kl_vec_opt(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, unsigned int i, unsigned int k);
     void calculate_new_theta_vec_opt(int i);
     int calculate_producton_counts (const std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>& production, const std::string& w);
@@ -82,7 +82,7 @@ private:
     void update_parse_tress_theta();
     void apply_production(std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> prod_a);
     Rule::Rule find_rule_by_lhs(std::vector<Symbol::Symbol> lhs);
-    [[nodiscard]] int convert_context_to_id(int side, std::vector<Symbol::Symbol> context) const;
+    int convert_context_to_id(int side, std::vector<Symbol::Symbol> context);
     void get_actual_context(std::vector<Symbol::Symbol> & leftContext, std::vector<Symbol::Symbol> & rightContext);
     /*static void printProduction(
             std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>> tree);
@@ -105,7 +105,7 @@ private:
     void p_ti_minus_1_frequence(int i);
     void p_ti_minus_1_plus_frequence(int i);
     void free_inside_table(double ***p, int wSize) const;
-    void free_inside_table_kl(double ****p, int wSize) const;
+    void free_inside_table_kl(double ****p, size_t wSize) const;
     void baum_welch_expectation(std::vector<double> &count_nd, std::vector<double> &count_nl, std::vector<std::vector<std::vector<double>>> &count_nt);
     void baum_welch_maximization(std::vector<double> &count_nd_r, std::vector<double> &count_nl_r, std::vector<std::vector<std::vector<double>>> &count_ntr);
     void calculate_wv(std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> &w, std::vector<std::vector<std::vector<double>>> &v, const std::vector<Symbol::Symbol>& word, double***inside_table, std::vector<std::vector<std::vector<double>>>o_t);
