@@ -12,6 +12,7 @@ CPMAddPackage(
         "CATCH_INSTALL_DOCS OFF"
         "CATCH_INSTALL_HELPERS OFF")
 include(${Catch2_SOURCE_DIR}/contrib/Catch.cmake)
+
 add_library(CATCH INTERFACE)
 
 target_include_directories(CATCH
