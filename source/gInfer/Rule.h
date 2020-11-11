@@ -28,7 +28,7 @@ public:
     Rule clone();
     void update_prob_dirichlet_theta();
     void generate_pior_dirichlet(double alfa);
-    std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> get_right_side_by_id(unsigned int id_1st_non_context, unsigned  int id_2nd_non_context, bool terminal, int n_non_terminals);
+    std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> get_right_side_by_id(size_t id_1st_non_context, size_t id_2nd_non_context, bool terminal, size_t n_non_terminals);
     double freq();
 private:
     double c_constant();

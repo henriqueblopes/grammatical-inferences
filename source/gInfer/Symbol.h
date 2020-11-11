@@ -15,8 +15,8 @@ public:
     bool terminal{};
     bool context{};
 public:
-    Symbol(std::string name, unsigned int id, bool terminal);
-    Symbol(std::string name, unsigned int id, bool terminal, bool context);
+    Symbol(std::string name, size_t id, bool terminal);
+    Symbol(std::string name, size_t id, bool terminal, bool context);
 
     Symbol();
 

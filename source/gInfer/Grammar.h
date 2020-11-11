@@ -27,7 +27,7 @@ public:
     Symbol::Symbol start;
     size_t n_terminals{};
     size_t n_non_terminals{};
-    std::pair<int, int> context_amount;
+    std::pair<size_t, size_t> context_amount;
     std::pair<unsigned long, unsigned long> context_size;
     std::vector<Symbol::Symbol> actual_production;
     std::vector<std::vector<Symbol::Symbol>> words;
@@ -71,7 +71,7 @@ private:
     void sample_parse_tree(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ***inside_table, unsigned int i, unsigned int k);
     void sample_parse_tree_kl(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, const std::string& w, double ****inside_table, size_t i, size_t k);
     void sample_parse_tree_kl_vec(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, size_t i, size_t k);
-    void sample_parse_tree_kl_vec_opt(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, unsigned int i, unsigned int k);
+    void sample_parse_tree_kl_vec_opt(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, size_t i, size_t k);
     void calculate_new_theta_vec_opt(int i);
     int calculate_producton_counts (const std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>& production, const std::string& w);
     std::vector<std::pair<double, int>> calculate_rule_frequence(Rule::Rule r, const std::string& w);
@@ -117,7 +117,7 @@ private:
     void recursive_insert_unused(std::vector<Symbol::Symbol> &unused, const Symbol::Symbol& nt);
     void normalize_probs();
     void sample_regular_rules(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, const std::vector<Symbol::Symbol>& w);
-    void recursive_add_terminal_to_nt(Symbol::Symbol nt, int n, int &nIds);
+    void recursive_add_terminal_to_nt(Symbol::Symbol nt, size_t n, int &nIds);
     void add_n_gram_rule_frequency(const Symbol::Symbol& lhs, const Symbol::Symbol& next_symbol);
 
 public:

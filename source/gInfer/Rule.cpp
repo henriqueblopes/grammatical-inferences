@@ -140,7 +140,7 @@ void Rule::Rule::update_prob_dirichlet_theta() {
     prob_dirichlet_theta = prodThetaAlfa / c_constant();
 }
 
-std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> Rule::Rule::get_right_side_by_id(unsigned int id_1st_non_context, unsigned int id_2nd_non_context, bool terminal, int n_non_terminals) {
+std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> Rule::Rule::get_right_side_by_id(size_t id_1st_non_context, size_t id_2nd_non_context, bool terminal, size_t n_non_terminals) {
     if (terminal)
         return right[n_non_terminals * n_non_terminals + id_1st_non_context];
     else

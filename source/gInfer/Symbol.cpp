@@ -11,13 +11,13 @@
 
 }
 
-Symbol::Symbol::Symbol(std::string name, unsigned int id, bool terminal) : name(std::move(name)), id(id), terminal(terminal) {context = false;}
+Symbol::Symbol::Symbol(std::string name, size_t id, bool terminal) : name(std::move(name)), id(id), terminal(terminal) {context = false;}
 
 Symbol::Symbol Symbol::Symbol::clone() const {
     return Symbol (name,id,terminal,context);
 }
 
-Symbol::Symbol::Symbol(std::string name, unsigned int id, bool terminal, bool context) : name(std::move(name)), id(id), terminal(terminal), context(context) {
+Symbol::Symbol::Symbol(std::string name, size_t id, bool terminal, bool context) : name(std::move(name)), id(id), terminal(terminal), context(context) {
 
 }
 

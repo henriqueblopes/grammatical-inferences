@@ -324,7 +324,7 @@ void Grammar::Grammar::sample_parse_tree(std::vector<std::pair<std::vector<Symbo
         for (l = 0; l < rightRange*jRange; l++)
             if (p < jbc[l])
                 break;
-        unsigned int j = 0;
+        size_t j = 0;
         delete[]jbc;
         //std::vector<Symbol::Symbol> rightProduction;
         std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rightProduction;
@@ -1628,7 +1628,7 @@ double ****Grammar::Grammar::cyk_prob_kl_vec(std::vector<Symbol::Symbol> w) {
 
     }
     context_amount.first = sizeLeftContext;
-    for (unsigned long i = 0; i <= context_size.second; i++) {
+    for (size_t i = 0; i <= context_size.second; i++) {
         std::vector<Symbol::Symbol> word;
         std::vector<std::vector<Symbol::Symbol>> permutationsTerminals;
         generate_permutation(permutationsTerminals, non_terminals, i, word, true);
@@ -2331,7 +2331,7 @@ void Grammar::Grammar::free_inside_table(double ***p, size_t wSize) const {
 }
 
 void Grammar::Grammar::free_inside_table_kl(double ****p, size_t wSize) const {
-    for (unsigned long i = 0; i < non_terminals.size() * context_amount.first; i++) {
+    for (size_t i = 0; i < non_terminals.size() * context_amount.first; i++) {
         for (size_t j = 0; j < wSize; j++) {
             for (size_t k = 0; k < wSize; k++)
                 delete[] p[i][j][k];
@@ -2344,7 +2344,7 @@ void Grammar::Grammar::free_inside_table_kl(double ****p, size_t wSize) const {
 
 void Grammar::Grammar::sample_parse_tree_kl_vec_opt(
         std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>> &vr,
-        Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, unsigned int i, unsigned int k) {
+        Rule::Rule r, std::vector<Symbol::Symbol> w, double ****inside_table, size_t i, size_t k) {
     size_t jRange = k - i;
     size_t rightRange = n_non_terminals * n_non_terminals;
 
@@ -3330,7 +3330,7 @@ void Grammar::Grammar::generate_n_gram_non_terminals() {
         recursive_add_terminal_to_nt(nt, i, nIds);
 }
 
-void Grammar::Grammar::recursive_add_terminal_to_nt(Symbol::Symbol nt, int n, int &nIds) {
+void Grammar::Grammar::recursive_add_terminal_to_nt(Symbol::Symbol nt, size_t n, int &nIds) {
     if (n ==0) {
         non_terminals.push_back(nt);
     } else {
