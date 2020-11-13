@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     //argv[11] = n_non_terminals
     int n_terminals = stoi((argv[1]));
     int n_shares_or_amount = stoi((argv[2]));
-    unsigned long n_input_for_training = stoi((argv[4]));
+    size_t n_input_for_training = stoi((argv[4]));
     int context_left_size = stoi((argv[5]));
     int context_right_size = stoi((argv[6]));
     int iterations = stoi((argv[7]));

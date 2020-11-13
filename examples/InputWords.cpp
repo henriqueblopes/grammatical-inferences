@@ -243,7 +243,7 @@ void InputWords::check_empty_string(const string& path) {
 
 void InputWords::print_word_sizes() {
     double sum = 0.0;
-    unsigned long max = 0;
+    size_t max = 0;
     for (const auto& w: input_words) {
         //cout << "Size:  " << w.size() << endl;
         sum += w.size();

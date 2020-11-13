@@ -1002,7 +1002,7 @@ void Grammar::Grammar::sample_parse_tree_kl(
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
         for (unsigned int i2 = 0; i2 < lc; i2++)
-            leftContext2.erase(leftContext2.begin() +i);
+            leftContext2.erase(leftContext2.begin());
         for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
 
@@ -1030,7 +1030,7 @@ void Grammar::Grammar::sample_parse_tree_kl(
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
         for (size_t i2 = 0; i2 < lc; i2++)
-            leftContext2.erase(leftContext2.begin() +i);
+            leftContext2.erase(leftContext2.begin());
         for (size_t i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
 
@@ -1936,7 +1936,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec(
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
         for (unsigned int i2 = 0; i2 < lc; i2++)
-            leftContext2.erase(leftContext2.begin() +i);
+            leftContext2.erase(leftContext2.begin());
         for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
 
@@ -1964,7 +1964,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec(
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
         for (size_t i2 = 0; i2 < lc; i2++)
-            leftContext2.erase(leftContext2.begin() +i);
+            leftContext2.erase(leftContext2.begin());
         for (size_t i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
         std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rightProduction;
@@ -2500,7 +2500,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec_opt(
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
         for (unsigned int i2 = 0; i2 < lc; i2++)
-            leftContext2.erase(leftContext2.begin() +i);
+            leftContext2.erase(leftContext2.begin());
         for (unsigned int i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
 
@@ -2528,7 +2528,7 @@ void Grammar::Grammar::sample_parse_tree_kl_vec_opt(
         //lc = (int) rand()%(leftContext2.size()+1);
         //rc = (int) rand()%(rightContext2.size()+1);
         for (size_t i2 = 0; i2 < lc; i2++)
-            leftContext2.erase(leftContext2.begin() +i);
+            leftContext2.erase(leftContext2.begin());
         for (size_t i2 = 0; i2 < rc; i2++)
             rightContext2.pop_back();
         std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rightProduction;
