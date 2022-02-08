@@ -6,6 +6,9 @@
 #define GRAMMARINDCTION_RULE_H
 #include <vector>
 #include "Symbol.h"
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/access.hpp>
 
 namespace Rule{
 class Rule {
@@ -20,7 +23,23 @@ public:
     int index{};
 
 
+    friend class boost::serialization::access;
+    template<class Archive>
+            void serialize(Archive & ar, const unsigned int version)
+            {
+                ar & left;
+                ar & right;
+                ar & prob_dirichlet_theta;
+                ar & index_1st_non_context;
+                ar & left_context;
+                ar & right_context;
+                ar & rule_frequence;
+                ar & index;
+            }
+
+
 public:
+    Rule(){};
     Rule(std::vector<Symbol::Symbol> left, std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> right);
     void print_rule();
     std::string rule_to_str();

@@ -14,7 +14,10 @@ set_target_properties(gInfer PROPERTIES VERSION ${PROJECT_VERSION})
 #[[set_target_properties(gInfer PROPERTIES PUBLIC_HEADER Grammar.h Symbol.h Rule.h)]]
 set(MY_HEADERS gInfer/Grammar.h gInfer/Rule.h gInfer/Symbol.h)
 
-target_include_directories(gInfer PUBLIC .)
+target_include_directories(gInfer PUBLIC .
+    ${Boost_INCLUDE_DIRS}
+)
+target_link_libraries(gInfer PUBLIC ${Boost_LIBRARIES})
 
 include(GNUInstallDirs)
 

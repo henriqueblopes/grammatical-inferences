@@ -6,10 +6,14 @@
 #define GRAMMARINDCTION_GRAMMAR_H
 
 
-
 #include "Rule.h"
-#include <vector>
 #include <random>
+#include <unordered_map>
+#include <vector>
+
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/access.hpp>
 namespace Grammar {
 class Grammar
 {
@@ -34,8 +38,29 @@ public:
     std::random_device rd;
     grammar_type g_tp;
 
-    Grammar(const std::vector<Symbol::Symbol> &terminals, int nNonTerminals, std::vector<std::vector<Symbol::Symbol>> words, enum grammar_type g_tp, std::pair<int,int> contextSize);
+    friend class boost::serialization::access;
+    template<class Archive>
+            void serialize(Archive & ar, const unsigned int version)
+            {
+                //ar & ALFA;
+                ar & terminals;
+                ar & non_terminals;
+                ar & rules;
+                ar & parse_trees;
+                ar & parse_trees_vec;
+                ar & start;
+                ar & n_terminals;
+                ar & n_terminals;
+                ar & context_amount;
+                ar & context_size;
+                ar & actual_production;
+                ar & words;
+                //ar & rd;
+                ar & g_tp;
+            }
 
+    Grammar(const std::vector<Symbol::Symbol> &terminals, int nNonTerminals, std::vector<std::vector<Symbol::Symbol>> words, enum grammar_type g_tp, std::pair<int,int> contextSize);
+    Grammar(){};
     void print_grammar();
     [[maybe_unused]] std::string grammar_to_str();
     void print_rules();
@@ -44,6 +69,25 @@ public:
     void train(training_method algorithm, int iterations);
     std::pair<double,double> perplexity(const std::vector<std::vector<Symbol::Symbol>>& test_data);
     std::pair<double,double> perplexity_kl(const std::vector<std::vector<Symbol::Symbol>>& test_data);
+    void prob_sequitur();
+    void convert_to_cnf();
+    void remove_unused_rules();
+    int verify_rule_existence_cnf(std::vector<Symbol::Symbol> rhs_cnf, std::vector<Rule::Rule> rules_nt_cnf);
+    bool equal_rhs(std::vector<Symbol::Symbol> rh1, std::vector<Symbol::Symbol> rh2);
+    void count_pumping_str(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, int sub_amount, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word);
+    void count_pumping_str_by_slice(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word);
+    void count_pumping_size1(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word);
+    void count_pumping_size2(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word);
+    void count_pumping_size3(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word);
+    void count_pumping_size4(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word);
+    void count_pumping_size5(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word);
+    Symbol::Symbol verify_pumping_times(Symbol::Symbol s);
+    std::vector<std::string> convert_symbol_to_vector_string(Symbol::Symbol s);
+    std::string convert_vector_to_string(std::vector<Symbol::Symbol> vs);
+    void pumping_inference (std::unordered_map<std::string, int> & map, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> & map_pump_to_word);
+
+    static bool equal_word(std::vector<Symbol::Symbol> w1, std::vector<Symbol::Symbol> w2);
+
 
 private:
     void baum_welch(int iteration);
@@ -62,6 +106,12 @@ private:
     void gibbs_sampling_pcfg(int iterations);
     void gibbs_sampling_pcsg(int iterations);
     void metropolis_hastings_pcsg(int iterations);
+    void check_digram_position_integrity(std::unordered_map<std::string, std::tuple<int, int, int>> & digram_position);
+    void check_digram_position_integrity_by_rules(std::unordered_map<std::string, std::tuple<int, int, int>> &digram_position);
+
+    bool enforce_digram_uniqueness(std::unordered_map<std::string, int> & digram_map, std::unordered_map<std::string, std::tuple<int, int, int>> & digram_position, int i);
+    void enforce_rule_utility(std::unordered_map<std::string, std::tuple<int, int, int>> & digram_position, int ii);
+    bool verify_duplicate_digram(std::unordered_map<std::string, std::tuple<int, int, int>> digram_map, std::string digram);
     double **** cyk_prob_kl_vec(std::vector<Symbol::Symbol> w);
     /*double **** CYKProbKLVecOpt(std::vector<Symbol::Symbol> w);*/
     double **** cyk_prob_kln_vec(const std::vector<Symbol::Symbol>& w);
@@ -98,7 +148,7 @@ private:
     int calculate_producton_counts_vec(
             const std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>& pair,
             const std::vector<Symbol::Symbol>& w);
-    static bool equal_word(std::vector<Symbol::Symbol> w1, std::vector<Symbol::Symbol> w2);
+
     double p_ti_ti_minus_1_vec(const std::vector<Symbol::Symbol>& w);
     double p_ti_ti_minus_1_vec_opt(int i) ;
     std::vector<std::pair<double, int>> calculate_rule_frequence_vec(Rule::Rule &rule, const std::vector<Symbol::Symbol>& w);
@@ -120,8 +170,15 @@ private:
     void recursive_add_terminal_to_nt(Symbol::Symbol nt, size_t n, int &nIds);
     void add_n_gram_rule_frequency(const Symbol::Symbol& lhs, const Symbol::Symbol& next_symbol);
 
+
 public:
     virtual ~Grammar();
+
+    bool compare_pumping_use(std::vector<Symbol::Symbol> vector, std::vector<std::vector<Symbol::Symbol>>);
+    void find_pumping_rules(int &v, std::string uvxyz, std::unordered_map<std::string, Symbol::Symbol> & non_terminal_string_map);
+    void calculate_new_rule_from_starting_symbol(std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> &new_start_right, int v, std::string uvxyz, std::unordered_map<std::string, Symbol::Symbol> &non_terminal_string_map);
+    std::vector<Symbol::Symbol> yield_string(std::vector<Symbol::Symbol> vector);
+    int load_map_pump_to_word(std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> map_pump_to_word);
 };
 }
 

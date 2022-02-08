@@ -2,14 +2,21 @@
 // Created by henrique on 02/04/19.
 //
 
-#include <iostream>
-#include <algorithm>
-#include <tuple>
-#include <cmath>
-#include <chrono>
-#include <utility>
 #include "Grammar.h"
-
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <langinfo.h>
+#include <queue>
+#include <sstream>
+#include <stack>
+#include <tuple>
+#include <utility>
+#include <fstream>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 using namespace std;
 
 
@@ -45,22 +52,22 @@ Grammar::Grammar::Grammar(const std::vector<Symbol::Symbol> &terminals, int nNon
 
 
 void Grammar::Grammar::print_grammar() {
-    std::cout << "Terminals: " << std::endl;
+    //std::cout << "Terminals: " << std::endl;
     std::vector<Symbol::Symbol>::iterator it;
-    for(it = terminals.begin(); it != terminals.end(); it++) {
+    /*for(it = terminals.begin(); it != terminals.end(); it++) {
         std::cout << "\t";
         std::cout <<  (*it).name << std::endl;
     }
 
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 
-    std::cout << "NonTerminals: " << std::endl;
+    /*std::cout << "NonTerminals: " << std::endl;
     for(it = non_terminals.begin(); it != non_terminals.end(); it++) {
         std::cout << "\t";
         std::cout <<  (*it).name <<std::endl;
     }
 
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 
     std::vector<Rule::Rule>::iterator itr;
     std::cout << "Rules: " << std::endl;
@@ -769,7 +776,6 @@ void Grammar::Grammar::generate_rules_cnf() {
                             rightHandSide.first.insert(rightHandSide.first.end(), (*itPermutationsAll).begin(), (*itPermutationsAll).end());
                             rulesByLeft.push_back(rightHandSide);
                         }
-                        //TO DO: Colocar o FOR abaixo dentro do anterior Unindo os pares de não terminais com terminais
                         for (itTerminals = terminals.begin(); itTerminals !=  terminals.end(); itTerminals++) {
                             std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rightHandSide;
                             rightHandSide.first.insert(rightHandSide.first.end(), (*itPermutationsTerminals).begin(), (*itPermutationsTerminals).end());
@@ -3399,11 +3405,1209 @@ void Grammar::Grammar::add_n_gram_rule_frequency(const Symbol::Symbol& lhs, cons
         }
     }
 }
+void Grammar::Grammar::prob_sequitur() {
+    non_terminals.clear();
+    rules.clear();
+    n_non_terminals = 0;
+    n_non_terminals = 1;
+    Symbol::Symbol start = Symbol::Symbol("NT"+ to_string(n_non_terminals-1), n_non_terminals-1, false, false);
+    non_terminals.push_back(start);
+    vector<Symbol::Symbol> lhs;
+    lhs.push_back(start);
+    std::unordered_map<string, int> digram_map;
+    std::unordered_map<string, tuple<int, int, int>> digram_position;
+    std::unordered_map<int, int> rule_map;
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> rhss;
+    rules.push_back(Rule::Rule(lhs,rhss));
+    for (int i = 0; i < words.size(); i++) {
+        //print_grammar();
+        cout << "word: " << i <<": " ;
+        for (auto a: words[i]) cout << a.name << " ";
+        cout << endl;
+        if (i == 1049)
+            cout <<"go fishing" << endl;
+
+        auto w = words[i];
+        std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> rhs;
+        rhs.first.push_back(Symbol::Symbol(w[0]));
+        rhs.second.first = 1.0;
+        rhs.second.second = ALFA;
+        rhss.push_back(rhs);
+        rules[0].right.push_back(rhs);
+        int dicard = 0;
+        for (auto s: w) {
+            //print_grammar();
+            if (!(dicard <1)) {
+                rules[0].right[i].first.push_back(s);
+                string digram = rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " +rules[0].right[i].first[rules[0].right[i].first.size() - 1].name;
+                string emptySaux = "";
+                string saux = "NT692 NT692";
+                string saux2 = "NT1226 NT1226";
+                if (saux.compare(digram) == 0)
+                    cout<< "Found Digram saux." << endl;
+                if (saux2.compare(digram) == 0)
+                    cout<< "Found Digram saux2." << endl;
+                while (verify_duplicate_digram(digram_position, digram)) {
+                    if (saux.compare(digram) == 0)
+                        cout<< "Found Digram saux." << endl;
+                    if (saux2.compare(digram) == 0)
+                        cout<< "Found Digram saux2." << endl;
+                    if (digram_position.find(emptySaux) != digram_position.end()) {
+                        cout <<" Tem digrama vazio" << endl;
+                    }
+                    if (i ==3527 || i == 3529) {
+                        for (auto m: digram_position) {
+                            if (get<2>(m.second) ==3527)
+                                cout << "Display m: "<< m.first << ": " << get<1>(m.second) << endl;
+                        }
+                        if (digram_position.find(saux) != digram_position.end()) {
+                            cout << "Achou";
+                        }
+                        cout << digram << ": " << get<1>(digram_position[digram]) << " : " << endl;
+                    }
+                    if (!((get<0>(digram_position[digram]) != 0) && (rules[get<0>(digram_position[digram])].right[get<2>(digram_position[digram])].first.size() == 2 ))) {
+                        if (rules[0].right[i].first.size() - 1 - get<1>(digram_position[digram]) > 1 || get<2>(digram_position[digram]) != i) {
+                            if (!rules[0].right[i].first[rules[0].right[i].first.size() - 2].terminal)
+                                rules[rules[0].right[i].first[rules[0].right[i].first.size() - 2].id].right[0].second.first -= 1.0;
+                            if (!rules[0].right[i].first[rules[0].right[i].first.size() - 1].terminal)
+                                rules[rules[0].right[i].first[rules[0].right[i].first.size() - 1].id].right[0].second.first -= 1.0;
+                            enforce_digram_uniqueness(digram_map,  digram_position, i);
+                        }
+                        else
+                            break;
+                    } else {
+                        string digram_to_look = rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " + rules[0].right[i].first[rules[0].right[i].first.size() - 1].name;
+                        if (!rules[0].right[i].first[rules[0].right[i].first.size() - 2].terminal)
+                            rules[rules[0].right[i].first[rules[0].right[i].first.size() - 2].id].right[0].second.first -= 1.0;
+                        if (!rules[0].right[i].first[rules[0].right[i].first.size() - 1].terminal)
+                            rules[rules[0].right[i].first[rules[0].right[i].first.size() - 1].id].right[0].second.first -= 1.0;
+                        rules[0].right[i].first.pop_back();
+                        //digram_map.erase(rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " + rules[0].right[i].first[rules[0].right[i].first.size() - 1].name);
+                        if (rules[0].right[i].first.size() > 1) {
+                            string digram_to_erase = rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " + rules[0].right[i].first[rules[0].right[i].first.size() - 1].name;
+                            if (rules[0].right[i].first.size() -1 == get<1>(digram_position[digram_to_erase]))
+                                digram_position.erase(digram_to_erase);
+                        }
+                        rules[0].right[i].first.pop_back();
+                        rules[0].right[i].first.push_back(non_terminals[get<0>(digram_position[digram_to_look])]);
+                        rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].second.first += 1.0;
+                    }
+                    if (0==1)
+                        cout<< "Found DigramPosition saux2." << endl;
+                    /*check_digram_position_integrity_by_rules(digram_position);
+                    check_digram_position_integrity(digram_position);*/
+                    enforce_rule_utility(digram_position, i);
+                    /*check_digram_position_integrity_by_rules(digram_position);
+                    check_digram_position_integrity(digram_position);*/
+
+                    if (rules[0].right[i].first.size() > 1)
+                        digram = rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " +rules[0].right[i].first[rules[0].right[i].first.size() - 1].name;
+                    else
+                       digram = "";
+
+                    if (digram_position.find("") != digram_position.end()) {
+                        cout << "Achou";
+                    }
+                }
+                if (rules[0].right[i].first.size() > 1) {
+                    digram_map.insert(make_pair(digram, 0));
+                    digram_position.insert(make_pair(digram, make_tuple(0,rules[0].right[i].first.size() - 1, i)));
+                } else
+                    digram = "";
+            }
+            else
+                dicard++;
 
 
-/*Grammar::Grammar(Grammar const &grammar) {
+        }
+        //enforce_rule_utility();
+        //check_digram_position_integrity(digram_position);
+        //check_digram_position_integrity_by_rules(digram_position);
+    }
 
-}*/
+}
+
+bool Grammar::Grammar::enforce_digram_uniqueness(std::unordered_map<std::string, int> & digram_map, std::unordered_map<std::string, std::tuple<int, int, int>> & digram_position, int i) {
+    digram_map[rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " +rules[0].right[i].first[rules[0].right[i].first.size() - 1].name] = n_non_terminals;
+    n_non_terminals++;
+    Symbol::Symbol nnt = Symbol::Symbol("NT" + to_string(n_non_terminals-1), n_non_terminals - 1, false, false);
+    non_terminals.push_back(nnt);
+    vector<Symbol::Symbol> lhs;
+    std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> rhs;
+    lhs.push_back(nnt);
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> rhss;
+    rhs.first.push_back(Symbol::Symbol(rules[0].right[i].first[rules[0].right[i].first.size() - 2]));
+    rhs.first.push_back(Symbol::Symbol(rules[0].right[i].first[rules[0].right[i].first.size() - 1]));
+    rhs.second.first = 2.0;
+    rhs.second.second = ALFA;
+    rhss.push_back(rhs);
+    rules.push_back(Rule::Rule(lhs, rhss));
+    string digram_to_look = rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " +rules[0].right[i].first[rules[0].right[i].first.size() - 1].name;
+    string backward_digram;
+    string backward_digram_erase;
+
+
+    if (get<1>(digram_position[digram_to_look]) >1) {
+        backward_digram = rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first[get<1>(digram_position[digram_to_look])-2].name + " " + lhs[0].name;
+        backward_digram_erase = rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first[get<1>(digram_position[digram_to_look])-2].name + " " + rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first[get<1>(digram_position[digram_to_look])-1].name;
+    }
+    string forward_digram;
+    string forward_digram_erase;
+    if (get<1>(digram_position[digram_to_look])+1 < rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.size()) {
+        forward_digram = lhs[0].name + " " + rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first[get<1>(digram_position[digram_to_look])+1].name;
+        forward_digram_erase  = rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first[get<1>(digram_position[digram_to_look])].name + " " + rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first[get<1>(digram_position[digram_to_look])+1].name;
+    }
+    rules[0].right[i].first.pop_back();
+
+    // inicio inserção nova regra no lugar do digrama repetido
+    if (get<1>(digram_position[digram_to_look]) == 0)
+        rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.insert(rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.begin()  +get<1>(digram_position[digram_to_look]), lhs.begin(), lhs.end());
+    else
+        rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.insert(rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.begin()  +get<1>(digram_position[digram_to_look])-1, lhs.begin(), lhs.end());
+    rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.erase(rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.begin()  +get<1>(digram_position[digram_to_look]));
+    rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.erase(rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.begin()  +get<1>(digram_position[digram_to_look]));
+    // fim inserção nova regra no lugar do digrama repetido
+
+    //digram_map.erase(rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " + rules[0].right[0].first[rules[0].right[0].first.size() - 1].name);
+
+    if (rules[0].right[i].first.size() > 1) {
+        string saux = rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " + rules[0].right[i].first[rules[0].right[i].first.size() - 1].name;
+        if (rules[0].right[i].first[rules[0].right[i].first.size() - 2].name.compare(rules[0].right[i].first[rules[0].right[i].first.size() - 1].name) == 0) {
+            if( rules[0].right[i].first.size() >2) {
+                if (rules[0].right[i].first[rules[0].right[i].first.size() - 3].name.compare(rules[0].right[i].first[rules[0].right[i].first.size() - 2].name) == 0) {
+                    cout << "digramas consecutivos iguais" << endl;
+                } else
+                    digram_position.erase(rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " + rules[0].right[i].first[rules[0].right[i].first.size() - 1].name);
+            }
+            else
+                digram_position.erase(rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " + rules[0].right[i].first[rules[0].right[i].first.size() - 1].name);
+        }
+        else
+            digram_position.erase(rules[0].right[i].first[rules[0].right[i].first.size() - 2].name + " " + rules[0].right[i].first[rules[0].right[i].first.size() - 1].name);
+
+    }
+    if (get<1>(digram_position[digram_to_look])+1 < rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.size()) {
+        if (digram_position.find(forward_digram_erase) != digram_position.end()) {
+            for (auto m: digram_position) {
+                if (get<0>(m.second) == get<0>(digram_position[forward_digram_erase]))
+                    if (get<2>(m.second) == get<2>(digram_position[forward_digram_erase]))
+                        if (get<1>(m.second) > get<1>(digram_position[forward_digram_erase])) {
+                            get<1>(digram_position[m.first])--;
+                        }
+            }
+        }
+    }
+    rules[0].right[i].first.pop_back();
+    rules[0].right[i].first.push_back(nnt);
+    if (get<1>(digram_position[digram_to_look]) >1) {
+        digram_map.insert(make_pair(backward_digram, 0));
+        digram_position.insert(make_pair(backward_digram, make_tuple(get<0>(digram_position[digram_to_look]), get<1>(digram_position[digram_to_look])-1, get<2>(digram_position[digram_to_look]))));
+        if (get<1>(digram_position[digram_to_look])-1 == get<1>(digram_position[backward_digram_erase])) {
+            digram_map.erase(backward_digram_erase);
+            digram_position.erase(backward_digram_erase);
+        }
+
+    }
+    forward_digram = lhs[0].name + " " + rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first[get<1>(digram_position[digram_to_look])].name;
+    //TODO atenção com esse +1 (ou falta dele) antes do <, talvez tenha bug.
+    if (get<1>(digram_position[digram_to_look]) < rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.size()){
+        digram_map.insert(make_pair(forward_digram, get<2>(digram_position[digram_to_look])));
+        digram_position.insert(make_pair(forward_digram, digram_position[digram_to_look]));
+    }
+
+    if (digram_position.find(forward_digram_erase) != digram_position.end()) {
+        string possibleTripleDigram = rules[get<0>(digram_position[forward_digram_erase])].
+                                  right[get<2>(digram_position[forward_digram_erase])].
+                                  first[get<1>(digram_position[forward_digram_erase])-1].name + " " +
+                                  rules[get<0>(digram_position[forward_digram_erase])].
+                                  right[get<2>(digram_position[forward_digram_erase])].
+                                  first[get<1>(digram_position[forward_digram_erase])].name;
+        if (forward_digram_erase.compare(possibleTripleDigram) != 0)
+            digram_position.erase(forward_digram_erase);
+    }
+
+    //digram_position.erase(digram_to_look);
+    get<0>(digram_position[digram_to_look])= nnt.id;
+    get<2>(digram_position[digram_to_look]) = 0;
+    get<1>(digram_position[digram_to_look]) = 1;
+    return true;
+}
 
 
 
+bool Grammar::Grammar::verify_duplicate_digram(std::unordered_map<std::string, std::tuple<int, int, int>> digram_map, string digram) {
+    if (digram_map.find(digram) == digram_map.end()) {
+        return false;
+    }
+    else return true;
+}
+
+
+
+/*
+void Grammar::Grammar::prob_sequitur() {
+    non_terminals.clear();
+    rules.clear();
+    n_non_terminals = 0;
+    n_non_terminals = 1;
+    Symbol::Symbol start = Symbol::Symbol("NT"+ to_string(n_non_terminals-1), n_non_terminals-1, false, false);
+    non_terminals.push_back(start);
+    vector<Symbol::Symbol> lhs;
+    lhs.push_back(start);
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> rhss;
+    rules.push_back(Rule::Rule(lhs,rhss));
+    for (int i = 0; i < words.size(); i++) {
+        auto w = words[i];
+        std::unordered_map<string, int> digram_map;
+        //td::unordered_map<string, pair<int, int>> digram_position;
+        std::unordered_map<string, tuple<int, int, int>> digram_position;
+        std::unordered_map<int, int> rule_map;
+        std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> rhs;
+        rhs.first.push_back(Symbol::Symbol(w[0]));
+        rhs.second.first = 1.0;
+        rhs.second.second = ALFA;
+        rhss.push_back(rhs);
+        rules[0].right.push_back(rhs);
+        int dicard = 0;
+        for (auto s: w) {
+            print_grammar();
+            if (!(dicard <1)) {
+                rules[0].right[0].first.push_back(s);
+                string digram = rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " +rules[0].right[0].first[rules[0].right[0].first.size() - 1].name;
+                while (verify_duplicate_digram(digram_position, digram)) {
+                    if (!((get<0>(digram_position[digram]) != 0) && (rules[get<0>(digram_position[digram])].right[0].first.size() == 2 ))) {
+                        if (rules[0].right[0].first.size() - 1 - get<1>(digram_position[digram]) > 1) {
+                            if (!rules[0].right[0].first[rules[0].right[0].first.size() - 2].terminal)
+                                rules[rules[0].right[0].first[rules[0].right[0].first.size() - 2].id].right[0].second.first -= 1.0;
+                            if (!rules[0].right[0].first[rules[0].right[0].first.size() - 1].terminal)
+                                rules[rules[0].right[0].first[rules[0].right[0].first.size() - 1].id].right[0].second.first -= 1.0;
+                            enforce_digram_uniqueness(digram_map,  digram_position);
+                        }
+                        else
+                            break;
+                    } else {
+                        string digram_to_look = rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " + rules[0].right[0].first[rules[0].right[0].first.size() - 1].name;
+                        if (!rules[0].right[0].first[rules[0].right[0].first.size() - 2].terminal)
+                            rules[rules[0].right[0].first[rules[0].right[0].first.size() - 2].id].right[0].second.first -= 1.0;
+                        if (!rules[0].right[0].first[rules[0].right[0].first.size() - 1].terminal)
+                            rules[rules[0].right[0].first[rules[0].right[0].first.size() - 1].id].right[0].second.first -= 1.0;
+                        rules[0].right[0].first.pop_back();
+                        digram_map.erase(rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " + rules[0].right[0].first[rules[0].right[0].first.size() - 1].name);digram_position.erase(rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " + rules[0].right[0].first[rules[0].right[0].first.size() - 1].name);
+                        rules[0].right[0].first.pop_back();
+                        rules[0].right[0].first.push_back(non_terminals[get<0>(digram_position[digram_to_look])]);
+                        rules[get<0>(digram_position[digram_to_look])].right[0].second.first += 1.0;
+                    }
+                    digram = rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " +rules[0].right[0].first[rules[0].right[0].first.size() - 1].name;
+                    enforce_rule_utility(digram_position);
+                }
+                digram_map.insert(make_pair(digram, 0));
+                digram_position.insert(make_pair(digram, make_tuple(0,rules[0].right[0].first.size() - 1, i)));
+            }
+            else
+                dicard++;
+        }
+        //enforce_rule_utility();
+    }
+}
+
+*/
+
+
+/*
+bool Grammar::Grammar::enforce_digram_uniqueness(std::unordered_map<std::string, int> & digram_map, std::unordered_map<std::string, std::tuple<int, int, int>> & digram_position, int i) {
+    digram_map[rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " +rules[0].right[0].first[rules[0].right[0].first.size() - 1].name] = n_non_terminals;
+    n_non_terminals++;
+    Symbol::Symbol nnt = Symbol::Symbol("NT" + to_string(n_non_terminals-1), n_non_terminals - 1, false, false);
+    non_terminals.push_back(nnt);
+    vector<Symbol::Symbol> lhs;
+    std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> rhs;
+    lhs.push_back(nnt);
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> rhss;
+    rhs.first.push_back(Symbol::Symbol(rules[0].right[0].first[rules[0].right[0].first.size() - 2]));
+    rhs.first.push_back(Symbol::Symbol(rules[0].right[0].first[rules[0].right[0].first.size() - 1]));
+    rhs.second.first = 2.0;
+    rhs.second.second = ALFA;
+    rhss.push_back(rhs);
+    rules.push_back(Rule::Rule(lhs, rhss));
+    string digram_to_look = rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " +rules[0].right[0].first[rules[0].right[0].first.size() - 1].name;
+    string backward_digram;
+    string backward_digram_erase;
+    if (get<1>(digram_position[digram_to_look]) >1) {
+        */
+/*backward_digram = rules[0].right[0].first[digram_position[digram_to_look].second-2].name + " " + lhs[0].name;
+        backward_digram_erase = rules[0].right[0].first[digram_position[digram_to_look].second-2].name + " " + rules[0].right[0].first[digram_position[digram_to_look].second-1].name;*//*
+
+        backward_digram = rules[get<0>(digram_position[digram_to_look])].right[0].first[get<1>(digram_position[digram_to_look])-2].name + " " + lhs[0].name;
+        backward_digram_erase = rules[get<0>(digram_position[digram_to_look])].right[0].first[get<1>(digram_position[digram_to_look])-2].name + " " + rules[get<0>(digram_position[digram_to_look])].right[0].first[get<1>(digram_position[digram_to_look])-1].name;
+    }
+    //novo forward digram
+    string forward_digram = lhs[0].name + " " + rules[get<0>(digram_position[digram_to_look])].right[0].first[get<1>(digram_position[digram_to_look])+1].name;
+    string forward_digram_erase  = rules[get<0>(digram_position[digram_to_look])].right[0].first[get<1>(digram_position[digram_to_look])].name + " " + rules[get<0>(digram_position[digram_to_look])].right[0].first[get<1>(digram_position[digram_to_look])+1].name;
+    rules[0].right[0].first.pop_back();
+    rules[get<0>(digram_position[digram_to_look])].right[0].first.insert(rules[get<0>(digram_position[digram_to_look])].right[0].first.begin()  +get<1>(digram_position[digram_to_look])-1, lhs.begin(), lhs.end());
+    rules[get<0>(digram_position[digram_to_look])].right[0].first.erase(rules[get<0>(digram_position[digram_to_look])].right[0].first.begin()  +get<1>(digram_position[digram_to_look]));
+    rules[get<0>(digram_position[digram_to_look])].right[0].first.erase(rules[get<0>(digram_position[digram_to_look])].right[0].first.begin()  +get<1>(digram_position[digram_to_look]));
+    digram_map.erase(rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " + rules[0].right[0].first[rules[0].right[0].first.size() - 1].name);
+    digram_position.erase(rules[0].right[0].first[rules[0].right[0].first.size() - 2].name + " " + rules[0].right[0].first[rules[0].right[0].first.size() - 1].name);
+    if (get<1>(digram_position[digram_to_look]) < rules[get<0>(digram_position[digram_to_look])].right[0].first.size()) {
+        for (auto m: digram_position) {
+            if (get<0>(m.second) == get<0>(digram_position[forward_digram_erase]))
+                if (get<1>(m.second) > get<1>(digram_position[forward_digram_erase])) {
+                    get<1>(digram_position[m.first])--;
+                }
+
+        }
+    }
+    rules[0].right[0].first.pop_back();
+    rules[0].right[0].first.push_back(nnt);
+    if (get<1>(digram_position[digram_to_look]) >1) {
+        digram_map.erase(backward_digram_erase);
+        digram_position.erase(backward_digram_erase);
+        digram_map.insert(make_pair(backward_digram, 0));
+        digram_position.insert(make_pair(backward_digram, make_tuple(0, get<1>(digram_position[digram_to_look])-1, 0)));
+    }
+    forward_digram = lhs[0].name + " " + rules[0].right[0].first[get<1>(digram_position[digram_to_look])].name;
+    forward_digram = lhs[0].name + " " + rules[get<0>(digram_position[digram_to_look])].right[0].first[get<1>(digram_position[digram_to_look])].name;
+    if (get<1>(digram_position[digram_to_look]) < rules[get<0>(digram_position[digram_to_look])].right[0].first.size()){
+        digram_map.insert(make_pair(forward_digram, 0));
+        digram_position.insert(make_pair(forward_digram, digram_position[digram_to_look]));
+    }
+    digram_map.erase(forward_digram_erase);
+    digram_position.erase(forward_digram_erase);
+    //digram_position.erase(digram_to_look);
+    get<0>(digram_position[digram_to_look])= nnt.id;
+    get<1>(digram_position[digram_to_look]) = 0;
+    return true;
+}
+*/
+
+
+void Grammar::Grammar::enforce_rule_utility(std::unordered_map<std::string, std::tuple<int, int, int>> & digram_position, int ii) {
+    std::vector<Rule::Rule>::iterator itR;
+    int cont = 0;
+    for (itR = rules.begin();  itR != rules.end(); itR++) {
+        Rule::Rule r = (*itR);
+        if (r.right[0].second.first == 1.0 && r.left[0].id != 0) {
+            cont++;
+            if (r.left[0].id == 288)
+                cout << "found" << endl;
+            if(r.left[0].id == 289)
+                cout << "found" << endl;
+            if(r.left[0].id == 287)
+                cout << "found" << endl;
+            string saux = "NT174 NT174";
+            (*itR).right[0].second.first = 0.0;
+            std::vector<Rule::Rule>::iterator itRule;
+            for (itRule = rules.begin();  itRule != rules.end(); itRule++) {
+                int index = 0;
+                if (itRule == rules.begin())
+                    index = ii;
+                bool rule_found = false;
+                for (int i = 0; i < (*itRule).right[index].first.size(); i++) {
+                    if (!(*itRule).right[index].first[i].terminal) {
+                        if (r.left[0].id == (*itRule).right[index].first[i].id) {
+
+                            string digram = r.right[0].first[0].name + " "+ r.right[0].first[1].name;
+                            if( (*itRule).left[0].id == 288)
+                                cout << "Achou" << endl;
+                            //string digram = r.right[index].first[0].name + " "+ r.right[index].first[1].name;
+                            //  troquei inder por 0 na regra r.right[]
+                            (*itRule).right[index].first.insert((*itRule).right[index].first.begin()+i, r.right[0].first.begin(), r.right[0].first.end());
+                            (*itRule).right[index].first.erase((*itRule).right[index].first.begin()+i+r.right[0].first.size());
+                            string previous_digram = "";
+                            for (int j = 1; j < (*itRule).right[0].first.size(); j++) {
+                                string new_digram_aux = (*itRule).right[0].first[j-1].name + " " + (*itRule).right[0].first[j].name;
+                                if (digram_position.find(new_digram_aux) != digram_position.end()) {
+                                    if (get<2>(digram_position[new_digram_aux]) != 0 ) {
+                                        string t1 = "G:maj C:min";
+                                        t1 = "C:min G:min";
+                                        t1 = "G:min C:min";
+                                        //print_grammar();
+                                        cout << "Achou" << endl;
+                                    }
+                                    if (new_digram_aux.compare(previous_digram) != 0) {
+                                        get<0>(digram_position[new_digram_aux]) = (*itRule).left[0].id;
+                                        get<1>(digram_position[new_digram_aux]) = j;
+                                        get<2>(digram_position[new_digram_aux]) = index;
+                                    }
+                                    previous_digram = new_digram_aux;
+                                }
+                                else
+                                    digram_position.insert(make_pair(new_digram_aux, make_tuple( (*itRule).left[0].id,  j, 0)));
+
+                            }
+                            get<0>(digram_position[digram]) = (*itRule).left[0].id;
+                            get<1>(digram_position[digram]) = i+1;
+                            //troquei 0 por index nos inserts abaixo
+                            if (i > 0) {
+                                digram = (*itRule).right[index].first[i-1].name + " " + r.right[0].first[0].name;
+                                digram_position.insert(make_pair(digram, make_tuple( (*itRule).left[0].id, i, index)));
+                                digram_position.erase((*itRule).right[index].first[i-1].name+ " " + r.left[0].name );
+                            } else if (i < (*itRule).right[index].first.size()-1 ){
+                                digram = r.right[0].first[r.right[0].first.size()-1].name + " " + (*itRule).right[index].first[i + r.right[0].first.size()].name;
+                                digram_position.insert(make_pair(digram, make_tuple( (*itRule).left[0].id,  i+ r.right[0].first.size(), index)));
+                                digram_position.erase(r.left[0].name+ " " + (*itRule).right[index].first[i + r.right[0].first.size()].name );
+                            }
+                            rule_found = true;
+                            break;
+                        }
+                    }
+                }
+                if(rule_found)
+                    break;
+            }
+
+        }
+    }
+    //cout << "regras removidas: " << cont << endl;
+}
+void Grammar::Grammar::convert_to_cnf() {
+    //IMPORTANTE: ao testar se a gramática na cnf gera a base de dados, comentar o trecho abaixo qm que regras iniciais iguais são agrupadas.
+    //GROUP EQUAL INITIAl RULES
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
+    for (int j = 0; j < rules[0].right.size(); j++) {
+    //for (itRight = rules[0].right.begin(); itRight != rules[0].right.end(); itRight++) {
+        std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight2;
+        //for (itRight2 = rules[0].right.begin()+1; itRight2 != rules[0].right.end(); itRight2++) {
+        for (int i = j+1; i < rules[0].right.size(); i++) {
+            if (equal_rhs(rules[0].right[j].first,  rules[0].right[i].first)) {
+                rules[0].right[j].second.first += 1.0;
+                rules[0].right.erase(rules[0].right.begin()+i);
+                i--;
+            }
+        }
+    }
+
+    //TERMINAL RULES
+    vector<Rule::Rule> rulesTerm;
+    for (auto t: terminals) {
+        n_non_terminals++;
+        Symbol::Symbol nnt = Symbol::Symbol("NT" + to_string(n_non_terminals-1), n_non_terminals - 1, false, false);
+        non_terminals.push_back(nnt);
+        vector<Symbol::Symbol> lTerminal;
+        lTerminal.push_back(nnt);
+        vector<Symbol::Symbol> rTerminal;
+        rTerminal.push_back(t);
+        vector<pair<vector<Symbol::Symbol>,pair<double, double>>> rhsTerminal;
+        rhsTerminal.push_back(make_pair(rTerminal, make_pair(0.0,0.1)));
+        Rule::Rule r = Rule::Rule(lTerminal, rhsTerminal);
+        rulesTerm.push_back(r);
+    }
+    //print_grammar();
+    //TERM
+    vector<Rule::Rule>::iterator itRule;
+    for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+        std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
+        for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+            for (int i = 0; i < (*itRight).first.size(); i++) {
+                if ((*itRight).first[i].terminal) {
+                    vector<pair<std::vector<Symbol::Symbol>, pair<double, double>>> rTerminal;
+                    (*itRight).first[i] = Symbol::Symbol(rulesTerm[(*itRight).first[i].id].left[0]);
+                    //mudei linha abaixo
+                    rulesTerm[(*itRight).first[i].id - rulesTerm[0].left[0].id].right[0].second.first += (*itRight).second.first;
+                }
+            }
+        }
+    }
+    rules.insert(rules.end(), rulesTerm.begin(), rulesTerm.end());
+    //print_grammar();
+    rulesTerm.clear();
+
+    //BIN (testar com linguagens com palavras maiores que 2)
+    vector<Rule::Rule> rulesAux;
+    rulesAux.insert(rulesAux.begin(), rules.begin(), rules.end());
+    for (itRule = rulesAux.begin(); itRule != rulesAux.end(); itRule++) {
+        std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
+        for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+            while ((*itRight).first.size() > 2) {
+                vector<Symbol::Symbol> rhs_cnf((*itRight).first.begin()+1, (*itRight).first.begin()+3);
+                vector<Symbol::Symbol> lTerminal;
+                vector<pair<vector<Symbol::Symbol>,pair<double, double>>> rhsTerminal;
+                int nt_index = verify_rule_existence_cnf(rhs_cnf, rulesTerm);
+                Rule::Rule r = Rule::Rule(lTerminal,rhsTerminal);
+                if (nt_index != -1) {
+                    r = rulesTerm[nt_index - rules.size()];
+                    rulesTerm[nt_index - rules.size()].right[0].second.first += 1.0;
+                } else {
+                    vector<Symbol::Symbol> lTerminal;
+                    n_non_terminals++;
+                    Symbol::Symbol nnt = Symbol::Symbol("NT" + to_string(n_non_terminals-1), n_non_terminals - 1, false, false);
+                    non_terminals.push_back(nnt);
+                    lTerminal.push_back(nnt);
+                    rhsTerminal.push_back(make_pair(rhs_cnf, make_pair(1.0,0.1)));
+                    r = Rule::Rule(lTerminal, rhsTerminal);
+                    rulesTerm.push_back(r);
+                }
+                (*itRight).first[1] = Symbol::Symbol(r.left[0]);
+                (*itRight).first.erase((*itRight).first.begin()+2);
+            }
+        }
+    }
+    rules = rulesAux;
+    rules.insert(rules.end(), rulesTerm.begin(), rulesTerm.end());
+    rulesTerm.clear();
+
+    //UNIT
+    for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
+        std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>::iterator itRight;
+        for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+            if ((*itRight).first.size() == 1) {
+                if (!(*itRight).first[0].terminal) {
+                    int iRule = (*itRight).first[0].id;
+                    (*itRight).first.clear();
+                    (*itRight).first.insert((*itRight).first.begin(), rules[iRule].right[0].first.begin(), rules[iRule].right[0].first.end());
+                    rules[iRule].right[0].second.first -= (*itRight).second.first;
+                }
+            }
+        }
+    }
+    //print_grammar();
+}
+int Grammar::Grammar::verify_rule_existence_cnf(std::vector<Symbol::Symbol> rhs_cnf, std::vector<Rule::Rule> rules_nt_cnf) {
+    int flag = -1;
+    for (auto r: rules_nt_cnf) {
+        if (rhs_cnf.size() != r.right[0].first.size())
+            return -1;
+        flag = r.left[0].id;
+        for (int i = 0; i < rhs_cnf.size(); i++) {
+            if (!rhs_cnf[i].equal_symbol(r.right[0].first[i]))
+                return -1;
+        }
+    }
+    return flag;
+}
+
+bool Grammar::Grammar::equal_rhs(std::vector<Symbol::Symbol> rh1, std::vector<Symbol::Symbol> rh2) {
+    if (rh1.size() != rh2.size())
+        return false;
+    for (int i = 0; i < rh1.size(); i++) {
+        if (!rh1[i].equal_symbol(rh2[i]))
+            return false;
+    }
+    return true;
+}
+//TODO fazer algoritmo de contagem de bombeamentos por slices igual no caderno
+//TODO fazer programação dinâmica constexpr
+void Grammar::Grammar::count_pumping_str(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, int sub_amount, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
+
+    tuple<vector<Symbol::Symbol>, vector<Symbol::Symbol>, vector<Symbol::Symbol>, vector<Symbol::Symbol>, vector<Symbol::Symbol>> pumping_str;
+
+    switch (word.size()) {
+        case 1:
+            count_pumping_size1(map, word, map_pump_to_word, original_word); break;
+        case 2:
+            count_pumping_size2(map, word, map_pump_to_word, original_word); break;
+        case 3:
+            count_pumping_size3(map, word, map_pump_to_word, original_word); break;
+        case 4:
+            count_pumping_size4(map, word, map_pump_to_word, original_word); break;
+        case 5:
+            count_pumping_size5(map, word, map_pump_to_word, original_word); break;
+    }
+    for (int i = sub_amount; i <word.size()-1 ; i ++) {
+        vector<Symbol::Symbol> aux_word;
+        aux_word.insert(aux_word.end(), word.begin(), word.end());
+        aux_word[i].name += " "+aux_word[i+1].name;
+        aux_word.erase(aux_word.begin()+i+1);
+        count_pumping_str(map, aux_word, i, map_pump_to_word, original_word);
+    }
+}
+
+void Grammar::Grammar::count_pumping_size1(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
+    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0]);
+    string pumping;
+    if (word_0_pumped.name.compare("")  != 0){
+        pumping = "|" +word_0_pumped.name + "|||"; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+        /*pumping = "|||" +word_0_pumped.name + "|"; map[pumping] +=1;*/
+    }
+}
+/*
+void Grammar::Grammar::count_pumping_size2(unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word) {
+    string pumping = "|" +word[1].name + "|||"; map[pumping] +=1;
+    pumping =  "|||" +word[1].name + "|"; map[pumping] +=1;
+    pumping = "|" + word[0].name + "|||" ; map[pumping] +=1;
+    pumping = "|" + word[0].name + "||" +word[1].name + "|"; map[pumping] +=1;
+    pumping = "|" + word[0].name + "|||"; map[pumping] +=1;
+    pumping = "|||"  + word[1].name + "|"; map[pumping] +=1;
+    pumping = "|||" + word[0].name + "|" ; map[pumping] +=1;
+
+}
+
+void Grammar::Grammar::count_pumping_size3(unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word) {
+    string pumping =  "|" +word[1].name + "|" + "||"; map[pumping] +=1;
+    pumping = "|" +word[1].name +"||" +word[2].name +"|"; map[pumping] +=1;
+    pumping = "|" +word[1].name +"|||" ; map[pumping] +=1;
+    pumping = "|" + word[0].name + "||" +word[2].name + "|"; map[pumping] +=1;
+    pumping = "|" + word[0].name + "||" +word[1].name + + "|"; map[pumping] +=1;
+    pumping = "|" + word[0].name + "|||"; map[pumping] +=1;
+    pumping = "|||" + word[1].name + "|"; map[pumping] +=1;
+}
+
+void Grammar::Grammar::count_pumping_size4(unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word) {
+    string pumping =  "|" +word[1].name + "||" +word[3].name +"|"; map[pumping] +=1;
+    pumping =  "|" +word[1].name + "|||"; map[pumping] +=1;
+    pumping =  "|" +word[1].name + "||" +word[2].name + "|"; map[pumping] +=1;
+    pumping = "||" +word[1].name + "|" +word[2].name + "|" ; map[pumping] +=1;
+    pumping = "|" + word[0].name + "||" +word[2].name + "|" ; map[pumping] +=1;
+}
+*/
+
+
+void Grammar::Grammar::count_pumping_size2(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
+    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0]);
+    Symbol::Symbol  word_1_pumped = verify_pumping_times(word[1]);
+    string pumping;
+    if (word_0_pumped.name.compare("")  != 0){
+        pumping = "|" + word_0_pumped.name + "|||" +word[1].name ; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+        /*pumping = "|" + word_0_pumped.name + "|" + word[1].name + "||"; map[pumping] +=1;
+        pumping = "|||" + word_0_pumped.name + "|" + word[1].name ; map[pumping] +=1;*/
+    } else if (word_1_pumped.name.compare("")  != 0) {
+        pumping = word[0].name + "|" +word_1_pumped.name + "|||"; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+        /*pumping = word[0].name + "|||" +word_1_pumped.name + "|"; map[pumping] +=1;
+        pumping = "||" + word[0].name + "|" + word_1_pumped.name + "|"; map[pumping] +=1;*/
+    } else if (word_0_pumped.name.compare("")  != 0 && word_1_pumped.name.compare("")) {
+        pumping = "|" + word_0_pumped.name + "||" +word_1_pumped.name + "|"; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    }
+}
+
+void Grammar::Grammar::count_pumping_size3(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
+    string pumping;
+    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0]);
+    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1]);
+    Symbol::Symbol word_2_pumped = verify_pumping_times(word[2]);
+    if (word_1_pumped.name.compare("")  != 0) {
+        pumping = word[0].name + "|" +word_1_pumped.name + "|" +word[2].name + "||"; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+        /*pumping = word[0].name + "|" +word_1_pumped.name +"|||" +word[2].name; map[pumping] +=1;
+        pumping = "||" + word[0].name + "|" + word_1_pumped.name + "|" +word[2].name ; map[pumping] +=1;
+        pumping = word[0].name + "|||"  + word_1_pumped.name + "|" +word[2].name ; map[pumping] +=1;*/
+    } else if (word_1_pumped.name.compare("")  != 0 && word_2_pumped.name.compare("")  != 0) {
+        pumping = word[0].name + "|" +word_1_pumped.name +"||" +word_2_pumped.name +"|"; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    } else if (word_0_pumped.name.compare("") != 0 && word_1_pumped.name.compare("")  != 0) {
+        pumping = "|" + word_0_pumped.name + "||" + word_1_pumped.name + +"|" + word[2].name; map[pumping] += 1;
+        map_pump_to_word[pumping].push_back(original_word);
+    } else if(word_0_pumped.name.compare("") != 0) {
+        pumping = "|" + word_0_pumped.name + "|" + word[1].name + "||"  +word[2].name; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    } else if (word_0_pumped.name.compare("") != 0 && word_2_pumped.name.compare("")  != 0) {
+        pumping = "|" + word_0_pumped.name + "|" +word[1].name + + "|" +word_2_pumped.name + "|"; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    }
+}
+
+void Grammar::Grammar::count_pumping_size4(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
+    string pumping;
+    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0]);
+    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1]);
+    Symbol::Symbol word_2_pumped = verify_pumping_times(word[2]);
+    Symbol::Symbol word_3_pumped = verify_pumping_times(word[3]);
+    if (word_1_pumped.name.compare("")  != 0) {
+        pumping = word[0].name + "|" +word_1_pumped.name + "|" +word[2].name + "||" +word[3].name ; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    } else if (word_1_pumped.name.compare("")  != 0 && word_3_pumped.name.compare("")  != 0) {
+        pumping = word[0].name + "|" +word[1].name + "|" +word[2].name + "|" +word_3_pumped.name +"|"; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    } else if (word_1_pumped.name.compare("")  != 0 && word_2_pumped.name.compare("")  != 0) {
+        pumping = word[0].name + "|" +word_1_pumped.name + "||" +word_2_pumped.name + "|" +word[3].name; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    } else if (word_2_pumped.name.compare("")  != 0) {
+        pumping = word[0].name + "||" +word[1].name + "|" +word_2_pumped.name + "|" +word[3].name; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    } else if (word_0_pumped.name.compare("")  != 0 && word_2_pumped.name.compare("")  != 0) {
+        pumping = "|" + word_0_pumped.name + "|" +word[1].name + "|" +word_2_pumped.name + "|" +word[3].name; map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    }
+}
+void Grammar::Grammar::count_pumping_size5(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
+    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1]);
+    Symbol::Symbol word_3_pumped = verify_pumping_times(word[3]);
+    if (word_1_pumped.name.compare("")  != 0 && word_3_pumped.name.compare("")  != 0) {
+        string pumping = word[0].name +"|" +word_1_pumped.name + "|"+word[2].name +"|" + word_3_pumped.name +"|"+word[4].name;
+        map[pumping] +=1;
+        map_pump_to_word[pumping].push_back(original_word);
+    }
+
+}
+
+Symbol::Symbol Grammar::Grammar::verify_pumping_times(Symbol::Symbol s) {
+    stringstream check1(s.name);
+    string intermediate;
+    vector<string> tokens;
+    while(getline(check1, intermediate, ' '))
+            tokens.push_back(intermediate);
+    bool flag = true;
+    if(tokens.size()<2)
+        flag = false;
+    for (int i = 1; i < tokens.size()/2+1; i++) {
+        if (tokens.size()%i == 0) {
+            flag = true;
+            int j = 0;
+            for (j = 0; j < tokens.size()-i; j+=i) {
+                for (int k = j; k <j+i; k++) {
+                    if (tokens[k].compare(tokens[k+i]) != 0) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if(!flag)
+                    break;
+
+            }
+
+            if (flag == true) {
+                if (j < i ) {
+                    s.name = "";
+                    return s;
+                }
+                s.name = "";
+                for (int k = 0; k < i; k++)
+                    s.name += tokens[k] + " ";
+                s.name = s.name.substr(0, s.name.size()-1);
+                return s;
+            }
+
+        }
+    }
+    if (flag == false)
+        s.name = "";
+    return s;
+}
+
+bool sortbysec(const pair<string ,int> &a,
+               const pair<string,int> &b)
+{
+    return (a.second > b.second);
+}
+
+void Grammar::Grammar::pumping_inference(unordered_map<std::string, int> &map, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> & map_pump_to_word) {
+    //TODO: Reduzir o count na regra do NT
+    vector<bool> pumped_rule;
+    for (int i = 0; i < rules[0].right.size(); i++)
+        pumped_rule.push_back(false);
+    vector<pair<string, int>> ordered;
+    for (auto w : map)
+        ordered.push_back(w);
+    std::sort(ordered.begin(), ordered.end(), sortbysec);
+    for (auto s: ordered) {
+        if (s.second <5)
+            break;
+        cout << s.first << ": " << s.second << endl;
+    }
+
+
+    unordered_map<string, Symbol::Symbol> non_terminal_string_map;
+    int repeated = 0;
+    for (int i = 1; i < rules.size(); i++) {
+        vector<Symbol::Symbol> yielded = yield_string(rules[i].left);
+        string key = "";
+        for (int k = 0; k < yielded.size(); k++)
+            key += yielded[k].name + " ";
+        key = key.substr(0, key.size()-1);
+        if (non_terminal_string_map.find(key) == non_terminal_string_map.end())
+            non_terminal_string_map[key] = rules[i].left[0];
+        else
+            cout << "rule: "<< i << " repeated key: " << key << endl;
+    }
+    vector<pair<vector<Symbol::Symbol>,pair<double, double>>> new_start_right;
+    int countRules = 0;
+    for (auto u: ordered) {
+        //criterio de parada com count de bombeamento menor que 5
+        if (u.second < 5)
+            break;
+        vector<pair<vector<Symbol::Symbol>,pair<double, double>>>::iterator itRight;
+        int v;
+       /* if (n_non_terminals ==28)
+            cout << "testar Aqui. nnt = : " << n_non_terminals << endl;*/
+        find_pumping_rules(v, u.first, non_terminal_string_map);
+        for (itRight = rules[0].right.begin(); itRight != rules[0].right.end(); itRight++) {
+            if (pumped_rule[itRight-rules[0].right.begin()] == false) {
+                if (compare_pumping_use(itRight->first, map_pump_to_word[u.first])) {
+                    countRules++;
+                    //print_grammar();
+                    cout << "Pumpumg Rules used: " << countRules << endl;
+                    pair<vector<Symbol::Symbol>,pair<double, double>> new_rhs;
+                    calculate_new_rule_from_starting_symbol(new_rhs, v, u.first, non_terminal_string_map);
+                    int existRhsFlag = false;
+                    for (auto & r: new_start_right) {
+                        if (equal_word(r.first, new_rhs.first)) {
+                            pumped_rule[itRight-rules[0].right.begin()] = true;
+                            r.second.first += itRight->second.first;
+                            rules[v].right[0].second.first += itRight->second.first;
+                            //rules[v].right[1].second.first += itRight->second.first;
+                            itRight->second.first = 0;
+                            existRhsFlag = true;
+                            break;
+                        }
+                    }
+                    if (!existRhsFlag) {
+                        new_rhs.second.first = itRight->second.first;
+                        //rules[v].right[0].second.first += itRight->second.first;
+                        //TO DO: ajustar a linha abaixo pra quantidade de vezes que é gerada a subpalavra bombeada
+                        //rules[v].right[0].second.first += itRight->second.first;
+                        rules[v].right[0].second.first += 0.5;
+                        //Se pertmir bombeamentos com apenas 1 utilização, vai dar merda
+                        rules[v].right[1].second.first += itRight->second.first-0.5;
+                        itRight->second.first = 0;
+                        pumped_rule[itRight-rules[0].right.begin()] = true;
+                        new_start_right.push_back(new_rhs);
+                    }
+                    for (auto r: itRight->first)
+                        if (r.id != v)
+                            rules[r.id].right[0].second.first -= new_rhs.second.first;
+                    /*for (auto r: new_rhs.first) {
+                        if (r.id != v)
+                            rules[r.id].right[0].second.first += new_rhs.second.first;
+                    }*/
+
+
+
+
+                }
+            }
+        }
+    }
+    rules[0].right.insert(rules[0].right.end(), new_start_right.begin(), new_start_right.end());
+    print_grammar();
+
+    //para cada bombeamento com contador > que criterio (cobertura de palavras, mínimo de variáveis, %de bombeadas em relação ao tamanho do conjunto de treinamento)
+        //para cada regra em NT0
+            //criar nova regra do bombeamento
+            //derivar palavra e comparar com o uso do bombeamento do mapa
+            //se usar bombeamento
+                //incrementar contador na nova regra
+                //decrementar uso da regra que não será mais usada
+                //marcar regra se ela usar o bombeamento.
+
+
+}
+bool Grammar::Grammar::compare_pumping_use(std::vector<Symbol::Symbol> vector, std::vector<std::vector<Symbol::Symbol>> pumping_string) {
+    std::vector<Symbol::Symbol> word = yield_string(vector);
+    for (auto v: pumping_string) {
+        if (equal_word(word, v))
+            return true;
+    }
+    return false;
+}
+void Grammar::Grammar::find_pumping_rules(int &v, std::string uvxyz, std::unordered_map<std::string, Symbol::Symbol> & non_terminal_string_map) {
+    v = -1;
+    std::vector<Symbol::Symbol> rhs_to_look;
+    size_t init_pipe = uvxyz.find("|", 0);
+    size_t next_pipe = uvxyz.find("|", init_pipe+1);
+    size_t next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", 0);
+    string pumping_v = "";
+    size_t bar = 1;//uvxyz.substr(0, next_pipe-init_pipe).find(" ", 0);
+    if(next_pipe-init_pipe<=1)
+        bar = string::npos;
+    while (bar != string::npos) {
+        if (next_bar != string::npos) {
+            pumping_v += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar);
+            bar = next_bar;
+            next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", bar+1);
+        }
+        else {
+            if (uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, string::npos)[0] != ' ')
+                pumping_v += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, string::npos);
+            else
+                pumping_v += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar+1, string::npos);
+            bar = next_bar;
+        }
+    }
+
+
+
+    init_pipe = next_pipe;
+    next_pipe = uvxyz.find("|", init_pipe+1);
+    string npumping_x = "";
+    next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", 0);
+    bar = 1;
+    if(next_pipe-init_pipe<=1)
+        bar = string::npos;
+    while (bar != string::npos) {
+        if (next_bar != string::npos) {
+            npumping_x += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar);
+            bar = next_bar;
+            next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", bar+1);
+        }
+        else {
+            npumping_x += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, string::npos);
+            bar = next_bar;
+        }
+    }
+    init_pipe = next_pipe;
+    next_pipe = uvxyz.find("|", init_pipe+1);
+    next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", 0);
+    string pumping_y = "";
+    bar = 1;
+    if(next_pipe-init_pipe<=1)
+        bar = string::npos;
+    while (bar != string::npos) {
+        if (next_bar != string::npos) {
+            pumping_y += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar);
+            bar = next_bar;
+            next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", bar+1);
+        }
+        else {
+            pumping_y += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, string::npos);
+            bar = next_bar;
+        }
+    }
+
+    for (int i = 0; i < rules.size(); i++) {
+        if (npumping_x.empty()) {
+            if (!pumping_v.empty()) {
+                if (!pumping_y.empty()) {
+                    if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
+                        if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
+                            if (rules[i].right[0].first[2].equal_symbol(non_terminal_string_map[pumping_y]))
+                                v = i;
+                } else {
+                    if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
+                        if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
+                            v = i;
+                }
+            } else {
+                if (rules[i].right[0].first[0].equal_symbol(rules[i].left[0]))
+                    if (rules[i].right[0].first[1].equal_symbol(non_terminal_string_map[pumping_y]))
+                        v = i;
+            }
+        } else if (rules[i].right.size() >1) {
+            if (rules[i].right[1].first[1].equal_symbol(non_terminal_string_map[npumping_x])) {
+                if (!pumping_v.empty()) {
+                    if (!pumping_y.empty()) {
+                        if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
+                            if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
+                                if (rules[i].right[0].first[2].equal_symbol(non_terminal_string_map[pumping_y]))
+                                    v = i;
+                    } else {
+                        if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
+                            if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
+                                v = i;
+                    }
+                } else {
+                    if (rules[i].right[0].first[0].equal_symbol(rules[i].left[0]))
+                        if (rules[i].right[0].first[1].equal_symbol(non_terminal_string_map[pumping_y]))
+                            v = i;
+                }
+            }
+        }
+
+    }
+    if (v != -1)
+        return;
+
+    if (!pumping_v.empty())
+        rhs_to_look.push_back(non_terminal_string_map[pumping_v]);
+
+    Symbol::Symbol new_nt = Symbol::Symbol("NT"+to_string(n_non_terminals), n_non_terminals, false, false);
+    n_non_terminals++;
+    non_terminals.push_back(new_nt);
+    rhs_to_look.push_back(new_nt);
+
+
+
+    if (!pumping_y.empty())
+        rhs_to_look.push_back(non_terminal_string_map[pumping_y]);
+    vector<Symbol::Symbol> lhs;
+    lhs.push_back(new_nt);
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> rhs;
+    rhs.push_back(make_pair(rhs_to_look, make_pair(0.0, 0.1)));
+
+    rhs_to_look.clear();
+    if (!pumping_v.empty())
+        rhs_to_look.push_back(non_terminal_string_map[pumping_v]);
+    if (!npumping_x.empty())
+        rhs_to_look.push_back(non_terminal_string_map[npumping_x]);
+    if (!pumping_y.empty())
+        rhs_to_look.push_back(non_terminal_string_map[pumping_y]);
+    rhs.push_back(make_pair(rhs_to_look, make_pair(0.0, 0.1)));
+    rules.push_back(Rule::Rule(lhs, rhs));
+
+
+
+    v = n_non_terminals-1;
+
+}
+std::vector<Symbol::Symbol> Grammar::Grammar::yield_string(std::vector<Symbol::Symbol> vector) {
+    std::vector<Symbol::Symbol> yielded;
+    std::stack<Symbol::Symbol> symbol_stack;
+    for (int i = vector.size()-1; i >=0; i--)
+        symbol_stack.push(vector[i]);
+
+    while (!symbol_stack.empty()) {
+        Symbol::Symbol aux = symbol_stack.top();
+        symbol_stack.pop();
+        if (aux.terminal)
+            yielded.push_back(aux);
+        else {
+            for (int i = rules[aux.id].right[0].first.size()-1; i >=0; i--)
+                symbol_stack.push(rules[aux.id].right[0].first[i]);
+        }
+    }
+    return yielded;
+}
+void Grammar::Grammar::calculate_new_rule_from_starting_symbol(pair<vector<Symbol::Symbol>, pair<double, double>> &new_start_right, int v, std::string uvxyz, std::unordered_map<string, Symbol::Symbol> &non_terminal_string_map) {
+    string u = "";
+    string z = "";
+    for (int i = 0; uvxyz[i] != '|'; i++)
+        u.push_back(uvxyz[i]);
+
+    for (int i = uvxyz.size()-1; uvxyz[i] != '|'; i--)
+        z.push_back(uvxyz[i]);
+    reverse(z.begin(),z.end());
+
+    //std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> new_rhs;
+    if (!u.empty())
+        new_start_right.first.push_back(non_terminal_string_map[u]);
+    new_start_right.first.push_back(rules[v].left[0]);
+    if (!z.empty())
+        new_start_right.first.push_back(non_terminal_string_map[z]);
+    new_start_right.second.second = 0.1;
+//    new_start_right.push_back(new_rhs);
+
+}
+void Grammar::Grammar::check_digram_position_integrity(unordered_map<std::string, std::tuple<int, int, int>> &digram_position) {
+    for (auto m: digram_position) {
+        vector <string> tokens;
+        string line = m.first;
+        stringstream check1(line);
+        string intermediate;
+        while(getline(check1, intermediate, ' '))
+            tokens.push_back(intermediate);
+        int flag = 1;
+
+        int ruleOffSet = -1;
+        if ( get<0>(m.second) == 0)
+            ruleOffSet = -1;
+        if (rules[get<0>(m.second)].right[get<2>(m.second)].first[get<1>(m.second)+ruleOffSet].name.compare(tokens[0]) != 0)
+            cout << "CHECK BY M: Problem on digram: " << m.first << ". position: " << "("<<get<0>(m.second)<<","<<get<1>(m.second)<<","<<get<2>(m.second)<<")"<<endl;
+        else if (rules[get<0>(m.second)].right[get<2>(m.second)].first[get<1>(m.second)+ruleOffSet+1].name.compare(tokens[1]) != 0)
+            cout << "CHECK BY M: Problem on digram: " << m.first << ". position: " << "("<<get<0>(m.second)<<","<<get<1>(m.second)<<","<<get<2>(m.second)<<")"<<endl;
+    }
+}
+
+void Grammar::Grammar::check_digram_position_integrity_by_rules(unordered_map<std::string, std::tuple<int, int, int>> &digram_position) {
+    Rule::Rule r = rules[0];
+        for(int j = 0; j < r.right.size(); j++) {
+            if (r.right[j].second.first >0) {
+                for (int i = 0; i < r.right[j].first.size()-1; i++) {
+                    string digram =  r.right[j].first[i].name + " " +r.right[j].first[i+1].name;
+                    if (digram_position.find(digram) == digram_position.end()) {
+                        cout << "Digram " << digram << " not found. Should be in ("+ to_string(r.left.front().id) +","+ to_string(i+1)+","+to_string(j)+")" <<endl;
+                    }
+
+                    else if (digram.compare(rules[get<0>(digram_position[digram])].right[get<2>(digram_position[digram])].first[get<1>(digram_position[digram])-1].name + " " +
+                                            rules[get<0>(digram_position[digram])].right[get<2>(digram_position[digram])].first[get<1>(digram_position[digram])].name) != 0)
+                        cout << "CHECK BY R: Problem on digram: " << digram << ". position: " << "("<<get<0>(digram_position[digram])<<","<<get<1>(digram_position[digram])<<","<<get<2>(digram_position[digram])<<")"<<endl;
+
+                }
+            }
+
+        }
+}
+
+void Grammar::Grammar::remove_unused_rules() {
+    int lastI = 0;
+    for (int i = 1; i < rules.size(); i++) {
+        if (rules[i].right[0].second.first == 0.0) {
+            lastI = i;
+            int j = i+1;
+            for (j = i+1; j < rules.size(); j++) {
+                if (rules[j].right[0].second.first != 0.0)
+                    break;
+            }
+            if (j == rules.size())
+                break;
+            rules[i].right[0].first.clear();
+            rules[i].right[0].first.insert(rules[i].right[0].first.begin(), rules[j].right[0].first.begin(), rules[j].right[0].first.end());
+            rules[i].right[0].second.first = rules[j].right[0].second.first;
+            rules[j].right[0].second.first = 0.0;
+
+            for (auto &r: rules) {
+                for (auto &itRight: r.right) {
+                    for (auto &s: itRight.first) {
+                        if (s.id == j && s.terminal == false)
+                            s = rules[i].left[0];
+                    }
+                }
+            }
+        }
+    }
+    rules.erase(rules.begin()+lastI, rules.end());
+    non_terminals.erase(non_terminals.begin()+lastI, non_terminals.end());
+    n_non_terminals = non_terminals.size();
+}
+void Grammar::Grammar::count_pumping_str_by_slice(unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word) {
+
+    for (int sub_amount = 0; sub_amount <word.size(); sub_amount++) {
+        for (int i = 0; i <=sub_amount ; i ++) {
+            vector<Symbol::Symbol> aux_word;
+            aux_word.insert(aux_word.end(), word.begin()+i, word.begin()+i+word.size()-sub_amount);
+            string find_pump = convert_vector_to_string(aux_word);
+            Symbol::Symbol v = verify_pumping_times(Symbol::Symbol(find_pump, 0, false, false));
+            int sb = 110;
+            if (word.size() == 186 && sub_amount >= sb)
+                cout << "Gotcha at " << sb;
+            for (int sub_amount2 = i+word.size()-sub_amount; sub_amount2 <word.size(); sub_amount2++) {
+                for (int j = i + word.size() - sub_amount; j <= sub_amount2; j++) {
+                    vector<Symbol::Symbol> aux_word2;
+                    aux_word2.insert(aux_word2.end(), word.begin() + j, word.begin() + j + word.size() - sub_amount2);
+                    string find_pump2 = convert_vector_to_string(aux_word2);
+                    Symbol::Symbol x = verify_pumping_times(Symbol::Symbol(find_pump2, 0, false, false));
+
+                    if (v.name.compare("") != 0 || x.name.compare("") != 0) {
+                        vector<Symbol::Symbol> u;
+                        u.insert(u.end(), word.begin(), word.begin()+i);
+                        string pumping = convert_vector_to_string(u);
+                        u.clear();
+                        u.insert(u.begin(), word.begin()+i+word.size()-sub_amount, word.begin() + j);
+                        if (v.name.compare("") != 0)
+                            pumping += "|" + v.name + "|" +convert_vector_to_string(u) + "|";
+                        else {
+                            u.insert(u.begin(), word.begin()+i, word.begin()+i+word.size()-sub_amount);
+                            if (pumping.compare("") != 0)
+                                pumping += " ";
+                            pumping += convert_vector_to_string(u) + "|";
+                        }
+
+
+                        if (x.name.compare("") != 0)
+                            pumping += x.name;
+                        u.clear();
+                        u.insert(u.begin(), word.begin() + j + word.size() - sub_amount2, word.end());
+                        pumping += "|" + convert_vector_to_string(u);
+                        if (v.name.compare("") == 0)
+                            pumping += "||";
+                        map[pumping] +=1;
+                        map_pump_to_word[pumping].push_back(word);
+
+
+                    }
+                }
+            }
+        }
+    }
+
+
+
+}
+std::vector<std::string> Grammar::Grammar::convert_symbol_to_vector_string(Symbol::Symbol s) {
+    stringstream check1(s.name);
+    string intermediate;
+    vector<string> tokens;
+    while(getline(check1, intermediate, ' '))
+        tokens.push_back(intermediate);
+    return tokens;
+}
+std::string Grammar::Grammar::convert_vector_to_string(std::vector<Symbol::Symbol> vs) {
+    string word = "";
+    if (vs.size()>0)
+        word += vs[0].name;
+    for (int i = 1; i <vs.size() ; i ++)
+        word += " "+vs[i].name;
+    return word;
+}
