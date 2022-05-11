@@ -21,7 +21,7 @@ void InputWords::read_words() {
     //cout << "nSequences: " << input_words.size() << endl;
 }
 
-//TO DO Ver como Tratar o acorde N
+//TODO Ver como Tratar o acorde N
 void InputWords::convert_file_to_word(const fs::path& path, unsigned long minSize) {
     string targeTone = "C";
     std::ifstream ifs (path, std::ifstream::in);
@@ -192,21 +192,21 @@ void InputWords::count_chords() {
     }
 }
 
-vector<Symbol::Symbol> InputWords::generate_terminals() {
-    count_chords();
+vector<Symbol::Symbol> InputWords::generate_terminals(std::unordered_map<string, int> counted_chords) {
+    //count_chords();
     vector<Symbol::Symbol> terminals;
     pair<string,int> maxChord;
     int i =0;
     while (i < n_terminals - 1) {
         maxChord = make_pair("", 0);
-        for (const auto& a: chord_counts) {
+        for (const auto& a: counted_chords) {
             if(a.second > maxChord.second)
                 maxChord = a;
         }
         Symbol::Symbol aux = Symbol::Symbol(maxChord.first, i, true, false);
         terminals.push_back(aux);
         chord_map[aux.name] = aux;
-        chord_counts.erase(maxChord.first);
+        counted_chords.erase(maxChord.first);
         i++;
     }
     Symbol::Symbol aux = Symbol::Symbol("Other", n_terminals - 1, true, false);
@@ -447,4 +447,9 @@ void InputWords::count_and_show_reducted_chords() {
     for (const auto& a: reducted_chord_counts) {
         cout <<a.first << " " << a.second << endl;
     }
+}
+void InputWords::change_words_to_reducted_chords() {
+    for (auto  & w: input_words)
+        for (auto & s: w)
+            s.name = chord_map_reduction[s.name];
 }

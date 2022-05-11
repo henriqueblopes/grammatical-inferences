@@ -49,3 +49,4 @@ gh-md-toc
 
 .DS_Store
 /cmake-build-debug/
+/resources/SPiCe_Offline/

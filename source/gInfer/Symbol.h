@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace Symbol {
-class Symbol{
+class Symbol {
 public:
     std::string name;
     size_t id{};

@@ -1,4 +1,4 @@
-//
+
 // Created by henrique on 02/04/19.
 //
 
@@ -2991,7 +2991,11 @@ void Grammar::Grammar::gen_fpta() {
     int nNT = 1;
     vector<Symbol::Symbol> vr;
     vr.push_back(nI);
-    Rule::Rule r = Rule::Rule(vr, std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>());
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> empty_right;
+    empty_right.push_back(std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>());
+    empty_right[0].first.push_back(Symbol::Symbol("", -1, true, false));
+    Rule::Rule r = Rule::Rule(vr, empty_right);
+
     rules.push_back(r);
     for (const auto& w: words) {
         string s;
@@ -3019,7 +3023,7 @@ void Grammar::Grammar::gen_fpta() {
                 //rules[nI.id].right.push_back(right);
                 vr.clear();
                 vr.push_back(nt);
-                r = Rule::Rule(vr, std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>());
+                r = Rule::Rule(vr, empty_right);
                 rules.push_back(r);
                 nI = nt;
             }
@@ -3034,7 +3038,7 @@ void Grammar::Grammar::gen_fpta() {
             }
         }
         if (!existRule) {
-            Symbol::Symbol nt = Symbol::Symbol("", -1, false, false);
+            Symbol::Symbol nt = Symbol::Symbol("", -1, true, false);
             non_terminals.push_back(nt);
             std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> right;
             right.first.push_back(nt);
@@ -3069,7 +3073,7 @@ void Grammar::Grammar::alergia(double alpha) {
     while (freqCBlue >= t0) {
         bool existRed = false;
         for (const auto& cRed: red) {
-            if (compatible_alergia(cRed, (*itBlue), alpha)) {
+            if (compatible_alergia(cRed, (*itBlue), alpha, rules)) {
                 cout << "merge " << cRed.name << " and " << (*itBlue).name << endl;
                 stochastic_merge(cRed, (*itBlue));
                 existRed = true;
@@ -3089,34 +3093,51 @@ void Grammar::Grammar::alergia(double alpha) {
         if (itBlue == blue.end())
             break;
         freqCBlue = rules[(*itBlue).id].freq();
-        print_grammar();
+        //print_grammar();
 
     }
-    remove_unused_nt();
+    /*remove_unused_rules();
+    remove_unused_nt();*/
     normalize_probs();
 }
 
-bool Grammar::Grammar::compatible_alergia(const Symbol::Symbol& a, const Symbol::Symbol& b, double alpha) {
+bool Grammar::Grammar::compatible_alergia(const Symbol::Symbol &a, const Symbol::Symbol &b, double alpha, std::vector<Rule::Rule> & vector_rules ) {
     bool correct = true;
-    if (!test_alergia((*(rules[a.id].right.end() - 1)).second.first, rules[a.id].freq(),
-                      (*(rules[b.id].right.end() - 1)).second.first, rules[b.id].freq(), alpha))
+
+    //nao tem os 2 ifs no alergia tradicional. coloquei para diferenciar NTs que são finais dos que não são
+    /*if ((*(vector_rules[a.id].right.end() - 1)).second.first == 0 && (*(vector_rules[b.id].right.end() - 1)).second.first != 0)
+        correct = false;
+    if ((*(vector_rules[a.id].right.end() - 1)).second.first != 0 && (*(vector_rules[b.id].right.end() - 1)).second.first == 0)
+        correct = false;*/
+
+    if (!test_alergia((*(vector_rules[a.id].right.end() - 1)).second.first, vector_rules[a.id].freq(),
+                      (*(vector_rules[b.id].right.end() - 1)).second.first, vector_rules[b.id].freq(), alpha))
         correct = false;
     for (const auto& t: terminals) {
         double dFreqa = 0.0;
         double dFreqb = 0.0;
 
-        for (auto nt: rules[a.id].right) {
+        for (auto nt: vector_rules[a.id].right) {
             if (nt.first[0].id == t.id) {
                 dFreqa =nt.second.first;
             }
         }
-        for (auto nt: rules[b.id].right) {
+        for (auto nt: vector_rules[b.id].right) {
             if (nt.first[0].id == t.id) {
-                dFreqa =nt.second.first;
+                dFreqb =nt.second.first;
             }
         }
-        if (!test_alergia(dFreqa, rules[a.id].freq(), dFreqb, rules[b.id].freq(), alpha))
+
+        //nao tem os 2 ifs no alergia tradicional. coloquei para diferenciar NTs que possuem transição par aum terminal t dos que não possuem
+        /*if (dFreqa == 0 && dFreqb != 0)
             correct = false;
+        if (dFreqa != 0 && dFreqb == 0)
+            correct = false;*/
+
+        if (!test_alergia(dFreqa, vector_rules[a.id].freq(), dFreqb, vector_rules[b.id].freq(), alpha))
+            correct = false;
+
+
     }
     return correct;
 }
@@ -3158,14 +3179,14 @@ void Grammar::Grammar::stochastic_fold(const Symbol::Symbol& a, const Symbol::Sy
         }
         if (itRighta != rules[a.id].right.end()) {
             if (itRighta->second.first >= 1.0) {
-                stochastic_fold(itRighta->first[1], itRight->first[1]);
+                if (!itRighta->first[0].name.empty())
+                    stochastic_fold(itRighta->first[1], itRight->first[1]);
                 (*itRighta).second.first += (*itRight).second.first;
+                (*itRight).second.first = 0.0;
             }
         }
         else {
-            itRighta->first[1] = Symbol::Symbol(itRight->first[1]);
-            (*itRighta).second.first = (*itRight).second.first;
-
+            rules[a.id].right.push_back(*itRight);
         }
     }
     (*(rules[a.id].right.end()-1)).second.first += (*(rules[b.id].right.end()-1)).second.first;
@@ -3181,21 +3202,27 @@ void Grammar::Grammar::remove_unused_nt() {
         std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
         for (itRight = r.right.begin(); itRight != r.right.end()-1; itRight++) {
             if ((*itRight).second.first <1.0) {
-                notUsed.push_back((*itRight).first[1]);
-                Symbol::Symbol aux = (*itRight).first[1];
-                recursive_insert_unused(notUsed, aux);
+                if ((*itRight).first.size() > 1) {
+                    notUsed.push_back((*itRight).first[1]);
+                    Symbol::Symbol aux = (*itRight).first[1];
+                }
+                //recursive_insert_unused(notUsed, aux);
 
             }
             else {
                 bool isUsed = false;
                 for (const auto& u: used) {
-                    if(itRight->first[1].id == u.id) {
-                        isUsed = true;
-                        break;
+                    if ((*itRight).first.size() > 1) {
+                        if (itRight->first[1].id == u.id) {
+                            isUsed = true;
+                            break;
+                        }
                     }
                 }
                 if (!isUsed)
-                    used.push_back((*itRight).first[1]);
+                    if ((*itRight).first.size() > 1) {
+                        used.push_back((*itRight).first[1]);
+                    }
             }
         }
     }
@@ -3223,8 +3250,9 @@ void Grammar::Grammar::normalize_probs() {
     for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
         std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
         double freq = itRule->freq();
-        for(itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++)
-            itRight->second.first = itRight->second.first/freq;
+        if (freq > 0.0)
+            for(itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++)
+                itRight->second.first = itRight->second.first/freq;
     }
 
 }
@@ -3376,7 +3404,7 @@ void Grammar::Grammar::train_n_gram() {
             nGram.erase(nGram.begin());
             nGram.push_back(w[i]);
         }
-        Symbol::Symbol final = Symbol::Symbol("", 0, true, false);
+        Symbol::Symbol final = Symbol::Symbol("", -1, true, false);
         add_n_gram_rule_frequency(finalLHS, final);
     }
     normalize_probs();
@@ -3609,7 +3637,6 @@ bool Grammar::Grammar::enforce_digram_uniqueness(std::unordered_map<std::string,
 
     }
     forward_digram = lhs[0].name + " " + rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first[get<1>(digram_position[digram_to_look])].name;
-    //TODO atenção com esse +1 (ou falta dele) antes do <, talvez tenha bug.
     if (get<1>(digram_position[digram_to_look]) < rules[get<0>(digram_position[digram_to_look])].right[get<2>(digram_position[digram_to_look])].first.size()){
         digram_map.insert(make_pair(forward_digram, get<2>(digram_position[digram_to_look])));
         digram_position.insert(make_pair(forward_digram, digram_position[digram_to_look]));
@@ -3865,18 +3892,7 @@ void Grammar::Grammar::convert_to_cnf() {
     //IMPORTANTE: ao testar se a gramática na cnf gera a base de dados, comentar o trecho abaixo qm que regras iniciais iguais são agrupadas.
     //GROUP EQUAL INITIAl RULES
     std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
-    for (int j = 0; j < rules[0].right.size(); j++) {
-    //for (itRight = rules[0].right.begin(); itRight != rules[0].right.end(); itRight++) {
-        std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight2;
-        //for (itRight2 = rules[0].right.begin()+1; itRight2 != rules[0].right.end(); itRight2++) {
-        for (int i = j+1; i < rules[0].right.size(); i++) {
-            if (equal_rhs(rules[0].right[j].first,  rules[0].right[i].first)) {
-                rules[0].right[j].second.first += 1.0;
-                rules[0].right.erase(rules[0].right.begin()+i);
-                i--;
-            }
-        }
-    }
+    group_equal_rhs(rules[0].right);
 
     //TERMINAL RULES
     vector<Rule::Rule> rulesTerm;
@@ -3893,7 +3909,8 @@ void Grammar::Grammar::convert_to_cnf() {
         Rule::Rule r = Rule::Rule(lTerminal, rhsTerminal);
         rulesTerm.push_back(r);
     }
-    //print_grammar();
+
+
     //TERM
     vector<Rule::Rule>::iterator itRule;
     for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
@@ -3910,7 +3927,6 @@ void Grammar::Grammar::convert_to_cnf() {
         }
     }
     rules.insert(rules.end(), rulesTerm.begin(), rulesTerm.end());
-    //print_grammar();
     rulesTerm.clear();
 
     //BIN (testar com linguagens com palavras maiores que 2)
@@ -3925,16 +3941,23 @@ void Grammar::Grammar::convert_to_cnf() {
                 vector<pair<vector<Symbol::Symbol>,pair<double, double>>> rhsTerminal;
                 int nt_index = verify_rule_existence_cnf(rhs_cnf, rulesTerm);
                 Rule::Rule r = Rule::Rule(lTerminal,rhsTerminal);
+                if (nt_index - rules.size() == 95)
+                    cout << "aqui" << endl;
                 if (nt_index != -1) {
                     r = rulesTerm[nt_index - rules.size()];
-                    rulesTerm[nt_index - rules.size()].right[0].second.first += 1.0;
+                    //rulesTerm[nt_index - rules.size()].right[0].second.first += 1.0;
+                    //if (itRule->left[0].id == 0)
+                        rulesTerm[nt_index - rules.size()].right[0].second.first += (*itRight).second.first;
                 } else {
                     vector<Symbol::Symbol> lTerminal;
                     n_non_terminals++;
                     Symbol::Symbol nnt = Symbol::Symbol("NT" + to_string(n_non_terminals-1), n_non_terminals - 1, false, false);
                     non_terminals.push_back(nnt);
                     lTerminal.push_back(nnt);
-                    rhsTerminal.push_back(make_pair(rhs_cnf, make_pair(1.0,0.1)));
+                    //rhsTerminal.push_back(make_pair(rhs_cnf, make_pair(1.0,0.1)));
+                    //if (itRule->left[0].id == 0)
+                        rhsTerminal.push_back(make_pair(rhs_cnf, make_pair((*itRight).second.first,0.1)));
+
                     r = Rule::Rule(lTerminal, rhsTerminal);
                     rulesTerm.push_back(r);
                 }
@@ -3943,10 +3966,10 @@ void Grammar::Grammar::convert_to_cnf() {
             }
         }
     }
+
     rules = rulesAux;
     rules.insert(rules.end(), rulesTerm.begin(), rulesTerm.end());
     rulesTerm.clear();
-
     //UNIT
     for (itRule = rules.begin(); itRule != rules.end(); itRule++) {
         std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>>::iterator itRight;
@@ -3957,6 +3980,12 @@ void Grammar::Grammar::convert_to_cnf() {
                     (*itRight).first.clear();
                     (*itRight).first.insert((*itRight).first.begin(), rules[iRule].right[0].first.begin(), rules[iRule].right[0].first.end());
                     rules[iRule].right[0].second.first -= (*itRight).second.first;
+                    for (auto & r: rules[iRule].right[0].first)
+                        rules[r.id].right[0].second.first += (*itRight).second.first;
+                    if (rules[iRule].right[0].second.first <= 0.0)
+                        for (auto & r: rules[iRule].right[0].first)
+                            rules[r.id].right[0].second.first -= 1;
+
                 }
             }
         }
@@ -3986,8 +4015,8 @@ bool Grammar::Grammar::equal_rhs(std::vector<Symbol::Symbol> rh1, std::vector<Sy
     }
     return true;
 }
-//TODO fazer algoritmo de contagem de bombeamentos por slices igual no caderno
-//TODO fazer programação dinâmica constexpr
+
+//TODO fazer programação dinâmica constexpr. Vai ser difícil fazer a parada com literais
 void Grammar::Grammar::count_pumping_str(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, int sub_amount, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
 
     tuple<vector<Symbol::Symbol>, vector<Symbol::Symbol>, vector<Symbol::Symbol>, vector<Symbol::Symbol>, vector<Symbol::Symbol>> pumping_str;
@@ -4014,7 +4043,7 @@ void Grammar::Grammar::count_pumping_str(std::unordered_map<std::string, int> &m
 }
 
 void Grammar::Grammar::count_pumping_size1(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
-    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0]);
+    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0], 1);
     string pumping;
     if (word_0_pumped.name.compare("")  != 0){
         pumping = "|" +word_0_pumped.name + "|||"; map[pumping] +=1;
@@ -4055,8 +4084,8 @@ void Grammar::Grammar::count_pumping_size4(unordered_map<std::string, int> &map,
 
 
 void Grammar::Grammar::count_pumping_size2(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
-    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0]);
-    Symbol::Symbol  word_1_pumped = verify_pumping_times(word[1]);
+    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0], 1);
+    Symbol::Symbol  word_1_pumped = verify_pumping_times(word[1], 1);
     string pumping;
     if (word_0_pumped.name.compare("")  != 0){
         pumping = "|" + word_0_pumped.name + "|||" +word[1].name ; map[pumping] +=1;
@@ -4076,9 +4105,9 @@ void Grammar::Grammar::count_pumping_size2(std::unordered_map<std::string, int> 
 
 void Grammar::Grammar::count_pumping_size3(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
     string pumping;
-    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0]);
-    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1]);
-    Symbol::Symbol word_2_pumped = verify_pumping_times(word[2]);
+    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0], 1);
+    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1], 1);
+    Symbol::Symbol word_2_pumped = verify_pumping_times(word[2], 1);
     if (word_1_pumped.name.compare("")  != 0) {
         pumping = word[0].name + "|" +word_1_pumped.name + "|" +word[2].name + "||"; map[pumping] +=1;
         map_pump_to_word[pumping].push_back(original_word);
@@ -4102,10 +4131,10 @@ void Grammar::Grammar::count_pumping_size3(std::unordered_map<std::string, int> 
 
 void Grammar::Grammar::count_pumping_size4(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
     string pumping;
-    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0]);
-    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1]);
-    Symbol::Symbol word_2_pumped = verify_pumping_times(word[2]);
-    Symbol::Symbol word_3_pumped = verify_pumping_times(word[3]);
+    Symbol::Symbol word_0_pumped = verify_pumping_times(word[0], 1);
+    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1], 1);
+    Symbol::Symbol word_2_pumped = verify_pumping_times(word[2], 1);
+    Symbol::Symbol word_3_pumped = verify_pumping_times(word[3], 1);
     if (word_1_pumped.name.compare("")  != 0) {
         pumping = word[0].name + "|" +word_1_pumped.name + "|" +word[2].name + "||" +word[3].name ; map[pumping] +=1;
         map_pump_to_word[pumping].push_back(original_word);
@@ -4124,8 +4153,8 @@ void Grammar::Grammar::count_pumping_size4(std::unordered_map<std::string, int> 
     }
 }
 void Grammar::Grammar::count_pumping_size5(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word, std::vector<Symbol::Symbol> &original_word) {
-    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1]);
-    Symbol::Symbol word_3_pumped = verify_pumping_times(word[3]);
+    Symbol::Symbol word_1_pumped = verify_pumping_times(word[1], 1);
+    Symbol::Symbol word_3_pumped = verify_pumping_times(word[3], 1);
     if (word_1_pumped.name.compare("")  != 0 && word_3_pumped.name.compare("")  != 0) {
         string pumping = word[0].name +"|" +word_1_pumped.name + "|"+word[2].name +"|" + word_3_pumped.name +"|"+word[4].name;
         map[pumping] +=1;
@@ -4133,8 +4162,7 @@ void Grammar::Grammar::count_pumping_size5(std::unordered_map<std::string, int> 
     }
 
 }
-
-Symbol::Symbol Grammar::Grammar::verify_pumping_times(Symbol::Symbol s) {
+Symbol::Symbol Grammar::Grammar::verify_pumping_times(Symbol::Symbol s, int pumping_size) {
     stringstream check1(s.name);
     string intermediate;
     vector<string> tokens;
@@ -4143,36 +4171,34 @@ Symbol::Symbol Grammar::Grammar::verify_pumping_times(Symbol::Symbol s) {
     bool flag = true;
     if(tokens.size()<2)
         flag = false;
-    for (int i = 1; i < tokens.size()/2+1; i++) {
-        if (tokens.size()%i == 0) {
-            flag = true;
-            int j = 0;
-            for (j = 0; j < tokens.size()-i; j+=i) {
-                for (int k = j; k <j+i; k++) {
-                    if (tokens[k].compare(tokens[k+i]) != 0) {
-                        flag = false;
-                        break;
-                    }
-                }
-                if(!flag)
+    if (tokens.size()%pumping_size == 0) {
+        flag = true;
+        int j = 0;
+        for (j = 0; j < tokens.size()-pumping_size; j+=pumping_size) {
+            for (int k = j; k <j+pumping_size; k++) {
+                if (tokens[k].compare(tokens[k+pumping_size]) != 0) {
+                    flag = false;
                     break;
-
-            }
-
-            if (flag == true) {
-                if (j < i ) {
-                    s.name = "";
-                    return s;
                 }
+            }
+            if(!flag)
+                break;
+        }
+
+        if (flag == true) {
+            if (j < pumping_size ) {
                 s.name = "";
-                for (int k = 0; k < i; k++)
-                    s.name += tokens[k] + " ";
-                s.name = s.name.substr(0, s.name.size()-1);
                 return s;
             }
-
+            s.name = "";
+            for (int k = 0; k < pumping_size; k++)
+                s.name += tokens[k] + " ";
+            s.name = s.name.substr(0, s.name.size()-1);
+            return s;
         }
     }
+    else
+        flag = false;
     if (flag == false)
         s.name = "";
     return s;
@@ -4184,8 +4210,13 @@ bool sortbysec(const pair<string ,int> &a,
     return (a.second > b.second);
 }
 
-void Grammar::Grammar::pumping_inference(unordered_map<std::string, int> &map, std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> & map_pump_to_word) {
-    //TODO: Reduzir o count na regra do NT
+bool sort_p_int_double_bysec(const pair<int ,double> &a, const pair<int ,double> &b)
+{
+    return (a.second > b.second);
+}
+
+
+void Grammar::Grammar::pumping_inference(unordered_map<std::string, int> &map, unordered_map<string, vector<int>> &map_pump_to_word) {
     vector<bool> pumped_rule;
     for (int i = 0; i < rules[0].right.size(); i++)
         pumped_rule.push_back(false);
@@ -4196,12 +4227,11 @@ void Grammar::Grammar::pumping_inference(unordered_map<std::string, int> &map, s
     for (auto s: ordered) {
         if (s.second <5)
             break;
-        cout << s.first << ": " << s.second << endl;
+        //cout << s.first << ": " << s.second << endl;
     }
 
 
     unordered_map<string, Symbol::Symbol> non_terminal_string_map;
-    int repeated = 0;
     for (int i = 1; i < rules.size(); i++) {
         vector<Symbol::Symbol> yielded = yield_string(rules[i].left);
         string key = "";
@@ -4217,20 +4247,28 @@ void Grammar::Grammar::pumping_inference(unordered_map<std::string, int> &map, s
     int countRules = 0;
     for (auto u: ordered) {
         //criterio de parada com count de bombeamento menor que 5
-        if (u.second < 5)
+        if (u.second < 1)
             break;
         vector<pair<vector<Symbol::Symbol>,pair<double, double>>>::iterator itRight;
         int v;
-       /* if (n_non_terminals ==28)
+        /*if (countRules >= 391 && u.second == 3)
+            cout << "testar Aqui. nnt = : " << n_non_terminals << endl;
+        if (n_non_terminals >= 1496)
             cout << "testar Aqui. nnt = : " << n_non_terminals << endl;*/
         find_pumping_rules(v, u.first, non_terminal_string_map);
         for (itRight = rules[0].right.begin(); itRight != rules[0].right.end(); itRight++) {
             if (pumped_rule[itRight-rules[0].right.begin()] == false) {
-                if (compare_pumping_use(itRight->first, map_pump_to_word[u.first])) {
+                if (compare_pumping_use(itRight->first, (map_pump_to_word[u.first]))) {
+                    if(itRight-rules[0].right.begin() == 0 )
+                        cout << "olha aqui" <<endl;
                     countRules++;
                     //print_grammar();
                     cout << "Pumpumg Rules used: " << countRules << endl;
                     pair<vector<Symbol::Symbol>,pair<double, double>> new_rhs;
+                    if (itRight-rules[0].right.begin() == 468) {
+                        cout << "olha aqui" <<endl;
+                        cout << u.first << endl;
+                    }
                     calculate_new_rule_from_starting_symbol(new_rhs, v, u.first, non_terminal_string_map);
                     int existRhsFlag = false;
                     for (auto & r: new_start_right) {
@@ -4256,9 +4294,18 @@ void Grammar::Grammar::pumping_inference(unordered_map<std::string, int> &map, s
                         pumped_rule[itRight-rules[0].right.begin()] = true;
                         new_start_right.push_back(new_rhs);
                     }
+                    if (itRight->second.first < 0.0)
+                        cout << "negative rule itright." << endl;
                     for (auto r: itRight->first)
-                        if (r.id != v)
+                        if (r.id != v) {
                             rules[r.id].right[0].second.first -= new_rhs.second.first;
+                            if (rules[r.id].right[0].second.first < 0.0)
+                                cout << "negative rule at the decreasing. rule: " << r.id << endl;
+                        }
+
+
+                    //teste de quantas regras ficam se excluirmos todas as regras por regras bombeadas.
+                    //itRight->second.first = 0.0;
                     /*for (auto r: new_rhs.first) {
                         if (r.id != v)
                             rules[r.id].right[0].second.first += new_rhs.second.first;
@@ -4271,8 +4318,27 @@ void Grammar::Grammar::pumping_inference(unordered_map<std::string, int> &map, s
             }
         }
     }
-    rules[0].right.insert(rules[0].right.end(), new_start_right.begin(), new_start_right.end());
     print_grammar();
+    for (auto & right: new_start_right ) {
+        for (auto & p: right.first) {
+            if (rules[p.id].right.size() >1 ) {
+                size_t i = rules[p.id].right[1].first[1].id;
+                rules[i].right[0].second.first +=1.0;
+            }
+        }
+    }
+    rules[0].right.insert(rules[0].right.end(), new_start_right.begin(), new_start_right.end());
+    remove_unused_rules();
+    remove_unused_rule_zero_righties(rules[0].right);
+    group_equal_initial_rules();
+    normalize_probs();
+    int count = 0;
+    for (auto pr: pumped_rule) {
+        if (pr == true)
+            count ++;
+    }
+    cout << "Trues: " << count << endl;
+    //print_grammar();
 
     //para cada bombeamento com contador > que criterio (cobertura de palavras, mínimo de variáveis, %de bombeadas em relação ao tamanho do conjunto de treinamento)
         //para cada regra em NT0
@@ -4285,10 +4351,10 @@ void Grammar::Grammar::pumping_inference(unordered_map<std::string, int> &map, s
 
 
 }
-bool Grammar::Grammar::compare_pumping_use(std::vector<Symbol::Symbol> vector, std::vector<std::vector<Symbol::Symbol>> pumping_string) {
+bool Grammar::Grammar::compare_pumping_use(std::vector<Symbol::Symbol> vector, std::vector<int> & pumping_string) {
     std::vector<Symbol::Symbol> word = yield_string(vector);
     for (auto v: pumping_string) {
-        if (equal_word(word, v))
+        if (equal_word(word, words[v]))
             return true;
     }
     return false;
@@ -4305,8 +4371,8 @@ void Grammar::Grammar::find_pumping_rules(int &v, std::string uvxyz, std::unorde
         bar = string::npos;
     while (bar != string::npos) {
         if (next_bar != string::npos) {
-            pumping_v += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar);
-            bar = next_bar;
+            pumping_v += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar-bar+1);
+            bar = next_bar+1;
             next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", bar+1);
         }
         else {
@@ -4329,8 +4395,8 @@ void Grammar::Grammar::find_pumping_rules(int &v, std::string uvxyz, std::unorde
         bar = string::npos;
     while (bar != string::npos) {
         if (next_bar != string::npos) {
-            npumping_x += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar);
-            bar = next_bar;
+            npumping_x += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar-bar+1);
+            bar = next_bar+1;
             next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", bar+1);
         }
         else {
@@ -4347,8 +4413,8 @@ void Grammar::Grammar::find_pumping_rules(int &v, std::string uvxyz, std::unorde
         bar = string::npos;
     while (bar != string::npos) {
         if (next_bar != string::npos) {
-            pumping_y += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar);
-            bar = next_bar;
+            pumping_y += uvxyz.substr(init_pipe, next_pipe-init_pipe).substr(bar, next_bar-bar+1);
+            bar = next_bar+1;
             next_bar = uvxyz.substr(init_pipe, next_pipe-init_pipe).find(" ", bar+1);
         }
         else {
@@ -4357,6 +4423,17 @@ void Grammar::Grammar::find_pumping_rules(int &v, std::string uvxyz, std::unorde
         }
     }
 
+
+    if (!pumping_v.empty())
+        if (non_terminal_string_map.find(pumping_v) == non_terminal_string_map.end())
+            create_new_nt_rule_substring(pumping_v, non_terminal_string_map);
+    if (!npumping_x.empty())
+        if (non_terminal_string_map.find(npumping_x) == non_terminal_string_map.end())
+            create_new_nt_rule_substring(npumping_x, non_terminal_string_map);
+    if (!pumping_y.empty())
+        if (non_terminal_string_map.find(pumping_y) == non_terminal_string_map.end())
+            create_new_nt_rule_substring(pumping_y, non_terminal_string_map);
+
     for (int i = 0; i < rules.size(); i++) {
         if (npumping_x.empty()) {
             if (!pumping_v.empty()) {
@@ -4364,7 +4441,9 @@ void Grammar::Grammar::find_pumping_rules(int &v, std::string uvxyz, std::unorde
                     if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
                         if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
                             if (rules[i].right[0].first[2].equal_symbol(non_terminal_string_map[pumping_y]))
-                                v = i;
+                                if (rules[i].right.size() >1)
+                                    if (rules[i].right[1].first.size() == 2)
+                                        v = i;
                 } else {
                     if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
                         if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
@@ -4382,21 +4461,26 @@ void Grammar::Grammar::find_pumping_rules(int &v, std::string uvxyz, std::unorde
                         if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
                             if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
                                 if (rules[i].right[0].first[2].equal_symbol(non_terminal_string_map[pumping_y]))
-                                    v = i;
+                                    if (rules[i].right[1].first.size() == 3)
+                                        v = i;
                     } else {
-                        if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
-                            if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
-                                v = i;
+                        if (rules[i].right[0].first.size() == 2)
+                            if (rules[i].right[0].first[0].equal_symbol(non_terminal_string_map[pumping_v]))
+                                if (rules[i].right[0].first[1].equal_symbol(rules[i].left[0]))
+                                    v = i;
                     }
                 } else {
-                    if (rules[i].right[0].first[0].equal_symbol(rules[i].left[0]))
-                        if (rules[i].right[0].first[1].equal_symbol(non_terminal_string_map[pumping_y]))
-                            v = i;
+                    if (rules[i].right[0].first.size() == 2)
+                        if (rules[i].right[0].first[0].equal_symbol(rules[i].left[0]))
+                            if (rules[i].right[0].first[1].equal_symbol(non_terminal_string_map[pumping_y]))
+                                v = i;
                 }
             }
         }
 
     }
+    if (v == 421)
+        cout << "aqui";
     if (v != -1)
         return;
 
@@ -4455,17 +4539,24 @@ void Grammar::Grammar::calculate_new_rule_from_starting_symbol(pair<vector<Symbo
     string z = "";
     for (int i = 0; uvxyz[i] != '|'; i++)
         u.push_back(uvxyz[i]);
-
     for (int i = uvxyz.size()-1; uvxyz[i] != '|'; i--)
         z.push_back(uvxyz[i]);
     reverse(z.begin(),z.end());
 
-    //std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> new_rhs;
-    if (!u.empty())
+    if (!u.empty()) {
+        if (non_terminal_string_map.find(u) == non_terminal_string_map.end())
+            create_new_nt_rule_substring(u, non_terminal_string_map);
         new_start_right.first.push_back(non_terminal_string_map[u]);
+        rules[non_terminal_string_map[u].id].right[0].second.first +=1.0;
+    }
     new_start_right.first.push_back(rules[v].left[0]);
-    if (!z.empty())
+    if (!z.empty()) {
+        if (non_terminal_string_map.find(z) == non_terminal_string_map.end())
+            create_new_nt_rule_substring(z, non_terminal_string_map);
         new_start_right.first.push_back(non_terminal_string_map[z]);
+        rules[non_terminal_string_map[z].id].right[0].second.first +=1.0;
+    }
+
     new_start_right.second.second = 0.1;
 //    new_start_right.push_back(new_rhs);
 
@@ -4513,19 +4604,20 @@ void Grammar::Grammar::check_digram_position_integrity_by_rules(unordered_map<st
 void Grammar::Grammar::remove_unused_rules() {
     int lastI = 0;
     for (int i = 1; i < rules.size(); i++) {
-        if (rules[i].right[0].second.first == 0.0) {
+        if (rules[i].freq() <= 0.0) {
             lastI = i;
             int j = i+1;
             for (j = i+1; j < rules.size(); j++) {
-                if (rules[j].right[0].second.first != 0.0)
+                if (rules[j].freq() > 0.0)
                     break;
             }
             if (j == rules.size())
                 break;
-            rules[i].right[0].first.clear();
-            rules[i].right[0].first.insert(rules[i].right[0].first.begin(), rules[j].right[0].first.begin(), rules[j].right[0].first.end());
-            rules[i].right[0].second.first = rules[j].right[0].second.first;
-            rules[j].right[0].second.first = 0.0;
+            rules[i].right = rules[j].right;
+            rules[i].left[0].name = rules[j].left[0].name;
+            for (auto &r: rules[j].right)
+                r.second.first = 0.0;
+
 
             for (auto &r: rules) {
                 for (auto &itRight: r.right) {
@@ -4537,63 +4629,96 @@ void Grammar::Grammar::remove_unused_rules() {
             }
         }
     }
+
     rules.erase(rules.begin()+lastI, rules.end());
     non_terminals.erase(non_terminals.begin()+lastI, non_terminals.end());
     n_non_terminals = non_terminals.size();
 }
-void Grammar::Grammar::count_pumping_str_by_slice(unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> &map_pump_to_word) {
 
+void Grammar::Grammar::count_pumping_str_by_slice(std::unordered_map<std::string, int> &map, std::vector<Symbol::Symbol> word, unordered_map<string, vector<int>> &map_pump_to_word, int w_index, double reduction_share) {
+    string aux = "";
     for (int sub_amount = 0; sub_amount <word.size(); sub_amount++) {
         for (int i = 0; i <=sub_amount ; i ++) {
             vector<Symbol::Symbol> aux_word;
             aux_word.insert(aux_word.end(), word.begin()+i, word.begin()+i+word.size()-sub_amount);
             string find_pump = convert_vector_to_string(aux_word);
-            Symbol::Symbol v = verify_pumping_times(Symbol::Symbol(find_pump, 0, false, false));
-            int sb = 110;
-            if (word.size() == 186 && sub_amount >= sb)
-                cout << "Gotcha at " << sb;
-            for (int sub_amount2 = i+word.size()-sub_amount; sub_amount2 <word.size(); sub_amount2++) {
-                for (int j = i + word.size() - sub_amount; j <= sub_amount2; j++) {
-                    vector<Symbol::Symbol> aux_word2;
-                    aux_word2.insert(aux_word2.end(), word.begin() + j, word.begin() + j + word.size() - sub_amount2);
-                    string find_pump2 = convert_vector_to_string(aux_word2);
-                    Symbol::Symbol x = verify_pumping_times(Symbol::Symbol(find_pump2, 0, false, false));
+            for (int pv_size = 1; pv_size < aux_word.size()/2+1; pv_size++) {
+                Symbol::Symbol v = verify_pumping_times(Symbol::Symbol(find_pump, 0, false, false), pv_size);
+                int v_pumping_times = aux_word.size()/pv_size;
+                if (v.name.compare("") != 0 ) {
+                    for (int sub_amount2 = i + word.size() - sub_amount; sub_amount2 < word.size(); sub_amount2++) {
+                        for (int j = i + word.size() - sub_amount; j <= sub_amount2; j++) {
 
-                    if (v.name.compare("") != 0 || x.name.compare("") != 0) {
-                        vector<Symbol::Symbol> u;
-                        u.insert(u.end(), word.begin(), word.begin()+i);
-                        string pumping = convert_vector_to_string(u);
-                        u.clear();
-                        u.insert(u.begin(), word.begin()+i+word.size()-sub_amount, word.begin() + j);
-                        if (v.name.compare("") != 0)
-                            pumping += "|" + v.name + "|" +convert_vector_to_string(u) + "|";
-                        else {
-                            u.insert(u.begin(), word.begin()+i, word.begin()+i+word.size()-sub_amount);
-                            if (pumping.compare("") != 0)
-                                pumping += " ";
-                            pumping += convert_vector_to_string(u) + "|";
+                            vector<Symbol::Symbol> u;
+                            u.insert(u.end(), word.begin(), word.begin() + i);
+                            aux = convert_vector_to_string(u);
+                            string pumping = convert_vector_to_string(u);
+                            vector<Symbol::Symbol> w;
+                            //u.clear();
+                            w.insert(w.begin(), word.begin() + i + word.size() - sub_amount, word.begin() + j);
+                            aux = convert_vector_to_string(w);
+                            pumping += "|" + v.name + "|" + convert_vector_to_string(w);
+                            vector<Symbol::Symbol> aux_word2;
+                            aux_word2.insert(aux_word2.end(), word.begin() + j, word.begin() + j + word.size() - sub_amount2);
+                            string find_pump2 = convert_vector_to_string(aux_word2);
+                            for (int px_size = 1; px_size < aux_word2.size()/2+1; px_size++) {
+                                string final_pumping = pumping;
+                                Symbol::Symbol x = verify_pumping_times(Symbol::Symbol(find_pump2, 0, false, false), px_size);
+                                int w_empty = false;
+                                if (w.empty())
+                                    w_empty = true;
+                                vector<Symbol::Symbol> z;
+                                z.insert(z.begin(), word.begin() + j + word.size() - sub_amount2, word.end());
+                                aux = convert_vector_to_string(z);
+                                int x_pumping_times = 0;
+                                if (x.name.compare("") != 0) {
+                                    x_pumping_times = aux_word2.size() / px_size;
+                                    if (x_pumping_times == v_pumping_times) {
+                                        final_pumping += "|" + x.name + "|" + convert_vector_to_string(z);
+                                    } else {
+                                        if (!w_empty)
+                                            final_pumping += " ";
+                                        final_pumping += find_pump2;
+                                        if (z.size() > 0) {
+                                            final_pumping += " " +convert_vector_to_string(z) + "||";
+                                        } else {
+                                            final_pumping += "||";
+                                        }
+
+                                    }
+                                } else {
+                                    if (!w_empty)
+                                        final_pumping += " ";
+                                    final_pumping += find_pump2;
+                                    if (z.size() > 0)
+                                        final_pumping += " " + convert_vector_to_string(z);
+                                    final_pumping+= "||";
+                                }
+                                int flag_used_pump = false;
+                                for (auto it: map_pump_to_word[final_pumping] )
+                                    if (it == w_index)
+                                        flag_used_pump = true;
+                                if (std::count(final_pumping.begin(), final_pumping.end(), '|') < 4)
+                                    cout <<"error in final pump" << endl;
+                                if (final_pumping.find("  ") != string::npos)
+                                    cout << "deu merda na posicao: "<< final_pumping.find("  ") << endl;
+                                if (!flag_used_pump) {
+                                    //TODO o bombeamento é contado com +1.0 ao invés de vpumping_times. Para voltar ao anterior, descomentar linha abaixo
+                                    //map[final_pumping] += v_pumping_times;
+                                    //if (v_pumping_times == x_pumping_times) {
+                                        map[final_pumping] += 1.0;
+                                        map_pump_to_word[final_pumping].push_back(w_index);
+                                    //}
+                                    if (((u.size()+ convert_symbol_to_vector_string(v).size() + w.size() + convert_symbol_to_vector_string(x).size() + z.size())*1.0)/word.size() < reduction_share)
+                                        return;
+                                }
+                            }
                         }
-
-
-                        if (x.name.compare("") != 0)
-                            pumping += x.name;
-                        u.clear();
-                        u.insert(u.begin(), word.begin() + j + word.size() - sub_amount2, word.end());
-                        pumping += "|" + convert_vector_to_string(u);
-                        if (v.name.compare("") == 0)
-                            pumping += "||";
-                        map[pumping] +=1;
-                        map_pump_to_word[pumping].push_back(word);
-
-
                     }
                 }
             }
         }
     }
-
-
-
 }
 std::vector<std::string> Grammar::Grammar::convert_symbol_to_vector_string(Symbol::Symbol s) {
     stringstream check1(s.name);
@@ -4610,4 +4735,2757 @@ std::string Grammar::Grammar::convert_vector_to_string(std::vector<Symbol::Symbo
     for (int i = 1; i <vs.size() ; i ++)
         word += " "+vs[i].name;
     return word;
+}
+void Grammar::Grammar::group_equal_initial_rules() {
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
+    for (int j = 0; j < rules[0].right.size(); j++) {
+        //for (itRight = rules[0].right.begin(); itRight != rules[0].right.end(); itRight++) {
+        std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight2;
+        //for (itRight2 = rules[0].right.begin()+1; itRight2 != rules[0].right.end(); itRight2++) {
+        for (int i = j+1; i < rules[0].right.size(); i++) {
+            if (equal_rhs(rules[0].right[j].first,  rules[0].right[i].first)) {
+                rules[0].right[j].second.first += 1.0;
+                rules[0].right.erase(rules[0].right.begin()+i);
+                i--;
+            }
+        }
+    }
+}
+void Grammar::Grammar::remove_unused_rule_zero_righties(std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> &right) {
+    int lastI = right.size();
+    //mudei o i inicial para 0 ao invés de 1. isso pode dar problema no pumping inference v1.
+    for (int i = 0; i < right.size(); i++) {
+        if (right[i].second.first <= 0.0) {
+            lastI = i;
+            int j = i+1;
+            for (j = i+1; j < right.size(); j++) {
+                if (right[j].second.first > 0.0)
+                    break;
+            }
+            if (j == right.size())
+                break;
+            right[i] = right[j];
+            right[j].second.first = 0.0;
+
+
+        }
+    }
+    right.erase(right.begin()+lastI, right.end());
+}
+void Grammar::Grammar::create_new_nt_rule_substring(std::string sb, std::unordered_map<std::string, Symbol::Symbol> & non_terminal_string_map) {
+    size_t next_bar = sb.find(" ", 0);
+    size_t bar = 0;
+    string aux = "";
+    std::vector<Symbol::Symbol> rhs_to_look;
+    if (sb.find("  ",0) != string::npos) {
+        cout << "talvez deu merda na posicao " << sb.find("  ",0) << endl;
+    }
+    while (bar != string::npos) {
+        if (next_bar != string::npos) {
+            aux = sb.substr(bar, next_bar - bar);
+            bar = next_bar + 1;
+        } else {
+            aux = sb.substr(bar, string::npos);
+            bar = next_bar;
+        }
+        if (aux.find(" ",0) != string::npos) {
+            cout << "talvez deu merda na posicao " << sb.find("  ",0) << endl;
+        }
+        next_bar = sb.find(" ", bar + 1);
+        rhs_to_look.push_back(non_terminal_string_map[aux]);
+
+    }
+    Symbol::Symbol new_nt = Symbol::Symbol("NT"+to_string(n_non_terminals), n_non_terminals, false, false);
+    n_non_terminals++;
+    non_terminals.push_back(new_nt);
+    vector<Symbol::Symbol> lhs;
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> rhs;
+    lhs.push_back(new_nt);
+    rhs.push_back(make_pair(rhs_to_look, make_pair(1, 0.1)));
+    rules.push_back(Rule::Rule(lhs, rhs));
+    non_terminal_string_map[sb] = new_nt;
+}
+/*Esse parser não funciona pq a gramática é ambígua. Como existe uma outraforma de derivar
+ * uma parte bombeável, ele pode escolher o handle errado e não conseguir chegar no símbolo inicial.
+ * Uma possibilidade seria derivar a partir da direita, porém regras que bombeiam duas substrings
+ * podem não ser contempladas. Uma sugestão é fazer um parser top-down e tentar não deixar ele entrar em loop*/
+double Grammar::Grammar::calculate_prob_word(std::vector<Symbol::Symbol> word) {
+    double prob = 1.0;
+    std::stack<Symbol::Symbol> symbol_stack;
+    symbol_stack.push(Symbol::Symbol("ERROR", 0, false, false));
+    int i = 0;
+    Symbol::Symbol token = word[i];
+    while (symbol_stack.top().name.compare("NT0") != 0 || i  != word.size()) {
+        bool top_handle = false;
+        for (int j = 1; j <= symbol_stack.size(); j++) {
+            vector<Symbol::Symbol> handle;
+            stack<Symbol::Symbol> aux = symbol_stack;
+            for (int k = 0; k < j; k++) {
+                handle.push_back(aux.top());
+                aux.pop();
+            }
+            cout << "Handle: ";
+            for (auto s: handle) {
+                s.print_symbol();
+                cout << " ";
+            }
+            cout << endl;
+            Symbol::Symbol nt = is_handle(handle);
+
+            if (!nt.name.empty()) {
+                top_handle = true;
+                for (int k = 0; k < handle.size(); k++)
+                    symbol_stack.pop();
+                symbol_stack.push(nt);
+                for (auto right : rules[nt.id].right) {
+                    reverse(handle.begin(), handle.end());
+                    if (equal_word(handle, right.first)) {
+                        prob *= right.second.first;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        if (!top_handle) {
+            if (i < word.size()) {
+                symbol_stack.push(word[i]);
+                i++;
+            } else {
+                return 0.0;
+            }
+        }
+
+    }
+    return prob;
+}
+Symbol::Symbol Grammar::Grammar::is_handle(std::vector<Symbol::Symbol> sub_word) {
+    for (auto r: rules) {
+        for (auto right: r.right) {
+            if (sub_word.size() == right.first.size()) {
+                bool flag = true;
+                for (int i = 0; i < sub_word.size(); i++) {
+                    if (!sub_word[i].equal_symbol(right.first[right.first.size()-i-1])) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag)
+                    return r.left[0];
+
+            }
+        }
+    }
+    return Symbol::Symbol("",0,false, false);
+}
+double Grammar::Grammar::calculate_parse_tree_prob_top_down(std::vector<Symbol::Symbol> word) {
+    double prob = 1.0;
+    int right = 0;
+    stack<pair<Symbol::Symbol, int>> symbol_rights_stack;
+    symbol_rights_stack.push(make_pair(rules[0].left[0], 0));
+    vector<Symbol::Symbol> yielded_word;
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> parse_tree;
+    vector<pair<int,int>> parse_tree_indexes;
+    while (!symbol_rights_stack.empty() && symbol_rights_stack.top().second < rules[0].right.size()) {
+
+        if (!symbol_rights_stack.top().first.terminal) {
+            Symbol::Symbol to_yield = symbol_rights_stack.top().first;
+            right = symbol_rights_stack.top().second;
+            symbol_rights_stack.pop();
+            for (int i = rules[to_yield.id].right[right].first.size()-1; i >=0; i--)
+                symbol_rights_stack.push(make_pair(rules[to_yield.id].right[right].first[i], 0));
+
+            parse_tree_indexes.push_back(make_pair(to_yield.id, right));
+
+        } else {
+            yielded_word.push_back(symbol_rights_stack.top().first);
+
+            bool flag_yield_ok = true;
+            for (int j = 0; j < yielded_word.size(); j++) {
+                if (!yielded_word[j].equal_symbol(word[j])) {
+                    flag_yield_ok = false;
+                    while (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1 == parse_tree_indexes[parse_tree_indexes.size()-1].second) {
+                        if (parse_tree_indexes.size() == 1 && parse_tree_indexes[parse_tree_indexes.size()-1].second == rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1)
+                            break;
+                        if (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first[0].terminal) {
+                            if (!symbol_rights_stack.top().first.equal_symbol(yielded_word[yielded_word.size()-1]))
+                                symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size()-1], 0));
+                            yielded_word.pop_back();
+                        }
+                        for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                            symbol_rights_stack.pop();
+                        symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0],parse_tree_indexes[parse_tree_indexes.size()-1].second));
+                        parse_tree_indexes.pop_back();
+                    }
+
+                    if (!parse_tree_indexes.empty()) {
+                        for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                            symbol_rights_stack.pop();
+                        symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0], parse_tree_indexes[parse_tree_indexes.size()-1].second+1));
+                        parse_tree_indexes.pop_back();
+                    }
+                    break;
+                }
+            }
+            if (flag_yield_ok)
+                symbol_rights_stack.pop();
+
+        }
+        if (symbol_rights_stack.empty()) {
+            if (!equal_word(yielded_word, word)) {
+                right = parse_tree_indexes[0].second+1;
+                parse_tree_indexes.clear();
+                yielded_word.clear();
+                symbol_rights_stack.push(make_pair(rules[0].left[0], right));
+            }
+        }
+    }
+
+    if (parse_tree_indexes.empty())
+        return 0.0;
+    else {
+        for (auto p: parse_tree_indexes)
+            prob *= rules[p.first].right[p.second].second.first;
+
+    }
+    return prob;
+}
+void Grammar::Grammar::build_node_to_pump_map(std::unordered_map<std::string, std::vector<int>> &map_pump_to_word, std::unordered_map<int, std::vector<std::string>> & node_pump_map, int max_ntv, int max_ntw, int max_ntx, int max_ntz) {
+
+    for (auto nt: non_terminals) {
+        string u = nt.name.substr(2, string::npos);
+        string aux;
+        if (u.compare("I") == 0)
+            u = "";
+        else {
+            aux =  "";
+            for (int i = 0; i < u.size(); i++) {
+                aux.push_back(u[i]);
+                aux += " ";
+            }
+            u = aux.substr(0, aux.size()-1);
+        }
+        string z = u;
+        reverse(z.begin(), z.end());
+    }
+}
+void Grammar::Grammar::fpta_pumping_inference(unordered_map<std::string, int> &map, unordered_map<std::string, std::vector<int>> &map_pump_to_word, int max_ntv, int max_ntw, int max_ntx, int max_ntz) {
+    /* TODO Avaliar o algoritmo de autossimilaridade com outros NTs e outras gramáticas
+     *          (Parece q mesmo que o bombeamento seja grande (10) ainda conta-se 5 nas diferenças)
+     *          Estudar melhor o que essa distância para aceitar quer dizer
+     *      Verificar para cada casa o que pode ser feito ára contar o tamanho do bombeamento.
+     *      Ao descobrir o tamanho do bombeamento, inferir u, v, w, x, z
+     *
+     * TODO Usar PegLib (PegParser, PegTL) no lugar do meu parser.
+     *     *
+     * TODO fazer toda busca da FPTA ser função do terminal (vai dar trabalho)
+     *
+     * TODO calcular dinamicamente o ntw, ntx baseado nas bombeadas identificadas
+     * TODO deixar a identificação de bombeamentos encontrar bombeamentos únicos
+     * TODO calcular dinamicamente a quantidade de nós em comum do fpta compatible
+     *
+     * */
+    non_terminals.clear();
+    rules.clear();
+    n_non_terminals = 0;
+    gen_fpta();
+    print_grammar();
+    //build_pumping_fronts();
+    //int nt = 0;
+   unordered_map<string, set<string>> map_nt_to_pumping_set = build_nt_pumping_sets(map, max_ntv, max_ntw, max_ntx, max_ntz);
+    //std::map<pair<string,string>,bool> fpta_compatible_matrix = build_compatible_matrix();
+    return;
+    std::vector<Symbol::Symbol> pumped_nts;
+    vector<Rule::Rule> static_rules = rules;
+    vector<Symbol::Symbol> static_non_terminals = non_terminals;
+    for (int i = 0; i < n_non_terminals; i++) {
+        if ((i+1) % (n_non_terminals/5) == 0 )
+            cout << "   Checking NT at " << (100.0*(i+1)/(n_non_terminals*1.0)) << "%" << endl;
+        Symbol::Symbol nt1 = non_terminals[i];
+        string u1 = nt1.name.substr(2, string::npos);
+        string aux;
+        if (u1.compare("I") == 0)
+            u1 = "";
+        else {
+            aux =  "";
+            for (int i = 0; i < u1.size(); i++) {
+                aux.push_back(u1[i]);
+                aux += " ";
+            }
+            u1 = aux.substr(0, aux.size()-1);
+        }
+        string z1 = "";
+        reverse(z1.begin(), z1.end());
+        //set<string> nt1_pumping_set = build_nt_pumping_set(nt1, map_pump_to_word, u1, max_ntv,  max_ntw,  max_ntx,  max_ntz);
+        set<string> nt1_pumping_set = map_nt_to_pumping_set[nt1.name];
+        for (int j = i+1; j < n_non_terminals; j++) {
+            Symbol::Symbol nt2 = non_terminals[j];
+            if (!nt1.equal_symbol(nt2)) {
+                bool flag_subtree = true;
+                string ntn1, ntn2;
+                if (nt1.name.compare("NTI") != 0) {
+                    if (nt1.name.size() < nt2.name.size()) {
+                        ntn1 = nt1.name.substr(2, string::npos);
+                        ntn2 = nt2.name. substr(2, string::npos);
+                    }
+                    else {
+                        ntn1 = nt2.name. substr(2, string::npos);
+                        ntn2 = nt1.name.substr(2, string::npos);
+                    }
+                    for (int k = 0; k < ntn1.size(); k++) {
+                        if (ntn1[k] != ntn2[k]) {
+                            flag_subtree = false;
+                            break;
+                        }
+
+                    }
+                }
+
+                if (flag_subtree) {
+                    string u2 = nt2.name.substr(2, string::npos);
+                    string aux;
+                    if (u2.compare("I") == 0)
+                        u2 = "";
+                    else {
+                        aux =  "";
+                        for (int i = 0; i < u2.size(); i++) {
+                            aux.push_back(u2[i]);
+                            aux += " ";
+                        }
+                        u2 = aux.substr(0, aux.size()-1);
+                    }
+                    //set<string> nt2_pumping_set = build_nt_pumping_set(nt2, map_pump_to_word, u2, max_ntv,  max_ntw,  max_ntx,  max_ntz);
+                    set<string> nt2_pumping_set = map_nt_to_pumping_set[nt2.name];
+
+                    //if (fpta_pumping_compatible(nt1_pumping_set, nt2_pumping_set, u1, z1, u2, 0.8)) {
+                    bool nt_compatible = fpta_pumping_compatible_tree(nt1, nt2, 0.97, static_rules, static_non_terminals);
+                    if (nt_compatible)
+                        find_pumping_rule(nt1, nt2);
+                    //bool nt_compatible = fpta_compatible_matrix[make_pair(nt1.name, nt2.name)];
+                    if (nt_compatible && !nt_compatible) {
+                        //cout << nt1.name<<" and " << nt2.name << " compatible: " << nt_compatible << endl;
+                        Grammar g = Grammar({}, 1, {}, g.pcfg, make_pair(0, 0));
+                        g.non_terminals.clear();
+                        g.rules.clear();
+                        g.terminals = terminals;
+                        g.non_terminals.push_back(non_terminals[0]);
+                        g.n_non_terminals = 1;
+                        string nt1_end = "NT";
+                        Symbol::Symbol nt1_s_end = non_terminals[0];
+                        if (nt2.name.compare("NTI") == 0)
+                            nt1_end = nt2.name;
+                        else
+                            nt1_end += nt2.name.substr(2,1);
+                        int i= 1;
+                        while (nt1_s_end.name.compare(nt1.name) != 0)  {
+                            for (auto right: rules[nt1_s_end.id].right) {
+                                if (right.first.size() <= 1) {
+                                    if (nt1_end.compare("NTI") == 0)
+                                        nt1_end = "NT";
+                                    nt1_end += nt2.name.substr(2+i,1);
+                                    break;
+                                }
+                                if (right.first[1].name.compare(nt1_end) == 0) {
+                                    vector<Symbol::Symbol> left;
+                                    left.push_back(nt1_s_end);
+                                    nt1_s_end = right.first[1];
+
+                                    right.first[1].id = g.n_non_terminals;
+                                    g.non_terminals.push_back(right.first[1]);
+                                    g.n_non_terminals++;
+
+                                    vector<pair<vector<Symbol::Symbol>,pair<double, double>>> righties;
+                                    righties.push_back(right);
+                                    Rule::Rule r = Rule::Rule(left,righties);
+                                    g.rules.push_back(r);
+                                    if (nt1_end.compare("NTI") == 0)
+                                        nt1_end = "NT";
+                                    nt1_end += nt2.name.substr(2+i,1);
+                                    break;
+                                }
+
+                            }
+                            i++;
+                        }
+                        size_t index_nt1 = g.non_terminals[g.n_non_terminals-1].id;
+                        pair<vector<Symbol::Symbol>,pair<double, double>> blocked_rhs;
+                        for (auto rhs: rules[nt1.id].right)
+                            if (rhs.first.size() > 1)
+                                if (rhs.first[1].name.compare(nt2.name) == 0) {
+                                    blocked_rhs = rhs; break; }
+
+                        // REMOVIDO ABAIXO PARA FAZER O NOVO ADD SUBTREE OF NT1
+                        /*if (nt2.name.substr(0, nt2.name.size()-1).size() >2) {
+                            while (nt1_s_end.name.compare(nt2.name.substr(0, nt2.name.size()-1)) != 0)  {
+                                for (auto right: rules[nt1_s_end.id].right) {
+                                    if (right.first.size() <= 1) {
+                                        if (nt1_end.compare("NTI") == 0)
+                                            nt1_end = "NT";
+                                        if (2+i <= nt2.name.size())
+                                            nt1_end += nt2.name.substr(2+i,1);
+                                        break;
+                                    }
+                                    if (right.first[1].name.compare(nt1_end) == 0) {
+                                        vector<Symbol::Symbol> left;
+                                        left.push_back(nt1_s_end);
+                                        if (nt1_s_end.name.compare(nt1.name) == 0)
+                                            blocked_rhs = right;
+                                        nt1_s_end = right.first[1];
+
+                                        right.first[1].id = g.n_non_terminals;
+                                        g.non_terminals.push_back(right.first[1]);
+                                        g.n_non_terminals++;
+
+                                        vector<pair<vector<Symbol::Symbol>,pair<double, double>>> righties;
+                                        righties.push_back(right);
+                                        if (rules[nt1_s_end.id].right[rules[nt1_s_end.id].right.size()-1].first[0].name.empty())
+                                            righties.push_back(rules[nt1_s_end.id].right[rules[nt1_s_end.id].right.size()-1]);
+                                        Rule::Rule r = Rule::Rule(left,righties);
+                                        g.rules.push_back(r);
+
+                                        if (nt1_end.compare("NTI") == 0)
+                                            nt1_end = "NT";
+                                        nt1_end += nt2.name.substr(2+i,1);
+                                        break;
+                                    }
+                                }
+                                i++;
+                            }
+                        }
+                        size_t index_nt2 = g.non_terminals[g.n_non_terminals-1].id;
+                        g.build_pumping_righties(nt1_pumping_set, index_nt2, index_nt1);*/
+                        size_t index_nt2 = add_subtrees_of_nt1_to_grammar(nt1, nt2, nt1_pumping_set, g, pumped_nts, index_nt1);
+                        if (index_nt2 != -1 && !g.rules[index_nt2].right.empty()) {
+                            //add_remaining_subtrees_to_grammar(nt1, blocked_rhs, g, pumped_nts);
+                            for (auto t: g.terminals) {
+                                Symbol::Symbol new_ntt = Symbol::Symbol("NTT"+t.name, g.n_non_terminals, false, false);
+                                g.non_terminals.push_back(new_ntt);
+                                g.n_non_terminals++;
+                                for (auto & r: g.rules)
+                                    for (auto & rhs: r.right) {
+                                        rhs.second.first = 0.0;
+                                        for (auto & s: rhs.first) {
+                                            if (s.name.compare(t.name) == 0)
+                                                s = new_ntt.clone();
+                                            else if (s.name.compare(new_ntt.name) == 0)
+                                                s = new_ntt.clone();
+                                        }
+                                    }
+                                vector<Symbol::Symbol> left;
+                                left.push_back(new_ntt);
+                                pair<vector<Symbol::Symbol>,pair<double, double>> right;
+                                right.first.push_back(t);
+                                vector<pair<vector<Symbol::Symbol>,pair<double, double>>> righties;
+                                righties.push_back(right);
+                                Rule::Rule r = Rule::Rule(left,righties);
+                                g.rules.push_back(r);
+                            }
+                            for (auto & w: words) {
+                                //cout << convert_vector_to_string(w) << endl;
+                                g.find_best_pumping_coverage(w);
+                                //g.print_grammar();
+                            }
+                            for (auto & r: g.rules)
+                                for (auto & rhs: r.right)
+                                    for (auto & s: rhs.first)
+                                        if (g.rules[s.id].right.size() == 1)
+                                            if (g.rules[s.id].right[0].first.size() == 1)
+                                                if (g.rules[s.id].right[0].first[0].terminal)
+                                                    s = g.rules[s.id].right[0].first[0];
+                            //g.print_grammar();
+                            bool can_merge = false;
+                            for (auto rhs: g.rules[index_nt2].right) {
+                                if (rhs.first.size() > 2)
+                                    if (rhs.second.first > 0.0) {
+                                        can_merge = true;
+                                        break;
+                                    }
+                            }
+                            if (!check_id_nt_rule())
+                                cout << "ERROR ID" << endl;
+                            if (can_merge) {
+                               if (pumping_merge_nt_3(nt1, nt2, g, pumped_nts))
+                                   j--;
+                               cout << ". Merged " << nt1.name << " and " << nt2.name << endl;
+                               //print_grammar();
+
+                            }
+                            if (!check_id_nt_rule())
+                                cout << "ERROR ID" << endl;
+                            else
+                                cout << endl;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //print_grammar();
+    //pumping_alergia(0.01, pumped_nts);
+}
+
+std::set<std::string> Grammar::Grammar::build_nt_pumping_set(Symbol::Symbol nt, std::unordered_map<std::string, std::vector<int>> &map_pump_to_word, std::string u, int max_ntv, int max_ntw, int max_ntx, int max_ntz) {
+    set<string> nt_pumping_set;
+    std::vector<std::vector<Symbol::Symbol>> permutations;
+    std::vector<Symbol::Symbol> word;
+    vector<string> vs;
+    vector<string> ws;
+    vector<string> xs;
+    vector<string> zs;
+    vector<string> zps;
+    int  n_symbols = count(u.begin(), u.end(), ' ')+1;
+    if (u.empty())
+        n_symbols = 0;
+    for (int i = 0; i <= max_ntv || i <= max_ntw || i <= max_ntx || i <= max_ntz || i <= n_symbols; i++ )
+        generate_permutation(permutations, terminals, i, word, 0);
+    for (auto p: permutations) {
+        string str = convert_vector_to_string(p);
+        if (p.size() <= max_ntv)
+            vs.push_back(str);
+        if (p.size() <= max_ntw)
+            ws.push_back(str);
+        if (p.size() <= max_ntx)
+            xs.push_back(str);
+        if (p.size() <= max_ntz)
+            zs.push_back(str);
+        if (p.size() <= n_symbols)
+            zps.push_back(str);
+    }
+    /*cout << nt.name << endl;*/
+    for (auto & v: vs)
+        for (auto & w: ws)
+            for (auto & x: xs)
+                for (auto & z: zs) {
+                    for (auto & zp: zps) {
+                        string pump = u+"|"+v+"|"+w+"|"+x+"|"+z;
+                        if (!zp.empty()) {
+                            if (!z.empty())
+                                pump = u+"|"+v+"|"+w+"|"+x+"|"+z+ " " + zp;
+                            else
+                                pump = u+"|"+v+"|"+w+"|"+x+"|"+ zp;
+                        }
+                        /*cout << pump << endl;*/
+                        if (map_pump_to_word.find(pump) != map_pump_to_word.end())
+                            nt_pumping_set.insert(pump);
+
+                    }
+
+                }
+    /*cout  << endl << endl;*/
+    return nt_pumping_set;
+}
+bool Grammar::Grammar::fpta_pumping_compatible(std::set<std::string> snt1, std::set<std::string> snt2, std::string u1, std::string z1, std::string u2, double pump_percentage_tolerance) {
+
+    double count_pump_compatible = 0.0;
+    for (auto nt2: snt2) {
+
+        string u1_aux = u2;
+        string z2 = nt2;
+        reverse(z2.begin(), z2.end());
+        string pumping = z2.substr(z2.find("|"), string::npos);
+        reverse(pumping.begin(), pumping.end());
+        pumping = pumping.substr(pumping.find("|"), string::npos);
+        z2 = z2.substr(0, z2.find("|"));
+
+        string z1_aux = z2;
+        bool flag_can_pump = true;
+        if (!u1.empty())
+            if (u2.find(u1) < u2.size()-2 && u2.size()-2 < u2.size())
+                u1_aux = u2.substr(u2.find(u1)+2, string::npos);
+            else
+                flag_can_pump = false;
+        if (!z1.empty())
+            if (z2.find(z1) < z2.size()-2 && z2.size()-2 < z2.size())
+                z1_aux = z2.substr(z2.find(z1)+2, string::npos);
+            else
+                flag_can_pump = false;
+        size_t  n_symbols = count(u1_aux.begin(), u1_aux.end(), ' ')+1;
+        int u1_aux_n_pump = 1;
+        int z1_aux_n_pump = 1;
+        if (z1_aux.empty() && !u1_aux.empty() || !z1_aux.empty() && u1_aux.empty())
+            flag_can_pump = false;
+        else if ((count(u1_aux.begin(), u1_aux.end(), ' ')+1) > (count(z1_aux.begin(), z1_aux.end(), ' ')+1)) {
+            if ((count(u1_aux.begin(), u1_aux.end(), ' ')+1) % (count(z1_aux.begin(), z1_aux.end(), ' ')+1) != 0)
+                flag_can_pump = false;
+            else {
+                u1_aux_n_pump = (count(u1_aux.begin(), u1_aux.end(), ' ') + 1) / (count(z1_aux.begin(), z1_aux.end(), ' ') + 1);
+                n_symbols = count(z1_aux.begin(), z1_aux.end(), ' ')+1;
+            }
+        } else if ((count(u1_aux.begin(), u1_aux.end(), ' ')+1) < (count(z1_aux.begin(), z1_aux.end(), ' ')+1)) {
+            if ((count(z1_aux.begin(), z1_aux.end(), ' ')+1) % (count(u1_aux.begin(), u1_aux.end(), ' ')+1) != 0)
+                flag_can_pump = false;
+            else {
+                z1_aux_n_pump = (count(z1_aux.begin(), z1_aux.end(), ' ')+1) / (count(u1_aux.begin(), u1_aux.end(), ' ')+1);
+                n_symbols = count(u1_aux.begin(), u1_aux.end(), ' ')+1;
+            }
+        }
+
+        reverse(z1_aux.begin(), z1_aux.end());
+        if (flag_can_pump) {
+            vector<pair<string,string>> pumpeds;
+
+            while(u1_aux.find(" ") != string::npos) {
+                pumpeds.push_back(make_pair(u1_aux.substr(0, u1_aux.find(" ")), z1_aux.substr(0, z1_aux.find(" "))));
+                for (int i = 0; i < u1_aux_n_pump; i++)
+                    u1_aux = u1_aux.substr(u1_aux.find(" ")+1, string::npos);
+                for (int i = 0; i < z1_aux_n_pump; i++)
+                    z1_aux = z1_aux.substr(z1_aux.find(" ")+1, string::npos);
+            }
+            pumpeds.push_back(make_pair(u1_aux.substr(0, u1_aux.find(" ")), z1_aux.substr(0, z1_aux.find(" "))));
+            for (int i = 1; i <= n_symbols; i++) {
+                int flag_compatible = true;
+                if (n_symbols%i == 0) {
+                    for (int j = 0; j < n_symbols; j += i) {
+                        string pump_v;
+                        string pump_x;
+                        for (int k = 0; k < i; k++) {
+                            pump_v += pumpeds[j+k].first + " ";
+                            pump_x += pumpeds[pumpeds.size()-1-j-k].second + " ";
+                        }
+                        pump_v = pump_v.substr(0, pump_v.size()-1);
+                        pump_x = pump_x.substr(0, pump_x.size()-1);
+                        string pump = "|"+pump_v+"||"+pump_x+"|";
+                        if (snt1.find(u1+pump+z1) == snt1.end())
+                            flag_compatible =  false;
+                    }
+
+                } else {
+                    flag_compatible = false;
+                }
+                if (flag_compatible) {
+                    if (snt1.find(u1+pumping+z1) != snt1.end()) {
+                        count_pump_compatible += 1.0;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (count_pump_compatible/snt1.size() > pump_percentage_tolerance) {
+        cout << "YES: count: " << count_pump_compatible << ",  size: " <<snt1.size() << ", ratio: " << count_pump_compatible/snt1.size() << ".";
+        return true;
+    }
+
+    cout << "NO: count: " << count_pump_compatible << ",  size: " <<snt1.size() << ", ratio: " << count_pump_compatible/snt1.size() << ".";
+    return false;
+
+}
+void Grammar::Grammar::find_best_pumping_coverage(std::vector<Symbol::Symbol> word) {
+    //cout << convert_vector_to_string(word) << endl;
+    Grammar g  = Grammar({}, 1, {}, g.pcfg, make_pair(0, 0));
+    g.rules = rules;
+    g.non_terminals = non_terminals;
+    g.terminals = terminals;
+
+    if (word.empty()) {
+        for (auto & rhs : rules[0].right)
+            for (auto & s: rhs.first)
+                if (s.name.empty()) {
+                    rhs.second.first += 1.0;
+                    break;
+                }
+        return;
+    }
+    int right = 0;
+    stack<pair<Symbol::Symbol, int>> symbol_rights_stack;
+    symbol_rights_stack.push(make_pair(rules[0].left[0], 0));
+    vector<Symbol::Symbol> yielded_word;
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> parse_tree;
+    vector<pair<int,int>> parse_tree_indexes;
+    while (!symbol_rights_stack.empty() && symbol_rights_stack.top().second < rules[symbol_rights_stack.top().first.id].right.size() || !symbol_rights_stack.empty() && symbol_rights_stack.top().second < rules[symbol_rights_stack.top().first.id].right.size() && symbol_rights_stack.top().first.terminal) {
+
+        if (!symbol_rights_stack.top().first.terminal) {
+            Symbol::Symbol to_yield = symbol_rights_stack.top().first;
+            right = symbol_rights_stack.top().second;
+            symbol_rights_stack.pop();
+            //g.rules[to_yield.id].right[right].second.first += 1.0;
+            for (int i = rules[to_yield.id].right[right].first.size()-1; i >=0; i--)
+                symbol_rights_stack.push(make_pair(rules[to_yield.id].right[right].first[i], 0));
+
+            parse_tree_indexes.push_back(make_pair(to_yield.id, right));
+
+        } else {
+            yielded_word.push_back(symbol_rights_stack.top().first);
+
+            bool flag_yield_ok = true;
+            vector<Symbol::Symbol> yielded_no_emptystr_word = remove_empty_substring(yielded_word);
+
+            for (int j = 0; j < yielded_no_emptystr_word.size(); j++) {
+                if (!yielded_no_emptystr_word[j].equal_symbol(word[j]) || yielded_no_emptystr_word.size() > word.size()) {
+                    flag_yield_ok = false;
+                    while (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1 == parse_tree_indexes[parse_tree_indexes.size()-1].second) {
+                        if (parse_tree_indexes.size() == 1 && parse_tree_indexes[parse_tree_indexes.size()-1].second == rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1)
+                            break;
+                        if (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first[0].terminal) {
+                            if (!symbol_rights_stack.top().first.equal_symbol(yielded_word[yielded_word.size()-1]))
+                                symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size()-1], 0));
+                            yielded_word.pop_back();
+                        }
+                        for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                            symbol_rights_stack.pop();
+                        symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0],parse_tree_indexes[parse_tree_indexes.size()-1].second));
+                        //rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].second.first -= 1.0;
+                        parse_tree_indexes.pop_back();
+                    }
+                    if (!yielded_word.empty()) {
+                        if (yielded_word[yielded_word.size()-1].name.empty()) {
+                            symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size() - 1], 0));
+                            yielded_word.pop_back();
+                        }
+                    }
+                    if (!parse_tree_indexes.empty()) {
+                        for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                            symbol_rights_stack.pop();
+                        symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0], parse_tree_indexes[parse_tree_indexes.size()-1].second+1));
+                        //rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].second.first -= 1.0;
+                        parse_tree_indexes.pop_back();
+                    }
+                    break;
+                }
+            }
+            if (flag_yield_ok)
+                symbol_rights_stack.pop();
+
+        }
+        if (symbol_rights_stack.empty()) {
+            if (!equal_word(remove_empty_substring(yielded_word), word)) {
+                while (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1 == parse_tree_indexes[parse_tree_indexes.size()-1].second) {
+                    if (parse_tree_indexes.size() == 1 && parse_tree_indexes[parse_tree_indexes.size()-1].second == rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1)
+                        break;
+                    if (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first[0].terminal) {
+                        symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size()-1], 0));
+                        yielded_word.pop_back();
+                    }
+                    for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                        symbol_rights_stack.pop();
+                    symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0],parse_tree_indexes[parse_tree_indexes.size()-1].second));
+                    //rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].second.first -= 1.0;
+                    parse_tree_indexes.pop_back();
+                }
+                if (!yielded_word.empty()) {
+                    if (yielded_word[yielded_word.size() - 1].name.empty()) {
+                        symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size() - 1], 0));
+                        yielded_word.pop_back();
+                    }
+                }
+                if (!parse_tree_indexes.empty()) {
+                    for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                        symbol_rights_stack.pop();
+                    symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0], parse_tree_indexes[parse_tree_indexes.size()-1].second+1));
+                    //rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].second.first -= 1.0;
+                    parse_tree_indexes.pop_back();
+                }
+            }
+        }
+        /*if (symbol_rights_stack.top().first.name.empty()) {
+            symbol_rights_stack.pop();
+        }*/
+    }
+
+    if (!parse_tree_indexes.empty()) {
+        for (auto p: parse_tree_indexes)
+            rules[p.first].right[p.second].second.first += 1.0;
+
+    }
+    return;
+}
+
+Symbol::Symbol Grammar::Grammar::find_terminal_by_name(std::string name) {
+    for (auto &t: terminals)
+        if (t.name.compare(name) == 0)
+            return t;
+    return Symbol::Symbol("", -1, true, false);
+}
+
+Symbol::Symbol Grammar::Grammar::find_symbol_in_vector_by_name(std::string name, vector<Symbol::Symbol>  &vec) {
+    for (auto &t: vec)
+        if (t.name.compare(name) == 0)
+            return t;
+    return Symbol::Symbol("", -1, true, false);
+}
+
+std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> Grammar::Grammar::build_pumping_righties(set<string> nt1_pumping_set, size_t index_nt2, size_t index_nt1) {
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right;
+
+    for (auto s: nt1_pumping_set) {
+        std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> r;
+        std::vector<Symbol::Symbol> rhs_pumped;
+        std::vector<Symbol::Symbol> rhs_not_pumped;
+        size_t init_pipe = s.find("|", 0);
+        size_t next_pipe = s.find("|", init_pipe+1);
+        size_t next_bar = s.substr(init_pipe+1, next_pipe-init_pipe-1).find(" ", 0);
+        string pumping_v = "";
+        size_t bar = 0;
+
+        if(next_pipe-init_pipe<=1)
+            bar = string::npos;
+        while (bar != string::npos) {
+            if (next_bar != string::npos) {
+                pumping_v = s.substr(init_pipe+1, next_pipe-init_pipe-1).substr(bar, next_bar-bar);
+                rhs_pumped.push_back(find_terminal_by_name(pumping_v));
+                bar = next_bar+1;
+                next_bar = s.substr(init_pipe+1, next_pipe-init_pipe-1).find(" ", bar+1);
+            }
+            else {
+                pumping_v = s.substr(init_pipe+1, next_pipe-init_pipe-1).substr(bar, string::npos);
+                rhs_pumped.push_back(find_terminal_by_name(pumping_v));
+                bar = next_bar;
+            }
+        }
+
+        rhs_pumped.push_back(non_terminals[index_nt1]);
+
+
+        init_pipe = next_pipe;
+        next_pipe = s.find("|", init_pipe+1);
+        string npumping_x = "";
+        next_bar = s.substr(init_pipe+1, next_pipe-init_pipe-1).find(" ", 0);
+        bar = 0;
+        if(next_pipe-init_pipe<=1)
+            bar = string::npos;
+        while (bar != string::npos) {
+            if (next_bar != string::npos) {
+                npumping_x = s.substr(init_pipe+1, next_pipe-init_pipe-1).substr(bar, next_bar-bar);
+                rhs_not_pumped.push_back(find_terminal_by_name(npumping_x));
+                bar = next_bar+1;
+                next_bar = s.substr(init_pipe+1, next_pipe-init_pipe-1).find(" ", bar+1);
+            }
+            else {
+                npumping_x = s.substr(init_pipe+1, next_pipe-init_pipe-1).substr(bar, string::npos);
+                bar = next_bar;
+                rhs_not_pumped.push_back(find_terminal_by_name(npumping_x));
+            }
+        }
+        if (npumping_x.empty())
+            rhs_not_pumped.push_back(find_terminal_by_name(npumping_x));
+
+        init_pipe = next_pipe;
+        next_pipe = s.find("|", init_pipe+1);
+        next_bar = s.substr(init_pipe+1, next_pipe-init_pipe-1).find(" ", 0);
+        string pumping_y = "";
+        bar = 0;
+        if(next_pipe-init_pipe<=1)
+            bar = string::npos;
+        while (bar != string::npos) {
+            if (next_bar != string::npos) {
+                pumping_y = s.substr(init_pipe+1, next_pipe-init_pipe-1).substr(bar, next_bar-bar);
+                rhs_pumped.push_back(find_terminal_by_name(pumping_y));
+                bar = next_bar+1;
+                next_bar = s.substr(init_pipe+1, next_pipe-init_pipe-1).find(" ", bar+1);
+            }
+            else {
+                pumping_y = s.substr(init_pipe+1, next_pipe-init_pipe-1).substr(bar, string::npos);
+                rhs_pumped.push_back(find_terminal_by_name(pumping_y));
+                bar = next_bar;
+            }
+        }
+        bool flag_exist_rhs = false;
+        for (auto rhs: right)
+            if (equal_rhs(rhs.first, rhs_pumped))
+                flag_exist_rhs = true;
+        if (!flag_exist_rhs) {
+            r.first = rhs_pumped;
+            right.push_back(r);
+        }
+        flag_exist_rhs = false;
+        for (auto rhs: right)
+            if (equal_rhs(rhs.first, rhs_not_pumped))
+                flag_exist_rhs = true;
+        if (!flag_exist_rhs) {
+            r.first = rhs_not_pumped;
+            right.push_back(r);
+        }
+    }
+    return right;
+    /*vector<Symbol::Symbol> left;
+
+    left.push_back(non_terminals[index_nt2]);
+    Rule::Rule r_pump = Rule::Rule(left, right);
+    rules.push_back(r_pump);*/
+}
+
+std::vector<Symbol::Symbol> Grammar::Grammar::remove_empty_substring(std::vector<Symbol::Symbol> word) {
+    for (int i = 0; i < word.size(); i ++) {
+        if (word[i].name.empty()) {
+            for (int j = i+1; j < word.size(); j++){
+                word[j-1] = word[j];
+            }
+            word.pop_back();
+        }
+    }
+    return word;
+}
+bool Grammar::Grammar::pumping_merge_nt(Symbol::Symbol nt1, Symbol::Symbol nt2, Grammar &g, std::vector<Symbol::Symbol> & pumped_nts) {
+    string nt1_subs_str = nt1.name;
+    bool flag_nt2_removed = true;
+    if (nt1_subs_str.compare("NTI") == 0)
+        nt1_subs_str = "NT";
+    nt1_subs_str += nt2.name.substr(2,1);
+    for (int i = 1; nt1.name.compare(nt2.name) != 0; nt1_subs_str += nt2.name.substr(2+i,1)) {
+        for (int j = 0; j < rules[nt1.id].right.size(); j++ ) {
+            if (rules[nt1.id].right[j].first.size() > 1)
+                if (rules[nt1.id].right[j].first[1].name.compare(nt1_subs_str) == 0) {
+                    if (!verify_nt_in_subtree_if_any_pumped(rules[nt1.id].right[j].first[1], pumped_nts))
+                        rules[nt1.id].right[j].second.first = 0.0;
+                    nt1 = find_symbol_in_vector_by_name(rules[nt1.id].right[j].first[1].name, non_terminals);
+                    break;
+                }
+        }
+    }
+    if (rules[nt2.id].freq() > 0.0)
+        flag_nt2_removed = false;
+    Symbol::Symbol aux = find_symbol_in_vector_by_name(nt2.name.substr(0, nt2.name.size()-1), non_terminals);
+    if (!aux.name.empty())
+        pumped_nts.push_back(aux);
+    queue<Symbol::Symbol> q_symbol;
+    q_symbol.push(nt2);
+    while (!q_symbol.empty()) {
+        aux = q_symbol.front();
+        if (!verify_nt_in_subtree_if_any_pumped(aux, pumped_nts)) {
+            for (int i = 0; i < non_terminals.size(); i++) {
+                if (non_terminals[i].name.compare(aux.name) == 0) {
+                    non_terminals.erase(non_terminals.begin() + i);
+                    break;
+                }
+            }
+            q_symbol.pop();
+            for (auto & rhs: rules[aux.id].right) {
+                rhs.second.first = 0.0;
+                if (rhs.first.size() > 1)
+                    q_symbol.push(rhs.first[1]);
+            }
+        } else
+            q_symbol.pop();
+    }
+    for (auto r: g.rules) {
+        if (verify_nt_in_subtree_of_nt2(r.left[0], nt2) || (r.right.size() == 1 && r.right[0].first[0].terminal) ) {
+            int nt_index = find_symbol_in_vector_by_name(r.left[0].name, non_terminals).id;
+            if (nt_index != -1) {
+                rules[nt_index].right.insert(rules[nt_index].right.end(), r.right.begin(), r.right.end());
+                group_equal_rhs(rules[nt_index].right);
+                remove_unused_rule_zero_righties(rules[nt_index].right);
+                if (rules[nt_index].right.empty())
+                    rules.erase(rules.begin() + nt_index);
+            }
+            else {
+                if (r.freq() > 0.0) {
+                    non_terminals.push_back(Symbol::Symbol(r.left[0].name, n_non_terminals, false, false));
+                    n_non_terminals++;
+                    rules.push_back(r);
+                }
+            }
+        }
+    }
+    for (int i = 0; i < non_terminals.size(); i++)
+        non_terminals[i].id = i;
+    n_non_terminals = non_terminals.size();
+    for (int i = 0; i < rules.size(); i++) {
+        remove_unused_rule_zero_righties(rules[i].right);
+        if (rules[i].right.empty()) {
+            rules.erase(rules.begin()+i);
+            i--;
+        } else {
+            bool flag_empty = false;
+            for (int j =0; j < rules[i].right.size(); j++) {
+                if (rules[i].right[j].first[0].name.empty())  {
+                    flag_empty = true;
+                    pair<vector<Symbol::Symbol>, pair<double,double>> aux = rules[i].right[rules[i].right.size()-1];
+                    rules[i].right[rules[i].right.size()-1] = rules[i].right[j];
+                    rules[i].right[j] = aux;
+                    break;
+                }
+            }
+            if (!flag_empty) {
+                std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> empty_right;
+                empty_right.first.push_back(Symbol::Symbol("", -1, true, false));
+                rules[i].right.push_back(empty_right);
+            }
+        }
+    }
+    for (int i = 0; i < rules.size(); i ++) {
+        for (int j = 0; j < rules[i].left.size(); j++)
+            rules[i].left[j] = find_symbol_in_vector_by_name(rules[i].left[j].name, non_terminals);
+        for (int j = 0; j < rules[i].right.size(); j++)
+            for (int k = 0; k < rules[i].right[j].first.size(); k++)
+                if (!rules[i].right[j].first[k].terminal)
+                    rules[i].right[j].first[k] = find_symbol_in_vector_by_name(rules[i].right[j].first[k].name, non_terminals);
+    }
+    return flag_nt2_removed;
+}
+void Grammar::Grammar::group_equal_rhs(vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> &right) {
+    for (int j = 0; j < right.size(); j++) {
+        for (int i = j+1; i < right.size(); i++) {
+            if (equal_rhs(right[j].first,  right[i].first)) {
+                right[j].second.first += right[i].second.first;
+                right.erase(right.begin()+i);
+                i--;
+            }
+        }
+    }
+}
+
+std::unordered_map<std::string, std::set<std::string>> Grammar::Grammar::build_nt_pumping_sets(unordered_map<std::string, int> & map, int max_ntv, int max_ntw, int max_ntx, int max_ntz) {
+    std::unordered_map<std::string, std::set<std::string>> map_nt_to_pumping_set;
+    for (auto & p: map) {
+        size_t pos = p.first.find("|", 0);
+        string s = "NT" + p.first.substr(0, pos);
+        s.erase(remove(s.begin(), s.end(), ' '), s.end());
+        if (s.size() == 2)
+            s += "I";
+        string aux = p.first.substr(pos+1, p.first.find("|", pos+1)- pos-1);
+        aux.erase(remove(aux.begin(), aux.end(), ' '), aux.end());
+        if (aux.size() <= max_ntv) {
+            pos = p.first.find("|", pos+1);
+            aux = p.first.substr(pos+1, p.first.find("|", pos+1)- pos-1);
+            aux.erase(remove(aux.begin(), aux.end(), ' '), aux.end());
+            if (aux.size() <= max_ntw) {
+                pos = p.first.find("|", pos+1);
+                aux = p.first.substr(pos+1, p.first.find("|", pos+1)- pos-1);
+                aux.erase(remove(aux.begin(), aux.end(), ' '), aux.end());
+                if (aux.size() <= max_ntx) {
+                    pos = p.first.find("|", pos+1);
+                    aux = p.first.substr(pos+1, p.first.size() - pos-1);
+                    aux.erase(remove(aux.begin(), aux.end(), ' '), aux.end());
+                    if (aux.size() <= max_ntz + p.first.substr(0, p.first.find("|", 0)).size())
+                        map_nt_to_pumping_set[s].insert(p.first);
+                }
+            }
+        }
+
+
+    }
+    return map_nt_to_pumping_set;
+}
+bool Grammar::Grammar::verify_nt_in_subtree_of_nt2(Symbol::Symbol nt1, Symbol::Symbol nt2) {
+    if (nt1.name.compare("NTI") == 0)
+        return true;
+    if (nt1.name.size() > nt2.name.size())
+        return false;
+    for (int i = 0; i < nt1.name.size(); i++)
+        if (nt1.name[i] != nt2.name[i])
+            return false;
+    return true;
+}
+bool Grammar::Grammar::verify_nt_in_subtree_if_any_pumped(Symbol::Symbol nt1, std::vector<Symbol::Symbol> pumped_nts) {
+    for (auto s: pumped_nts)
+        if (verify_nt_in_subtree_of_nt2(nt1, s))
+            return  true;
+    return false;
+
+}
+bool Grammar::Grammar::verify_nt_in_subtree_if_any_pumped_not_equal(Symbol::Symbol nt1, std::vector<Symbol::Symbol> pumped_nts) {
+    for (auto s: pumped_nts) {
+        if (!nt1.equal_symbol(s))
+            if (verify_nt_in_subtree_of_nt2(nt1, s))
+                return  true;
+    }
+    return false;
+
+}
+
+void Grammar::Grammar::add_remaining_subtrees_to_grammar(Symbol::Symbol nt, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> blocked_rhs, Grammar &g, std::vector<Symbol::Symbol> &pumped_nts) {
+    for (auto rhs: rules[nt.id].right) {
+        if (!equal_rhs(rhs.first, blocked_rhs.first)) {
+            if (rhs.first.size() == 2) {
+                if (rhs.first[0].terminal) {
+                    g.rules[g.find_symbol_in_vector_by_name(nt.name, g.non_terminals).id].right.push_back(rhs);
+                    queue<Symbol::Symbol> q_symbol;
+                    q_symbol.push(rhs.first[1]);
+                    while (!q_symbol.empty()) {
+                        Symbol::Symbol aux = q_symbol.front();
+                        q_symbol.pop();
+                        g.rules.push_back(rules[aux.id]);
+                        g.non_terminals.push_back(Symbol::Symbol(aux.name, g.n_non_terminals, aux.terminal, aux.context));
+                        g.n_non_terminals++;
+                        //if (!verify_nt_in_subtree_if_any_pumped(aux, pumped_nts)) {
+                            for (auto s: rules[aux.id].right)
+                                if (s.first.size() > 1) {
+                                    if (verify_nt_in_subtree_of_nt2(aux, s.first[1]))
+                                        q_symbol.push(s.first[1]);
+                                }
+                        //}
+                    }
+                }
+            }
+        }
+    }
+    for (int i = 0; i < g.rules.size(); i++) {
+        g.rules[i].left[0] = find_symbol_in_vector_by_name(g.rules[i].left[0].name, g.non_terminals);
+        for (int j = 0; j <  g.rules[i].right.size(); j++) {
+            for (int k = 0; k < g.rules[i].right[j].first.size(); k++)
+                if (!g.rules[i].right[j].first[k].terminal)
+                    g.rules[i].right[j].first[k] = find_symbol_in_vector_by_name(g.rules[i].right[j].first[k].name, g.non_terminals);
+        }
+    }
+}
+bool Grammar::Grammar::fpta_pumping_compatible_tree(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol) {
+    nt1 = find_symbol_in_vector_by_name(nt1.name, vector_symbol);
+    nt2 = find_symbol_in_vector_by_name(nt2.name, vector_symbol);
+    /*if (nt1.name.size() > nt2.name.size()) {
+        Symbol::Symbol aux = nt1;
+        nt1 = nt2;
+        nt2 = aux;
+    }*/
+    //TODO não é simétrico. Ex: NT000 * NT0 é compatível, mas Nt0 * NT000 não é. Acredito que é pq o exist_subtree para quando não achamos  subarvore no nt2
+    if ((*(vector_rules[nt1.id].right.end() - 1)).second.first == 0 && (*(vector_rules[nt2.id].right.end() - 1)).second.first != 0)
+        return false;
+    if ((*(vector_rules[nt1.id].right.end() - 1)).second.first != 0 && (*(vector_rules[nt2.id].right.end() - 1)).second.first == 0)
+        return false;
+    queue<Symbol::Symbol> q_nt1;
+    queue<Symbol::Symbol> q_nt2;
+    q_nt1.push(nt1);
+    q_nt2.push(nt2);
+    //cout << "Checking " << q_nt1.front().name <<" and " << q_nt2.front().name << endl;
+    double count = 0;
+    double n_nodes = 0;
+    double n_sons = 0.0;
+    double leaf_nodes = 0.0;
+    while (!q_nt1.empty() && !q_nt2.empty()) {
+        n_nodes += 1.0;
+        //cout << "   " << q_nt1.front().name <<" and " << q_nt2.front().name << endl;
+        if (compatible_alergia(q_nt1.front(), q_nt2.front(), tolerance, vector_rules))
+            count += 1.0;
+        else
+            compatible_alergia(q_nt1.front(), q_nt2.front(), tolerance, vector_rules);
+        if (vector_rules[q_nt1.front().id].right.empty())
+            leaf_nodes += 1.0;
+        for (auto rhs: vector_rules[q_nt1.front().id].right)
+            if (rhs.first.size() == 2) {
+                bool exist_both_subtree = false;
+                for (auto rhs2: vector_rules[q_nt2.front().id].right)
+                    if (rhs2.first.size() == 2)
+                        if (rhs.first[0].equal_symbol(rhs2.first[0])) {
+                            if (rhs.first[1].name.empty())
+                                cout << "error here" << endl;
+                            n_sons +=1.0;
+                            q_nt1.push(rhs.first[1]);
+                            q_nt2.push(rhs2.first[1]);
+                            exist_both_subtree = true;
+                            break;
+                        }
+                if (!exist_both_subtree) {
+                    if (n_nodes > 4)
+                        if (count/n_nodes > tolerance /*&& n_sons/n_nodes > 1.0*/) {
+                            cout << nt1.name << " * " << nt2.name << " - n_nodes:  " << n_nodes << ", count: " << count << ", ratio: " <<count/n_nodes/* << ", average sons: " << n_sons/(n_nodes- leaf_nodes) */<< endl;
+                            find_pumping_rule(nt1, nt2);
+                            return true;
+                        }
+                    //cout << nt1.name << " * " << nt2.name << " - n_nodes:  " << n_nodes << ", count: " << count << ", ratio: " <<count/n_nodes << ", average sons: " << n_sons/(n_nodes - leaf_nodes) << endl;
+                    return false;
+                }
+            }
+        q_nt1.pop();
+        q_nt2.pop();
+    }
+    //cout << nt1.name << " * " << nt2.name << " : " << count/n_nodes << endl;
+    /*if (count/n_nodes >= tolerance)
+        return true;*/
+    return false;
+}
+
+bool Grammar::Grammar::pumping_merge_nt_2(Symbol::Symbol nt1, Symbol::Symbol nt2, Grammar &g, std::vector<Symbol::Symbol> & pumped_nts) {
+    string nt1_subs_str = nt1.name;
+    bool flag_nt2_removed = false;
+    //if (nt1_subs_str.compare("NTI") == 0)
+        nt1_subs_str = "NT";
+    nt1_subs_str += nt2.name.substr(2,1);
+    for (int i = 0; nt1.name.compare(nt2.name) != 0; nt1_subs_str += nt2.name.substr(2+i,1)) {
+        for (int j = 0; j < rules[nt1.id].right.size(); j++ ) {
+            if (rules[nt1.id].right[j].first.size() > 1)
+                if (rules[nt1.id].right[j].first[1].name.compare(nt1_subs_str) == 0) {
+                    if (!verify_nt_in_subtree_if_any_pumped(rules[nt1.id].right[j].first[1], pumped_nts)) {
+                        if (rules[nt1.id].right[j].first[1].name.compare(nt2.name) == 0) {
+                            if (g.rules[g.find_symbol_in_vector_by_name(nt1.name, g.non_terminals).id].freq() > 0.0) {
+                                rules[nt1.id].right[j].second.first = 0.0;
+                                flag_nt2_removed = true;
+                            }
+                            else
+                                return false;
+                        }
+                    }
+                    nt1 = find_symbol_in_vector_by_name(rules[nt1.id].right[j].first[1].name, non_terminals);
+                    break;
+                }
+        }
+        i++;
+        if (2+i > nt2.name.size())
+            break;
+    }
+    Symbol::Symbol aux;
+    if (nt2.name.size() == 3)
+        aux = find_symbol_in_vector_by_name("NTI", non_terminals);
+    else
+        aux = find_symbol_in_vector_by_name(nt2.name.substr(0, nt2.name.size()-1), non_terminals);
+    if (!aux.name.empty())
+        pumped_nts.push_back(aux);
+    queue<Symbol::Symbol> q_symbol;
+    q_symbol.push(nt2);
+    while (!q_symbol.empty()) {
+        aux = q_symbol.front();
+        if (!verify_nt_in_subtree_if_any_pumped(aux, pumped_nts)) {
+            for (int i = 0; i < non_terminals.size(); i++) {
+                if (non_terminals[i].name.compare(aux.name) == 0) {
+                    non_terminals.erase(non_terminals.begin() + i);
+                    break;
+                }
+            }
+            q_symbol.pop();
+            for (auto & rhs: rules[aux.id].right) {
+                rhs.second.first = 0.0;
+                if (rhs.first.size() > 1)
+                    q_symbol.push(rhs.first[1]);
+            }
+        } else
+            q_symbol.pop();
+    }
+    for (auto r: g.rules) {
+        if (verify_nt_in_subtree_of_nt2(r.left[0], nt2) /*|| (r.right.size() == 1 && r.right[0].first[0].terminal) */) {
+            int nt_index = find_symbol_in_vector_by_name(r.left[0].name, non_terminals).id;
+            if (nt_index != -1) {
+                rules[nt_index].right.insert(rules[nt_index].right.end(), r.right.begin(), r.right.end());
+                group_equal_rhs(rules[nt_index].right);
+                remove_unused_rule_zero_righties(rules[nt_index].right);
+                if (rules[nt_index].right.empty())
+                    rules.erase(rules.begin() + nt_index);
+            }
+            else {
+                if (r.freq() > 0.0) {
+                    non_terminals.push_back(Symbol::Symbol(r.left[0].name, n_non_terminals, false, false));
+                    n_non_terminals++;
+                    rules.push_back(r);
+                }
+            }
+        }
+    }
+    for (int i = 0; i < non_terminals.size(); i++)
+        non_terminals[i].id = i;
+    n_non_terminals = non_terminals.size();
+    for (int i = 0; i < rules.size(); i++) {
+        remove_unused_rule_zero_righties(rules[i].right);
+        if (rules[i].right.empty()) {
+            rules.erase(rules.begin()+i);
+            i--;
+        } else {
+            bool flag_empty = false;
+            for (int j =0; j < rules[i].right.size(); j++) {
+                if (rules[i].right[j].first[0].name.empty())  {
+                    flag_empty = true;
+                    pair<vector<Symbol::Symbol>, pair<double,double>> aux = rules[i].right[rules[i].right.size()-1];
+                    rules[i].right[rules[i].right.size()-1] = rules[i].right[j];
+                    rules[i].right[j] = aux;
+                    break;
+                }
+            }
+            if (!flag_empty) {
+                std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> empty_right;
+                empty_right.first.push_back(Symbol::Symbol("", -1, true, false));
+                rules[i].right.push_back(empty_right);
+            }
+        }
+    }
+    for (int i = 0; i < rules.size(); i ++) {
+        for (int j = 0; j < rules[i].left.size(); j++)
+            rules[i].left[j] = find_symbol_in_vector_by_name(rules[i].left[j].name, non_terminals);
+        for (int j = 0; j < rules[i].right.size(); j++)
+            for (int k = 0; k < rules[i].right[j].first.size(); k++)
+                if (!rules[i].right[j].first[k].terminal)
+                    rules[i].right[j].first[k] = find_symbol_in_vector_by_name(rules[i].right[j].first[k].name, non_terminals);
+    }
+    return flag_nt2_removed;
+}
+std::map<std::pair<std::string, std::string>, bool> Grammar::Grammar::build_compatible_matrix() {
+    map<pair<string,string>,bool> fpta_compatible_matrix;
+    for (int i = 0; i < n_non_terminals; i ++)
+        for (int j = 0; j < n_non_terminals; j ++)
+            fpta_compatible_matrix[make_pair(non_terminals[i].name, non_terminals[j].name)] = fpta_pumping_compatible_tree(non_terminals[i], non_terminals[j], 0.95, rules, non_terminals);
+    return fpta_compatible_matrix;
+}
+
+
+std::map<std::vector<std::pair<int,int>>, std::map<int, double>>Grammar::Grammar::find_next_prefix_probabilities(std::vector<Symbol::Symbol> prefix) {
+    map<vector<pair<int,int>>, map<int, double>> probs;
+    for (auto t: terminals) {
+        Symbol::Symbol new_ntt = Symbol::Symbol("NT_"+t.name, n_non_terminals, false, false);
+        non_terminals.push_back(new_ntt);
+        n_non_terminals++;
+        for (auto & r: rules)
+            for (auto & rhs: r.right) {
+                for (auto & s: rhs.first) {
+                    if (s.name.compare(t.name) == 0)
+                        s = new_ntt.clone();
+                    else if (s.name.compare(new_ntt.name) == 0)
+                        s = new_ntt.clone();
+                }
+            }
+        vector<Symbol::Symbol> left;
+        left.push_back(new_ntt);
+        pair<vector<Symbol::Symbol>,pair<double, double>> right;
+        right.first.push_back(t);
+        right.second.first = 1.0;
+        vector<pair<vector<Symbol::Symbol>,pair<double, double>>> righties;
+        righties.push_back(right);
+        Rule::Rule r = Rule::Rule(left,righties);
+        rules.push_back(r);
+    }
+    if (prefix.empty()) {
+        for (auto & rhs : rules[0].right)
+            for (auto & s: rhs.first)
+                if (s.name.empty()) {
+                    rhs.second.first += 1.0;
+                    break;
+                }
+        return probs;
+    }
+    int right = 0;
+    stack<pair<Symbol::Symbol, int>> symbol_rights_stack;
+    symbol_rights_stack.push(make_pair(rules[0].left[0], 0));
+    vector<Symbol::Symbol> yielded_word;
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> parse_tree;
+    vector<pair<int,int>> parse_tree_indexes;
+    while (!symbol_rights_stack.empty() && symbol_rights_stack.top().second < rules[symbol_rights_stack.top().first.id].right.size() || !symbol_rights_stack.empty() && symbol_rights_stack.top().second < rules[symbol_rights_stack.top().first.id].right.size() && symbol_rights_stack.top().first.terminal) {
+
+        if (!symbol_rights_stack.top().first.terminal) {
+            Symbol::Symbol to_yield = symbol_rights_stack.top().first;
+            right = symbol_rights_stack.top().second;
+            symbol_rights_stack.pop();
+            //g.rules[to_yield.id].right[right].second.first += 1.0;
+            for (int i = rules[to_yield.id].right[right].first.size()-1; i >=0; i--)
+                symbol_rights_stack.push(make_pair(rules[to_yield.id].right[right].first[i], 0));
+
+            parse_tree_indexes.push_back(make_pair(to_yield.id, right));
+
+        } else {
+            yielded_word.push_back(symbol_rights_stack.top().first);
+
+            bool flag_yield_ok = true;
+            vector<Symbol::Symbol> yielded_no_emptystr_word = remove_empty_substring(yielded_word);
+
+            for (int j = 0; j < yielded_no_emptystr_word.size(); j++) {
+                if (!yielded_no_emptystr_word[j].equal_symbol(prefix[j]) || yielded_no_emptystr_word.size() > prefix.size()) {
+                    flag_yield_ok = false;
+                    while (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1 == parse_tree_indexes[parse_tree_indexes.size()-1].second) {
+                        if (parse_tree_indexes.size() == 1 && parse_tree_indexes[parse_tree_indexes.size()-1].second == rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1)
+                            break;
+                        if (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first[0].terminal) {
+                            if (!symbol_rights_stack.top().first.equal_symbol(yielded_word[yielded_word.size()-1]))
+                                symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size()-1], 0));
+                            yielded_word.pop_back();
+                        }
+                        for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                            symbol_rights_stack.pop();
+                        symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0],parse_tree_indexes[parse_tree_indexes.size()-1].second));
+                        //rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].second.first -= 1.0;
+                        parse_tree_indexes.pop_back();
+                    }
+                    if (!yielded_word.empty()) {
+                        if (yielded_word[yielded_word.size()-1].name.empty()) {
+                            symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size() - 1], 0));
+                            yielded_word.pop_back();
+                        }
+                    }
+                    if (!parse_tree_indexes.empty()) {
+                        for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                            symbol_rights_stack.pop();
+                        symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0], parse_tree_indexes[parse_tree_indexes.size()-1].second+1));
+                        //rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].second.first -= 1.0;
+                        parse_tree_indexes.pop_back();
+                    }
+                    break;
+                }
+            }
+            if (flag_yield_ok) {
+                symbol_rights_stack.pop();
+                if (equal_rhs(yielded_no_emptystr_word, prefix)) {
+                    if (!symbol_rights_stack.empty()) {
+                        for (auto rhs: rules[symbol_rights_stack.top().first.id].right) {
+                            if (!rhs.first[0].name.empty())
+                                if (!rhs.first[0].terminal)
+                                    probs[parse_tree_indexes][rules[rhs.first[0].id].right[0].first[0].id] = rhs.second.first;
+                                else
+                                    probs[parse_tree_indexes][rhs.first[0].id] = rhs.second.first;
+                        }
+                    } else
+                        probs[parse_tree_indexes][-1] = 1.0;
+                }
+
+            }
+
+        }
+        if (symbol_rights_stack.empty()) {
+            if (!equal_word(remove_empty_substring(yielded_word), prefix)) {
+                while (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1 == parse_tree_indexes[parse_tree_indexes.size()-1].second) {
+                    if (parse_tree_indexes.size() == 1 && parse_tree_indexes[parse_tree_indexes.size()-1].second == rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right.size()-1)
+                        break;
+                    if (rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first[0].terminal) {
+                        symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size()-1], 0));
+                        yielded_word.pop_back();
+                    }
+                    for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                        symbol_rights_stack.pop();
+                    symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0],parse_tree_indexes[parse_tree_indexes.size()-1].second));
+                    //rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].second.first -= 1.0;
+                    parse_tree_indexes.pop_back();
+                }
+                if (!yielded_word.empty()) {
+                    if (yielded_word[yielded_word.size() - 1].name.empty()) {
+                        symbol_rights_stack.push(make_pair(yielded_word[yielded_word.size() - 1], 0));
+                        yielded_word.pop_back();
+                    }
+                }
+                if (!parse_tree_indexes.empty()) {
+                    for (int k = 0; k < rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].first.size(); k++)
+                        symbol_rights_stack.pop();
+                    symbol_rights_stack.push(make_pair(rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].left[0], parse_tree_indexes[parse_tree_indexes.size()-1].second+1));
+                    //rules[parse_tree_indexes[parse_tree_indexes.size()-1].first].right[parse_tree_indexes[parse_tree_indexes.size()-1].second].second.first -= 1.0;
+                    parse_tree_indexes.pop_back();
+                }
+            }
+        }
+        if (symbol_rights_stack.size() == 1 && symbol_rights_stack.top().first.name.empty()) {
+            probs[parse_tree_indexes][-1] = 1.0;
+            break;
+        }
+
+    }
+    return probs;
+}
+vector<pair<int, double>> Grammar::Grammar::find_prefix_ranking_probabilities(std::vector<Symbol::Symbol> prefix) {
+    map<int, double> ranking;
+    std::map<std::vector<std::pair<int,int>>, std::map<int, double>> next_s_by_tree = find_next_prefix_probabilities(prefix);
+    double prob_all_t = 0.0;
+    for (auto t: next_s_by_tree) {
+        double prob_t = 1.0;
+        double den_gen_s = 0.0;
+        for (auto r: t.first)
+            prob_t *= rules[r.first].right[r.second].second.first;
+        prob_all_t += prob_t;
+        for (auto p: t.second)
+            den_gen_s += p.second;
+        for (auto p: t.second)
+            ranking[p.first] += (p.second/den_gen_s) * prob_t;
+    }
+    vector<pair<int, double>> ordered_ranking;
+    for (auto w : ranking) {
+        w.second /= prob_all_t;
+        ordered_ranking.push_back(w);
+    }
+    sort(ordered_ranking.begin(), ordered_ranking.end(), sort_p_int_double_bysec);
+    return ordered_ranking;
+}
+size_t Grammar::Grammar::add_subtrees_of_nt1_to_grammar(Symbol::Symbol nt1, Symbol::Symbol nt2, set<string> &nt1_pumping_set, Grammar &g, vector<Symbol::Symbol> &pumped_nts, size_t index_nt1) {
+    size_t index_nt2 = -1;
+    queue<Symbol::Symbol> q_symbol;
+    q_symbol.push(nt1);
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> rhss;
+    while (!q_symbol.empty()) {
+        Symbol::Symbol aux = q_symbol.front();
+        q_symbol.pop();
+        g.rules.push_back(rules[aux.id]);
+        auto rules_it = rules[aux.id].right.end();
+        int i = 0;
+        for (auto & s: rules[aux.id].right)
+            if (s.first.size() > 1) {
+                if (s.first[1].equal_symbol(nt2)) {
+                    index_nt2 = find_symbol_in_vector_by_name(aux.name, g.non_terminals).id;
+                    rhss = g.build_pumping_righties(nt1_pumping_set, index_nt2, index_nt1);
+                    group_equal_rhs(rhss);
+                    rules_it = g.rules[index_nt2].right.begin()+i;
+                }
+                else if (verify_nt_in_subtree_of_nt2(aux, s.first[1]) && s.first[1].name.compare("NTI") != 0) {
+                    g.non_terminals.push_back(Symbol::Symbol(s.first[1].name, g.n_non_terminals, s.first[1].terminal, s.first[1].context));
+                    g.n_non_terminals++;
+                    q_symbol.push(s.first[1]);
+                }
+                i++;
+            }
+        if (find_symbol_in_vector_by_name(aux.name, g.non_terminals).id == index_nt2) {
+            g.rules[index_nt2].right.erase(rules_it);
+            rhss.insert(rhss.end(), g.rules[index_nt2].right.begin(), g.rules[index_nt2].right.end());
+            group_equal_rhs(rhss);
+            g.rules[index_nt2].right = rhss;
+        }
+    }
+    for (int i = 0; i < g.rules.size(); i++) {
+        g.rules[i].left[0] = find_symbol_in_vector_by_name(g.rules[i].left[0].name, g.non_terminals);
+        for (int j = 0; j <  g.rules[i].right.size(); j++) {
+            for (int k = 0; k < g.rules[i].right[j].first.size(); k++)
+                if (!g.rules[i].right[j].first[k].terminal)
+                    g.rules[i].right[j].first[k] = find_symbol_in_vector_by_name(g.rules[i].right[j].first[k].name, g.non_terminals);
+        }
+    }
+    return index_nt2;
+}
+
+bool Grammar::Grammar::pumping_merge_nt_3(Symbol::Symbol nt1, Symbol::Symbol nt2, Grammar &g, std::vector<Symbol::Symbol> &pumped_nts) {
+
+    Symbol::Symbol fixed_nt1 = nt1;
+    string nt1_subs_str = nt1.name;
+    bool flag_nt2_removed = false;
+    //if (nt1_subs_str.compare("NTI") == 0)
+    nt1_subs_str = "NT";
+    nt1_subs_str += nt2.name.substr(2,1);
+    for (int i = 0; nt1.name.compare(nt2.name) != 0; nt1_subs_str += nt2.name.substr(2+i,1)) {
+        for (int j = 0; j < rules[nt1.id].right.size(); j++ ) {
+            if (rules[nt1.id].right[j].first.size() == 2 )
+                if (rules[nt1.id].right[j].first[1].name.compare(nt1_subs_str) == 0) {
+                    if (!verify_nt_in_subtree_if_any_pumped(rules[nt1.id].right[j].first[1], pumped_nts)) {
+                        if (rules[nt1.id].right[j].first[1].name.compare(nt2.name) == 0) {
+                            flag_nt2_removed = true;
+                        }
+                    }
+                    //TODO Parece estar foldando a subtree mais de uma vez. verificar isso depois. mas talvez não faça diferença pq o valor a ser foldado será 0.
+                    fold_fpta_subtree(fixed_nt1, nt2, pumped_nts, rules, non_terminals);
+                    if (flag_nt2_removed)
+                        rules[nt1.id].right[j].second.first = 0.0;
+                    nt1 = find_symbol_in_vector_by_name(rules[nt1.id].right[j].first[1].name, non_terminals);
+                    break;
+                }
+        }
+        i++;
+        if (2+i > nt2.name.size())
+            break;
+    }
+    Symbol::Symbol aux;
+    if (nt2.name.size() == 3)
+        aux = find_symbol_in_vector_by_name("NTI", non_terminals);
+    else
+        aux = find_symbol_in_vector_by_name(nt2.name.substr(0, nt2.name.size()-1), non_terminals);
+    if (!aux.name.empty())
+        pumped_nts.push_back(aux);
+    queue<Symbol::Symbol> q_symbol;
+    q_symbol.push(nt2);
+    while (!q_symbol.empty()) {
+        aux = q_symbol.front();
+        if (!verify_nt_in_subtree_if_any_pumped(aux, pumped_nts)) {
+            for (int i = 0; i < non_terminals.size(); i++) {
+                if (non_terminals[i].name.compare(aux.name) == 0) {
+                    non_terminals.erase(non_terminals.begin() + i);
+                    break;
+                }
+            }
+        }
+            q_symbol.pop();
+            for (auto & rhs: rules[aux.id].right) {
+                if (rhs.first.size() == 1)
+                    rhs.second.first = 0.0;
+                else {
+                    if (rhs.first.size() > 1) {
+                        if (verify_nt_in_subtree_of_nt2(aux, rhs.first[1]) && rhs.first[1].name.compare("NTI") != 0) {
+                            rhs.second.first = 0.0;
+                            q_symbol.push(rhs.first[1]);
+                        }
+                    }
+                }
+            }
+    }
+    for (auto r: g.rules) {
+        if (verify_nt_in_subtree_if_any_pumped(r.left[0], pumped_nts) /*|| (r.right.size() == 1 && r.right[0].first[0].terminal) */) {
+            int nt_index = find_symbol_in_vector_by_name(r.left[0].name, non_terminals).id;
+            if (nt_index != -1) {
+                for (auto & rhs: r.right) {
+                    bool exist_both_subtree = false;
+                    for (auto & rhs2: rules[nt_index].right) {
+                        if (equal_rhs(rhs.first, rhs2.first)) {
+                            if (rhs.first.size() == 1 || verify_nt_in_subtree_if_any_pumped(rhs.first[1], pumped_nts)) {
+                                if (rhs.first.size() != 2)
+                                    rhs2.second.first = rhs.second.first;
+                            }
+                            exist_both_subtree = true;
+                            break;
+                        }
+                    }
+                    if (!exist_both_subtree) {
+                        if (rhs.first.size() == 1 || verify_nt_in_subtree_if_any_pumped(rhs.first[1], pumped_nts)) {
+                            rules[nt_index].right.push_back(rhs);
+                        }
+                    }
+                }
+            } else {
+                if (r.freq() > 0.0) {
+                    non_terminals.push_back(Symbol::Symbol(r.left[0].name, n_non_terminals, false, false));
+                    n_non_terminals++;
+                    rules.push_back(r);
+                }
+            }
+        }
+    }
+    /*aux = find_symbol_in_vector_by_name(nt2.name.substr(0, nt2.name.size()-1), non_terminals);
+    rules[aux.id].right.insert(rules[aux.id].right.end(),
+                               g.rules[find_symbol_in_vector_by_name(nt2.name.substr(0, nt2.name.size()-1), non_terminals).id].right.begin(),
+                               g.rules[find_symbol_in_vector_by_name(nt2.name.substr(0, nt2.name.size()-1), non_terminals).id].right.end());
+    group_equal_rhs(rules[aux.id].right);
+    remove_unused_rule_zero_righties(rules[aux.id].right);*/
+    for (int i = 0; i < non_terminals.size(); i++)
+        non_terminals[i].id = i;
+    n_non_terminals = non_terminals.size();
+    for (int i = 0; i < rules.size(); i++) {
+
+        remove_unused_rule_zero_righties(rules[i].right);
+        if (rules[i].right.empty()) {
+            if (!verify_nt_in_subtree_if_any_pumped(rules[i].left[0], pumped_nts)) {
+            rules.erase(rules.begin()+i);
+            i--;
+            }
+        } else {
+            bool flag_empty = false;
+            for (int j =0; j < rules[i].right.size(); j++) {
+                if (rules[i].right[j].first[0].name.empty())  {
+                    flag_empty = true;
+                    pair<vector<Symbol::Symbol>, pair<double,double>> aux = rules[i].right[rules[i].right.size()-1];
+                    rules[i].right[rules[i].right.size()-1] = rules[i].right[j];
+                    rules[i].right[j] = aux;
+                    break;
+                }
+            }
+            if (!flag_empty) {
+                std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> empty_right;
+                empty_right.first.push_back(Symbol::Symbol("", -1, true, false));
+                rules[i].right.push_back(empty_right);
+            }
+        }
+    }
+    for (int i = 0; i < rules.size(); i ++) {
+        for (int j = 0; j < rules[i].left.size(); j++)
+            rules[i].left[j] = find_symbol_in_vector_by_name(rules[i].left[j].name, non_terminals);
+        for (int j = 0; j < rules[i].right.size(); j++)
+            for (int k = 0; k < rules[i].right[j].first.size(); k++)
+                if (!rules[i].right[j].first[k].terminal)
+                    rules[i].right[j].first[k] = find_symbol_in_vector_by_name(rules[i].right[j].first[k].name, non_terminals);
+    }
+    return flag_nt2_removed;
+}
+void Grammar::Grammar::fold_fpta_subtree(Symbol::Symbol nt1, Symbol::Symbol nt2, vector<Symbol::Symbol> &pumped_nts, vector<Rule::Rule> &vector_rules, vector<Symbol::Symbol> &vector_symbol) {
+    nt1 = find_symbol_in_vector_by_name(nt1.name, vector_symbol);
+    nt2 = find_symbol_in_vector_by_name(nt2.name, vector_symbol);
+    queue<Symbol::Symbol> q_nt1;
+    queue<Symbol::Symbol> q_nt2;
+    queue<Symbol::Symbol> q_nt2_remaining;
+    q_nt1.push(nt1);
+    q_nt2.push(nt2);
+    double count_pump = 0.0;
+    while (!q_nt1.empty() && !q_nt2.empty()) {
+        for (auto & rhs: vector_rules[q_nt2.front().id].right) {
+            bool exist_both_subtree = false;
+            for (auto & rhs2: vector_rules[q_nt1.front().id].right) {
+                if (rhs.first[0].id == rhs2.first[0].id) {
+                    if (rhs.first.size() == 1 || !verify_nt_in_subtree_if_any_pumped(rhs.first[1], pumped_nts)) {
+                        if (rhs2.first[1].equal_symbol(nt2))
+                            count_pump += rhs.second.first;
+                        rhs2.second.first += rhs.second.first;
+                        rhs.second.first = 0.0;
+                    }
+                    if (rhs.first.size() > 1) {
+                        if (verify_nt_in_subtree_of_nt2(q_nt2.front(), rhs.first[1]) && rhs.first[1].name.compare("NTI") != 0) {
+                            q_nt2.push(rhs.first[1]);
+                            if (rhs2.first[1].equal_symbol(nt2)) {
+                                q_nt1.push(nt1);
+                                //rhs2.second.first = 0.0;
+                            }
+                            else
+                                q_nt1.push(rhs2.first[1]);
+                        }
+                    }
+                    exist_both_subtree = true;
+                    break;
+                }
+            }
+            if (!exist_both_subtree) {
+                q_nt2_remaining.push(rhs.first[1]);
+                //COMENTEI TUDO PQ ACREDITO QUE CASO A SUBTREE NÃO EXISTA, OS SIMBÓLIS DELA SÃO GERADOS PELO BOMBEAMENTO
+                /*auto right = rhs;
+                Symbol::Symbol new_nt = Symbol::Symbol(q_nt1.front().name + right.first[0].name, n_non_terminals, false, false);
+                n_non_terminals++;
+                right.first[1] = new_nt;
+                vector_rules[q_nt1.front().id].right.push_back(right);
+
+                vector<Symbol::Symbol> lhs;
+                lhs.push_back(new_nt);
+                std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> new_rhs;
+                Rule::Rule r = Rule::Rule(lhs, new_rhs);*/
+
+                if (rhs.first.size() == 1 || !verify_nt_in_subtree_if_any_pumped(rhs.first[1], pumped_nts)) {
+                    rhs.second.first = 0.0;
+                }
+                /*if (rhs.first.size() > 1) {
+                    if (verify_nt_in_subtree_of_nt2(q_nt2.front(), rhs.first[1]) && rhs.first[1].name.compare("NTI") != 0) {
+                        q_nt1.push(new_nt);
+                        q_nt2.push(rhs.first[1]);
+                    }
+                }*/
+            }
+        }
+        q_nt1.pop();
+        q_nt2.pop();
+    }
+    while (!q_nt2_remaining.empty()) {
+        for (auto & rhs: vector_rules[q_nt2_remaining.front().id].right) {
+            if (rhs.first.size() == 1 || !verify_nt_in_subtree_if_any_pumped(rhs.first[1], pumped_nts)) {
+                rhs.second.first = 0.0;
+            }
+            if (rhs.first.size() > 1) {
+                if (verify_nt_in_subtree_of_nt2(q_nt2_remaining.front(), rhs.first[1]) && rhs.first[1].name.compare("NTI") != 0) {
+                    q_nt2_remaining.push(rhs.first[1]);
+                }
+            }
+        }
+        q_nt2_remaining.pop();
+    }
+    //cout << "coutn pump: " << count_pump << endl;
+}
+void Grammar::Grammar::pumping_alergia(double alpha, vector<Symbol::Symbol> & pumped_nts) {
+    vector<Symbol::Symbol> red;
+    red.push_back(non_terminals[0]);
+    vector<Symbol::Symbol> blue;
+    for (auto s: rules[0].right) {
+        if (s.first[0].name.empty())
+            break;
+        blue.push_back(s.first[1]);
+    }
+    int t0 = 10;
+
+
+    auto itBlue = blue.begin();
+    double freqCBlue = rules[(*itBlue).id].freq();
+    while (!blue.empty()) {
+        if (freqCBlue >= t0) {
+            bool existRed = false;
+            for (const auto& cRed: red) {
+                if (fpta_single_pumping_compatible_tree(cRed, (*itBlue), 0.97, rules, non_terminals)) {
+                    cout <<  ". merge " << cRed.name << " and " << (*itBlue).name << endl;
+                    stochastic_pumping_merge(cRed, (*itBlue), pumped_nts);
+                    existRed = true;
+                    break;
+                }
+            }
+            if (!existRed) {
+                red.push_back((*itBlue));
+                for (auto right: rules[(*itBlue).id].right) {
+                    if (!(right.first[0].name.empty()) && right.first.size() == 2)
+                        blue.push_back(right.first[1]);
+                }
+                itBlue = blue.begin();
+            }
+            blue.erase(itBlue);
+            itBlue = blue.begin();
+            if (itBlue == blue.end())
+                break;
+            freqCBlue = rules[(*itBlue).id].freq();
+            //print_grammar();
+        } else {
+            itBlue = blue.begin();
+            blue.erase(itBlue);
+            itBlue = blue.begin();
+            if (itBlue == blue.end())
+                break;
+            freqCBlue = rules[(*itBlue).id].freq();
+        }
+
+    }
+    //print_grammar();
+    remove_unused_rules();
+    normalize_probs();
+}
+void Grammar::Grammar::stochastic_pumping_merge(const Symbol::Symbol &a, const Symbol::Symbol &b, vector<Symbol::Symbol> &pumped_nts) {
+    vector<Rule::Rule>::iterator itRule;
+    for (itRule = rules.begin(); itRule < rules.end(); itRule++) {
+        std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
+        for (itRight = (*itRule).right.begin(); itRight != (*itRule).right.end(); itRight++) {
+            if (itRight->first.size() == 2) {
+                if ((*itRight).first[1].id == b.id) {
+                    double count_pumping_rule = stochastic_pumping_fold(a, b, pumped_nts);
+                    std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> newRight;
+                    //int n = (*itRight).second.first;
+                    newRight.first.push_back((*itRight).first[0]);
+                    newRight.first.push_back(a);
+                    newRight.second.first = (*itRight).second.first - count_pumping_rule;
+                    (*itRight).second.first = count_pumping_rule;
+                    (*itRule).right.insert((*itRule).right.end()-1, newRight);
+                    return;
+                }
+            }
+        }
+    }
+}
+double Grammar::Grammar::stochastic_pumping_fold(const Symbol::Symbol &a, const Symbol::Symbol &b, vector<Symbol::Symbol> &pumped_nts) {
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRight;
+    double count_pumping_rules = 0.0;
+    for (itRight = rules[b.id].right.begin(); itRight != rules[b.id].right.end()-1; itRight++) {
+        std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>::iterator itRighta;
+        for (itRighta = rules[a.id].right.begin(); itRighta != rules[a.id].right.end(); itRighta++) {
+            if (itRighta->first.size() <= 2 && itRight->first.size() <= 2)
+                if (itRighta->first[0].id == itRight->first[0].id) {
+                    if (itRighta->second.first >=1.0) {
+                        if (!verify_nt_in_subtree_if_any_pumped(itRighta->first[1], pumped_nts))
+                            break;
+                        else {
+                            count_pumping_rules += itRighta->second.first;
+                        }
+
+                    }
+                }
+        }
+        if (itRighta != rules[a.id].right.end()) {
+            if (itRighta->second.first >= 1.0) {
+                if (!itRighta->first[0].name.empty())
+                    stochastic_pumping_fold(itRighta->first[1], itRight->first[1], pumped_nts);
+                (*itRighta).second.first += (*itRight).second.first;
+                (*itRight).second.first = 0.0;
+            }
+        }
+        else {
+            rules[a.id].right.push_back(*itRight);
+            (*itRight).second.first = 0.0;
+        }
+    }
+    (*(rules[a.id].right.end()-1)).second.first += (*(rules[b.id].right.end()-1)).second.first;
+    (*(rules[b.id].right.end()-1)).second.first = 0.0;
+    return count_pumping_rules;
+}
+bool Grammar::Grammar::check_id_nt_rule() {
+    for (int i = 0; i <  rules.size();i ++)
+        if (rules[i].left[0].id != i)
+            return false;
+    return true;
+}
+
+
+bool Grammar::Grammar::fpta_single_pumping_compatible_tree(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol) {
+    nt1 = find_symbol_in_vector_by_name(nt1.name, vector_symbol);
+    nt2 = find_symbol_in_vector_by_name(nt2.name, vector_symbol);
+    queue<Symbol::Symbol> q_nt1;
+    queue<Symbol::Symbol> q_nt2;
+    q_nt1.push(nt1);
+    q_nt2.push(nt2);
+    double count = 0;
+    double n_nodes = 0;
+    double n_sons = 0.0;
+    double leaf_nodes = 0.0;
+    while (!q_nt1.empty() && !q_nt2.empty()) {
+        n_nodes += 1.0;
+        if (compatible_alergia(q_nt1.front(), q_nt2.front(), tolerance, vector_rules))
+            count += 1.0;
+        else
+            compatible_alergia(q_nt1.front(), q_nt2.front(), tolerance, vector_rules);
+        if (vector_rules[q_nt1.front().id].right.empty())
+            leaf_nodes += 1.0;
+        for (auto rhs: vector_rules[q_nt1.front().id].right)
+            if (rhs.first.size() == 2) {
+                bool exist_both_subtree = false;
+                for (auto rhs2: vector_rules[q_nt2.front().id].right)
+                    if (rhs2.first.size() == 2)
+                        if (rhs.first[0].equal_symbol(rhs2.first[0])) {
+                            if (rhs.first[1].name.empty())
+                                cout << "error here" << endl;
+                            n_sons +=1.0;
+                            q_nt1.push(rhs.first[1]);
+                            q_nt2.push(rhs2.first[1]);
+                            exist_both_subtree = true;
+                            break;
+                        }
+                if (!exist_both_subtree) {
+                    if (n_nodes > 4)
+                        if (count/n_nodes > tolerance && n_sons/n_nodes <= 1.0) {
+                            cout << nt1.name << " * " << nt2.name << " - n_nodes:  " << n_nodes << ", count: " << count << ", ratio: " <<count/n_nodes << ", average sons: " << n_sons/(n_nodes- leaf_nodes);
+                            return true;
+                        }
+                    //cout << nt1.name << " * " << nt2.name << " - n_nodes:  " << n_nodes << ", count: " << count << ", ratio: " <<count/n_nodes << ", average sons: " << n_sons/(n_nodes - leaf_nodes) << endl;
+                    return false;
+                }
+            }
+        q_nt1.pop();
+        q_nt2.pop();
+    }
+    cout << nt1.name << " * " << nt2.name << " : " << count/n_nodes << endl;
+    if (count/n_nodes >= tolerance)
+        return true;
+    return false;
+}
+void Grammar::Grammar::eliminate_covered_pumpings(unordered_map<std::string, std::vector<int>> &map_pump_to_word, unordered_map<std::string, int> &map) {
+    for (auto & p1: map_pump_to_word) {
+        for (auto & p2: map_pump_to_word) {
+            if (p1.first.compare(p2.first) != 0) {
+                set<int> p1_set (p1.second.begin(), p1.second.end());
+                set<int> p2_set (p2.second.begin(), p2.second.end());
+                bool contain = true;
+                for (auto w: p2_set) {
+                    if (p1_set.find(w) == p1_set.end()) {
+                        contain = false;
+                        break;
+                    }
+                }
+                if (contain) {
+                    map_pump_to_word.erase(p2.first);
+                    map.erase(p2.first);
+                    break;
+                }
+                for (auto w: p1_set) {
+                    if (p2_set.find(w) == p2_set.end()) {
+                        contain = false;
+                        break;
+                    }
+                }
+                if (contain) {
+                    map_pump_to_word.erase(p1.first);
+                    map.erase(p1.first);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/*TODO Criar regra de bombeamento da seguinte forma:
+ *      Para cada NT
+ *        Gerar lista de compatíveis de um NT. Essa lista mostra que todos NTs na lista estão no mesmo momento do bombeamento.
+ *      Até que um NT sem nenhum NT compatível seja encontrado. (este possivelmente é o NT do final do bombeamento)
+ *      A partir das listas geradas, encontrar o x, w e y.
+ *          Se w existir, ele é T que sempre suscede o NT a ser bombeado.
+ *
+ * TODO calcular tamanho de x no bombeamento. Se um elemento é subarvore de outro, a menor diferença é o tamanho do bombeamento x ( os maiores tem que ser multiplos do tamanho).
+ *      O que vem depois pode ser w ou z.
+ * */
+
+void Grammar::Grammar::find_pumping_rule(Symbol::Symbol nt1, Symbol::Symbol nt2) {
+    for (auto r: rules) {
+        for (auto rhs: r.right) {
+            std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right;
+            std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rhs_pumping;
+            if (rhs.first.size() > 1) {
+                if (rhs.first[1].id == nt2.id) {
+                    rhs_pumping.first.push_back(rhs.first[0]);
+                    rhs_pumping.first.push_back(nt1);
+                    rhs_pumping.second.first = 1.0;
+                    build_rhs_until_empty_rule(nt2, right, rhs_pumping);
+                    build_rhs_until_empty_rule(nt1, right, rhs_pumping);
+                    vector<Symbol::Symbol> lhs = r.left;
+                    Rule::Rule new_rule = Rule::Rule(lhs, right);
+                    new_rule.print_rule();
+
+                }
+            }
+        }
+    }
+}
+bool Grammar::Grammar::exist_empty_rule(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right) {
+    for (auto rhs: right)
+        if (rhs.first[0].name.empty())
+            if (rhs.second.first > 0.0)
+                return true;
+    return false;
+}
+void Grammar::Grammar::build_rhs_until_empty_rule(Symbol::Symbol nt1, std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> &right, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> rhs_pumping) {
+    if (!exist_empty_rule(rules[nt1.id].right)) {
+        for (auto rhs: rules[nt1.id].right) {
+            if (!rhs.first[0].name.empty()) {
+                std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> rhs_pumping_aux = rhs_pumping;
+                rhs_pumping_aux.first.push_back(rhs.first[0]);
+                build_rhs_until_empty_rule(rhs.first[1], right, rhs_pumping_aux);
+            }
+        }
+    } else {
+        right.push_back(rhs_pumping);
+    }
+}
+void Grammar::Grammar::build_pumping_fronts() {
+    vector<set<int>> pumping_fronts;
+
+    pair<int, int> first_i_j = find_first_compatible_pump();
+
+    while (first_i_j.first != -1) {
+        set<int> pumping_front;
+        pumping_front.insert(first_i_j.first);
+        if (first_i_j.second != -1) {
+            pumping_front.insert(first_i_j.second);
+            set<int> front_aux = pumping_front;
+            while (!front_aux.empty()) {
+                set<int> next_nts_in_front;
+                for (auto nt : front_aux) {
+                    for (int k = non_terminals[nt].id+1; k < n_non_terminals; k++) {
+                        if (fpta_pumping_compatible_tree(non_terminals[nt], non_terminals[k], 0.95, rules, non_terminals)) {
+                            if (pumping_front.find(non_terminals[k].id) == pumping_front.end()) {
+                                next_nts_in_front.insert(k);
+                            }
+                        }
+                    }
+                }
+                pumping_front.insert(next_nts_in_front.begin(), next_nts_in_front.end());
+                front_aux = next_nts_in_front;
+            }
+
+        }
+        pumping_fronts.push_back(pumping_front);
+
+        first_i_j.first = first_i_j.second = -1;
+        for (int k = 0; k < n_non_terminals; k++) {
+            bool found_k = true;
+            for (auto pf : pumping_fronts) {
+                if (pf.find(k) != pf.end()) {
+                    found_k = false;
+                    break;
+                }
+            }
+            if (found_k) {
+                first_i_j.first = k;
+                break;
+            }
+        }
+        if (first_i_j.first != -1)
+            for (int i = first_i_j.first + 1; i < n_non_terminals; i++) {
+                if (fpta_pumping_compatible_tree(non_terminals[first_i_j.first], non_terminals[i], 0.95, rules, non_terminals)) {
+                    first_i_j.second = i;
+                    break;
+                }
+
+            }
+    }
+
+    for (int i=0; i < pumping_fronts.size(); i++) {
+        cout << "front " << i;
+        for (auto nt: pumping_fronts[i])
+            cout << " " << non_terminals[nt].name << " ";
+        cout << endl;
+    }
+    for (auto s: pumping_fronts) {
+        for (auto f:  s) {
+            if (*s.begin() != f) {
+                cout << non_terminals[*s.begin()].name << " " << non_terminals[f].name << endl;
+                find_pumping_rule(non_terminals[*s.begin()], non_terminals[f]);
+            }
+        }
+    }
+
+
+}
+std::pair<int, int> Grammar::Grammar::find_first_compatible_pump() {
+    for (int i = 0; i < n_non_terminals; i++)
+        for (int j = i+1; j < n_non_terminals; j++)
+            if (fpta_pumping_compatible_tree(non_terminals[i], non_terminals[j], 0.95, rules, non_terminals))
+                return make_pair(i,j);
+    return make_pair(-1,-1);
+}
+
+bool Grammar::Grammar::fpta_pumping_compatible_tree2(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol) {
+    nt1 = find_symbol_in_vector_by_name(nt1.name, vector_symbol);
+    nt2 = find_symbol_in_vector_by_name(nt2.name, vector_symbol);
+    /*if (nt1.name.size() > nt2.name.size()) {
+        Symbol::Symbol aux = nt1;
+        nt1 = nt2;
+        nt2 = aux;
+    }*/
+    if ((*(vector_rules[nt1.id].right.end() - 1)).second.first == 0 && (*(vector_rules[nt2.id].right.end() - 1)).second.first != 0)
+        return false;
+    if ((*(vector_rules[nt1.id].right.end() - 1)).second.first != 0 && (*(vector_rules[nt2.id].right.end() - 1)).second.first == 0)
+        return false;
+    queue<Symbol::Symbol> q_nt1;
+    queue<Symbol::Symbol> q_nt2;
+    q_nt1.push(nt1);
+    q_nt2.push(nt2);
+    //cout << "Checking " << q_nt1.front().name <<" and " << q_nt2.front().name << endl;
+    double count = 0;
+    double n_nodes = 0;
+    double n_sons = 0.0;
+    double leaf_nodes = 0.0;
+    while (!q_nt1.empty() && !q_nt2.empty()) {
+        n_nodes += 1.0;
+        //cout << "   " << q_nt1.front().name <<" and " << q_nt2.front().name << endl;
+        if (compatible_alergia(q_nt1.front(), q_nt2.front(), tolerance, vector_rules))
+        //if (compatible_alergia(q_nt1.front(), q_nt2.front(), tolerance, vector_rules))
+            count += 1.0;
+        else
+            return false;
+        if (vector_rules[q_nt1.front().id].right.empty())
+            leaf_nodes += 1.0;
+        for (auto rhs: vector_rules[q_nt1.front().id].right)
+            if (rhs.first.size() == 2) {
+                bool exist_both_subtree = false;
+                for (auto rhs2: vector_rules[q_nt2.front().id].right)
+                    if (rhs2.first.size() == 2)
+                        if (rhs.first[0].equal_symbol(rhs2.first[0])) {
+                            if (rhs.first[1].name.empty())
+                                cout << "error here" << endl;
+                            n_sons +=1.0;
+                            q_nt1.push(rhs.first[1]);
+                            q_nt2.push(rhs2.first[1]);
+                            exist_both_subtree = true;
+                            if (rules[rhs2.first[1].id].right.size() == 1)
+                                exist_both_subtree = false;
+                            break;
+                        }
+                if (!exist_both_subtree) {
+                    if (q_nt1.front().id == nt1.id)
+                        return false;
+                    return true;
+                }
+            }
+        q_nt1.pop();
+        q_nt2.pop();
+    }
+    //cout << nt1.name << " * " << nt2.name << " : " << count/n_nodes << endl;
+    /*if (count/n_nodes >= tolerance)
+        return true;*/
+    return false;
+}
+std::vector<Rule::Rule> Grammar::Grammar::find_pumping_rule_by_auto_similarity(Symbol::Symbol nt, set<int> &not_search_nts, std::map<int, std::vector<std::pair<Symbol::Symbol, int>>> compatible_lists) {
+    //cout << "Checking nt " << nt.name <<", id: " << nt.id << endl << "   words: ";
+    queue<Symbol::Symbol> queue_symbol;
+    queue_symbol.push(nt);
+    map<int, vector<tuple<vector<Symbol::Symbol>, vector<Symbol::Symbol>, vector<Symbol::Symbol>, vector<Symbol::Symbol>, set<int>, int>>> nts_pumpings;
+    while (!queue_symbol.empty()) {
+        for (auto rhs: rules[queue_symbol.front().id].right) {
+            if (rhs.first.size() == 2) {
+                queue_symbol.push(rhs.first[1]);
+            }
+        }
+        bool flag = exist_empty_rule(rules[queue_symbol.front().id].right);
+        /*if (flag)
+            cout << "";*/
+        if (flag) {
+
+            int frequency = 0;
+            int amount = 0;
+            vector<Symbol::Symbol> z_path;
+            vector<Symbol::Symbol> path_to_accept;
+            path_to_accept.push_back(queue_symbol.front());
+            while (path_to_accept[path_to_accept.size()-1].id != nt.id) {
+                for (auto r: rules) {
+                    bool back_nt_found = false;
+                    for (auto rhs: r.right) {
+                        if (rhs.first.size() == 2) {
+                            if (rhs.first[1].id == path_to_accept[path_to_accept.size()-1].id) {
+                                path_to_accept.push_back(r.left[0]);
+                                back_nt_found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (back_nt_found)
+                        break;
+
+                }
+            }
+            //cout  << path_to_accept[0].name << ", ";
+
+            while (path_to_accept.size() > 1) {
+                set<int> nts_that_pumps;
+                int count_repeatence = 0;
+                queue<pair<Symbol::Symbol, int>> queue_symbol_auto_similarity;
+                vector<pair<Symbol::Symbol, int>> list_symbol_auto_similarity;
+                list_symbol_auto_similarity = compatible_lists[path_to_accept[path_to_accept.size()-1].id];
+                /*for (auto rhs: rules[nt.id].right)
+                    if (rhs.first.size() == 2)
+                        queue_symbol_auto_similarity.push(make_pair(rhs.first[1], 1));
+
+                while (!queue_symbol_auto_similarity.empty()) {
+                    if (fpta_pumping_compatible_tree2( path_to_accept[path_to_accept.size()-1], queue_symbol_auto_similarity.front().first,1.5, rules, non_terminals)) {//if (check_auto_similarity(path_to_accept, queue_symbol_auto_similarity.front().first)) {
+                        //fpta_pumping_compatible_tree2( path_to_accept[path_to_accept.size()-1], queue_symbol_auto_similarity.front().first,1.5, rules, non_terminals);
+                        list_symbol_auto_similarity.push_back(queue_symbol_auto_similarity.front());
+                        count_repeatence++;
+                    }
+                    for (auto rhs: rules[queue_symbol_auto_similarity.front().first.id].right)
+                        if (rhs.first.size() == 2)
+                            queue_symbol_auto_similarity.push(make_pair(rhs.first[1], queue_symbol_auto_similarity.front().second+1));
+                    queue_symbol_auto_similarity.pop();
+
+                }*/
+                set<int> accept_repetition;
+                map<int, int> start_pumping;
+                int last_start_pump = 0;
+                int next_start_pump = 0;
+                /*if (!list_symbol_auto_similarity.empty())
+                    cout << endl <<  "      found some auto similarities at " << path_to_accept[0].name;*/
+                for (auto s: list_symbol_auto_similarity) {
+
+
+                    if (start_pumping.find(s.second - next_start_pump) == start_pumping.end()) {
+                        start_pumping[s.second - last_start_pump] += 1;
+                        next_start_pump = last_start_pump;
+                        last_start_pump = s.second;
+                    } else {
+                        start_pumping[s.second - next_start_pump] += 1;
+                    }
+                    queue<pair<Symbol::Symbol, int>>s_to_first_accept;
+                    s_to_first_accept.push(s);
+                    while (!s_to_first_accept.empty()) {
+                        for (auto rhs: rules[s_to_first_accept.front().first.id].right) {
+                            if (rhs.first.size() == 2) {
+                                s_to_first_accept.push(make_pair(rhs.first[1], s_to_first_accept.front().second+1));
+                            }
+                        }
+                        if (exist_empty_rule(rules[s_to_first_accept.front().first.id].right) ) {
+                            if (s_to_first_accept.front().second - (int) path_to_accept.size() > 0) {
+                                //cout << "Accept in: " << s_to_first_accept.front().second -  s.second << endl;
+                                accept_repetition.insert(s_to_first_accept.front().second - (int) path_to_accept.size());
+                            }
+                            break;
+                        }
+                        s_to_first_accept.pop();
+                    }
+                }
+                //sort(accept_repetition.begin(),accept_repetition.end());
+                if (!list_symbol_auto_similarity.empty() && !accept_repetition.empty()) {
+
+                    map<int, int> count_accept_difference;
+                    for (auto e: accept_repetition) {
+                        std::pair<std::set<int>::const_iterator,std::set<int>::const_iterator> ret;
+                        ret = accept_repetition.equal_range(e);
+                        count_accept_difference[*ret.second - *ret.first] += 1;
+
+                    }
+                    int max = 0;
+                    int pumping_size = 0;
+                    if (accept_repetition.size() == 1)
+                        pumping_size = *accept_repetition.begin();
+                    else {
+                        for (auto e: count_accept_difference) {
+                            if (e.second > max && e.first > 0) {
+                                max = e.second;
+                                pumping_size = e.first;
+                            }
+                        }
+                    }
+                    if (pumping_size == 0)
+                        break;
+                    if (path_to_accept.size() >= pumping_size) {
+                        //cout << endl <<  "      found some auto similarities with repetition at " << path_to_accept[0].name;
+                        max = 0;
+                        int v_size = 0;
+                        for (auto e: start_pumping) {
+                            if (e.second > max) {
+                                max = e.second;
+                                v_size = e.first;
+                            }
+                        }
+                        if (pumping_size < v_size)
+                            break;
+                        vector<Symbol::Symbol> u;
+                        vector<Symbol::Symbol> v;
+                        vector<Symbol::Symbol> w;
+                        vector<Symbol::Symbol> x;
+                        vector<Symbol::Symbol> z;
+                        vector<Symbol::Symbol> null_v;
+
+                        find_v_w_x_z_from_path(path_to_accept, v, w, x, v_size, pumping_size, z_path, z);
+                        bool exist_derivation = true;
+                        int total_yielded_words = 0;
+                        int total_words = 0;
+                        int pumpings_use = 0;
+                        for (int i = 2; i < 5; i ++) { // TODO esse 5 tem que ser parametrizado pelo tamanho de alguma coisa. Final da respectiva subárvore por exemplo
+
+                            if (!check_derivation_from_nt_with_v_w_x_z(nt, v, w, x, z, i)) {
+                                exist_derivation = false;
+                                pumpings_use += i;
+                                break;
+                            }
+                            for (auto e: list_symbol_auto_similarity) {
+                                if (e.second % v_size == 0) {
+                                    total_words++;
+                                    if (check_reachable_node_from_nt_with_v_w_x_z(e.first, v, w, x, z, i, e.second/v_size)) {
+                                        nts_that_pumps.insert(e.first.id);
+                                        total_yielded_words++;
+
+                                    }
+                                }
+                            }
+                        }
+                        if (exist_derivation) {
+                            cout << endl <<  "          found P-RULE! " << "u "<< queue_symbol.front().name << ", v " << convert_vector_to_string(v) <<  ", w " << convert_vector_to_string(w) << ", x " << convert_vector_to_string(x) << ", z " << convert_vector_to_string(z);
+                            nts_pumpings[queue_symbol.front().id].push_back(make_tuple(v, w, x, z, nts_that_pumps, pumping_size));
+                        }
+
+                    } else
+                        break;
+                }
+                z_path.push_back(path_to_accept[0]);
+                path_to_accept.erase(path_to_accept.begin(), path_to_accept.begin()+1);
+            }
+            //if (!nts_pumpings.empty())
+                //cout<< endl << "        in word " << queue_symbol.front().name << ", found pumps" << endl << "  continue words: ";
+            /*for (auto p: nts_pumpings[queue_symbol.front().id]) {
+                //cout << "v: " << convert_vector_to_string(get<0>(p)) << ", w: " << convert_vector_to_string(get<1>(p)) << ", x: " << convert_vector_to_string(get<2>(p)) <<  " and z: " << convert_vector_to_string(get<3>(p)) << " start in nts: ";
+                for (auto nt: get<4>(p)) {
+                    //cout << non_terminals[nt].name << " ";
+
+                }
+                //cout << endl;
+            }*/
+        }
+        queue_symbol.pop();
+    }
+    vector<Rule::Rule> return_rules = mount_pumping_rules(nts_pumpings, not_search_nts, nt);
+    return return_rules;
+}
+bool Grammar::Grammar::check_auto_similarity(std::vector<Symbol::Symbol> path_to_accept, Symbol::Symbol start) {
+    for (int i = path_to_accept.size()-1; i >= 0 ; i--) {
+        if (!fpta_pumping_compatible_tree2( path_to_accept[i], start,1.5, rules, non_terminals))
+        //if (!compatible_alergia(start, path_to_accept[i], 1, rules))
+            return false;
+        if (i > 0) {
+            bool exist_path = false;
+            Symbol::Symbol symbol_path;
+            for (auto rhs2: rules[path_to_accept[i].id].right) {
+                if (rhs2.first.size() == 2) {
+                    if (rhs2.first[1].id == path_to_accept[i-1].id) {
+                        symbol_path = rhs2.first[0];
+                        break;
+                    }
+                }
+            }
+            for (auto rhs: rules[start.id].right) {
+                if (rhs.first.size() == 2) {
+                    if (rhs.first[0].id == symbol_path.id) {
+                        start = rhs.first[1];
+                        exist_path = true;
+                    }
+                }
+            }
+            if (!exist_path)
+                return false;
+        }
+    }
+    return true;
+}
+void Grammar::Grammar::find_v_w_x_z_from_path(std::vector<Symbol::Symbol> path, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, int v_size, int pumping_size, std::vector<Symbol::Symbol> z_path, std::vector<Symbol::Symbol> &z) {
+    reverse(path.begin(), path.end());
+    for (int i = 0 ; i < v_size; i ++) {
+        for (auto rhs: rules[path[i].id].right) {
+            if (rhs.first.size() == 2) {
+                if (rhs.first[1].id == path[i+1].id) {
+                    v.push_back(rhs.first[0]);
+                    break;
+                }
+            }
+        }
+    }
+    for (int i = v_size ; i < path.size()-pumping_size+v_size-1; i ++) {
+        for (auto rhs: rules[path[i].id].right) {
+            if (rhs.first.size() == 2) {
+                if (rhs.first[1].id == path[i+1].id) {
+                    w.push_back(rhs.first[0]);
+                    break;
+                }
+            }
+        }
+    }
+    for (int i = path.size()-pumping_size+v_size-1 ; i < path.size()-1; i ++) {
+        for (auto rhs: rules[path[i].id].right) {
+            if (rhs.first.size() == 2) {
+                if (rhs.first[1].id == path[i+1].id) {
+                    x.push_back(rhs.first[0]);
+                    break;
+                }
+            }
+        }
+    }
+    if (!z_path.empty()) {
+        reverse(z_path.begin(), z_path.end());
+        for (auto rhs: rules[path[path.size()-1].id].right) {
+            if (rhs.first.size() == 2) {
+                if (rhs.first[1].id == z_path[0].id) {
+                    z.push_back(rhs.first[0]);
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0 ; i < z_path.size()-1; i ++) {
+            for (auto rhs: rules[z_path[i].id].right) {
+                if (rhs.first.size() == 2) {
+                    if (rhs.first[1].id == z_path[i+1].id) {
+                        z.push_back(rhs.first[0]);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+}
+bool Grammar::Grammar::check_reachable_node_from_nt_with_v_w_x_z(Symbol::Symbol nt, vector<Symbol::Symbol> &v, vector<Symbol::Symbol> &w, vector<Symbol::Symbol> &x, vector<Symbol::Symbol> &z, int pumping_times, int already_pumped_v) {
+
+    if (already_pumped_v == 0)
+        return false;
+    //Se não precisar derivar o bombeamento V, apagar fors aninhados abaixo
+    for (int i = 0; i < pumping_times- already_pumped_v; i++) {
+        for (auto v_e: v) {
+            bool exist_rhs = false;
+            for (auto rhs: rules[nt.id].right) {
+                if (rhs.first.size() == 2) {
+                    if (rhs.first[0].id == v_e.id) {
+                        nt = rhs.first[1];
+                        exist_rhs = true;
+                        break;
+                    }
+
+                }
+            }
+            if (!exist_rhs)
+                return false;
+        }
+    }
+    for (auto w_e: w) {
+        bool exist_rhs = false;
+        for (auto rhs: rules[nt.id].right) {
+
+            if (rhs.first.size() == 2) {
+                if (rhs.first[0].id == w_e.id) {
+                    nt = rhs.first[1];
+                    exist_rhs = true;
+                    break;
+                }
+            }
+        }
+        if (!exist_rhs)
+            return false;
+    }
+    for (int i = 0; i < pumping_times; i++) {
+        for (auto x_e: x) {
+            bool exist_rhs = false;
+            for (auto rhs: rules[nt.id].right) {
+                if (rhs.first.size() == 2) {
+                    if (rhs.first[0].id == x_e.id) {
+                        nt = rhs.first[1];
+                        exist_rhs = true;
+                        break;
+                    }
+                }
+            }
+            if (!exist_rhs)
+                return false;
+        }
+    }
+    for (auto z_e: z) {
+        bool exist_rhs = false;
+        for (auto rhs: rules[nt.id].right) {
+            if (rhs.first.size() == 2) {
+                if (rhs.first[0].id == z_e.id) {
+                    nt = rhs.first[1];
+                    exist_rhs = true;
+                    break;
+                }
+            }
+        }
+        if (!exist_rhs)
+            return false;
+    }
+
+    return true;
+}
+
+
+bool Grammar::Grammar::check_derivation_from_nt_with_v_w_x_z(Symbol::Symbol nt, vector<Symbol::Symbol> &v, vector<Symbol::Symbol> &w, vector<Symbol::Symbol> &x, vector<Symbol::Symbol> &z, int pumping_times) {
+
+    //Se não precisar derivar o bombeamento V, apagar fors aninhados abaixo
+    for (int i = 0; i < pumping_times; i++) {
+        for (auto v_e: v) {
+            bool exist_rhs = false;
+            for (auto rhs: rules[nt.id].right) {
+                if (rhs.first.size() == 2) {
+                    if (rhs.first[0].id == v_e.id) {
+                        nt = rhs.first[1];
+                        exist_rhs = true;
+                        break;
+                    }
+
+                }
+            }
+            if (!exist_rhs)
+                return false;
+        }
+    }
+    for (auto w_e: w) {
+        bool exist_rhs = false;
+        for (auto rhs: rules[nt.id].right) {
+
+            if (rhs.first.size() == 2) {
+                if (rhs.first[0].id == w_e.id) {
+                    nt = rhs.first[1];
+                    exist_rhs = true;
+                    break;
+                }
+            }
+        }
+        if (!exist_rhs)
+            return false;
+    }
+    for (int i = 0; i < pumping_times; i++) {
+        for (auto x_e: x) {
+            bool exist_rhs = false;
+            for (auto rhs: rules[nt.id].right) {
+                if (rhs.first.size() == 2) {
+                    if (rhs.first[0].id == x_e.id) {
+                        nt = rhs.first[1];
+                        exist_rhs = true;
+                        break;
+                    }
+                }
+            }
+            if (!exist_rhs)
+                return false;
+        }
+    }
+    for (auto z_e: z) {
+        bool exist_rhs = false;
+        for (auto rhs: rules[nt.id].right) {
+            if (rhs.first.size() == 2) {
+                if (rhs.first[0].id == z_e.id) {
+                    nt = rhs.first[1];
+                    exist_rhs = true;
+                    break;
+                }
+            }
+        }
+        if (!exist_rhs)
+            return false;
+    }
+
+    if (exist_empty_rule(rules[nt.id].right))
+        return true;
+    return false;
+}
+bool Grammar::Grammar::check_v_pumping_use(Symbol::Symbol nt, Symbol::Symbol nt_target, std::vector<Symbol::Symbol> &v, int pumping_times) {
+    for (int i = 0; i < pumping_times; i++) {
+        for (auto v_e: v) {
+            bool exist_rhs = false;
+            for (auto rhs: rules[nt.id].right) {
+                if (rhs.first.size() == 2) {
+                    if (rhs.first[0].id == v_e.id) {
+                        nt = rhs.first[1];
+                        exist_rhs = true;
+                        break;
+                    }
+
+                }
+            }
+            if (!exist_rhs)
+                return false;
+        }
+    }
+    if (nt.id == nt_target.id)
+        return true;
+    return false;
+}
+
+std::vector<Rule::Rule> Grammar::Grammar::mount_pumping_rules(std::map<int, std::vector<std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int>>> nts_pumpings, set<int> &not_search_nts, Symbol::Symbol nt) {
+    vector<pair<vector<Symbol::Symbol>, int>> z_word_counts;
+    for (auto e1: nts_pumpings) {
+        for (auto e2: nts_pumpings) {
+            if (e1.first != e2.first) {
+                for (auto z1: e1.second) {
+                    for (auto z2: e2.second) {
+                        if (equal_word(get<3>(z1), get<3>(z2))) {
+                            bool there_is_z_count = false;
+                            for (auto & z_count: z_word_counts) {
+                                if (equal_word(get<3>(z1), z_count.first)) {
+                                    z_count.second++;
+                                    there_is_z_count = true;
+                                    break;
+                                }
+                            }
+                            if (!there_is_z_count)
+                                z_word_counts.push_back(make_pair(get<3>(z1), 1));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    pair<vector<Symbol::Symbol>, int> max_z_count ;
+    max_z_count.second = 0;
+    for (auto z: z_word_counts) {
+        if (z.second > max_z_count.second)
+            max_z_count = z;
+    }
+    vector<Rule::Rule> pumping_rules;
+    Symbol::Symbol p_nt = Symbol::Symbol("p" + nt.name, 0, false, false);
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right;
+    for (auto e : nts_pumpings) {
+        for (auto p: e.second) {
+            if (equal_word(get<3>(p), max_z_count.first)) {
+                std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rhs;
+                rhs.first.insert(rhs.first.end(), get<0>(p).begin(), get<0>(p).end());
+                rhs.first.push_back(p_nt);
+                rhs.first.insert(rhs.first.end(), get<2>(p).begin(), get<2>(p).end());
+                for (int i = 1; i < get<4>(p).size(); i++) {
+                    rhs.second.first += i;
+                }
+                right.push_back(rhs);
+                rhs.first.clear();
+                rhs.second.first  = 0.0;
+                rhs.first.insert(rhs.first.end(), get<1>(p).begin(), get<1>(p).end());
+                for (int i = 1; i < get<4>(p).size(); i++)
+                    rhs.second.first += 1;
+                right.push_back(rhs);
+                not_search_nts.merge(get<4>(p));
+            }
+        }
+    }
+    group_equal_rhs(right);
+    vector<Symbol::Symbol> lhs;
+    lhs.push_back(p_nt);
+    pumping_rules.push_back(Rule::Rule(lhs, right));
+    lhs.clear();
+    right.clear();
+    lhs.push_back(nt);
+    std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rhs;
+    rhs.first.push_back(p_nt);
+    rhs.first.insert(rhs.first.end(), max_z_count.first.begin(), max_z_count.first.end());
+    rhs.second.first = 1.0;
+    right.push_back(rhs);
+    pumping_rules.push_back(Rule::Rule(lhs, right));
+    return pumping_rules;
+}
+void Grammar::Grammar::super_duper_pumping_inference() {
+    non_terminals.clear();
+    rules.clear();
+    n_non_terminals = 0;
+    gen_fpta();
+    std::map<int, std::vector<std::pair<Symbol::Symbol, int>>> compatible_lists = build_compatible_lists();
+    print_grammar();
+    set<int> not_search_nts;
+    vector<Rule::Rule> pumped_rules;
+    vector<Rule::Rule> pumping_rules;
+    vector<Symbol::Symbol> pumped_nts;
+    for (auto nt: non_terminals) {
+        if (not_search_nts.find(nt.id) == not_search_nts.end()) {
+            vector<Rule::Rule> new_rules = find_pumping_rule_by_auto_similarity(nt, not_search_nts, compatible_lists);
+
+            if (new_rules[0].freq() > 0.0) {
+                pump_and_reduce_w(new_rules[0]);
+                new_rules[1].right[0].first[0].id = n_non_terminals;
+                n_non_terminals++;
+                non_terminals.push_back(new_rules[1].right[0].first[0]);
+                pumping_rules.push_back(new_rules[0]);
+                pumped_rules.push_back(new_rules[1]);
+                pumped_nts.push_back(new_rules[1].left[0]);
+            }
+        }
+    }
+    for (auto r: pumped_rules) {
+        if (!verify_nt_in_subtree_if_any_pumped_not_equal(r.left[0], pumped_nts)) {
+            rules[r.left[0].id].right = r.right;
+
+        } else {
+            rules[r.left[0].id].right.insert(rules[r.left[0].id].right.end(), r.right.begin(), r.right.end());
+        }
+    }
+
+    vector<Rule::Rule> aux_rules;
+    vector<Symbol::Symbol> aux_nts;
+    queue<Symbol::Symbol> nt_queue;
+    nt_queue.push(non_terminals[0]);
+
+    while (!nt_queue.empty()) {
+        aux_rules.push_back(rules[nt_queue.front().id]);
+        aux_nts.push_back(nt_queue.front());
+        for (auto rhs: rules[nt_queue.front().id].right) {
+            if (rhs.first.size() == 2) {
+                if (rhs.first[0].name[0] != 'p')  {
+                    nt_queue.push(rhs.first[1]);
+                }
+            }
+        }
+        nt_queue.pop();
+    }
+
+
+    aux_rules.insert(aux_rules.end(), pumping_rules.begin(), pumping_rules.end());
+    rules = aux_rules;
+    non_terminals = aux_nts;
+
+    print_grammar();
+}
+void Grammar::Grammar::pump_and_reduce_w(Rule::Rule &r) {
+    bool found_w = false;
+    Rule::Rule aux_r = r;
+    std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> right;
+    vector<vector<Symbol::Symbol>> w_words;
+    for (int i = 0; i < r.right.size(); i ++) {
+        bool found_p = false;
+        for (auto s: r.right[i].first)
+            if (s.name[0] == 'p')
+                found_p = true;
+        if (!found_p) {
+            if (!found_w) {
+                right.push_back(r.right[i]);
+                found_w = true;
+            }
+            else
+                w_words.push_back(r.right[i].first);
+        } else
+            right.push_back(r.right[i]);
+    }
+    aux_r.right = right;
+    Grammar g = Grammar({}, 1, {}, g.pcfg, make_pair(0, 0));
+    g.non_terminals.clear();
+    g.rules.clear();
+    g.terminals = terminals;
+    g.rules.push_back(aux_r);
+    g.non_terminals.push_back(r.left[0]);
+    g.n_non_terminals = 1;
+
+
+    for (auto t: g.terminals) {
+        Symbol::Symbol new_ntt = Symbol::Symbol("NTT"+t.name, g.n_non_terminals, false, false);
+        g.non_terminals.push_back(new_ntt);
+        g.n_non_terminals++;
+        for (auto &r2 : g.rules)
+            for (auto & rhs: r2.right) {
+                //rhs.second.first = 0.0;
+                for (auto & s: rhs.first) {
+                    if (s.name.compare(t.name) == 0)
+                        s = new_ntt.clone();
+                    else if (s.name.compare(new_ntt.name) == 0)
+                        s = new_ntt.clone();
+                }
+            }
+        vector<Symbol::Symbol> left;
+        left.push_back(new_ntt);
+        pair<vector<Symbol::Symbol>,pair<double, double>> right;
+        right.first.push_back(t);
+        right.second.first = 1.0;
+        vector<pair<vector<Symbol::Symbol>,pair<double, double>>> righties;
+        righties.push_back(right);
+        Rule::Rule r2 = Rule::Rule(left,righties);
+        g.rules.push_back(r2);
+
+    }
+    for (auto & w: w_words) {
+        if (g.calculate_parse_tree_prob_top_down(w) > 0) {
+            for (auto & rhs: r.right) {
+                if (equal_rhs(rhs.first, w)) {
+                    rhs.second.first = 0;
+                }
+            }
+        }
+    }
+    remove_unused_rule_zero_righties(r.right);
+
+
+}
+std::map<int, std::vector<std::pair<Symbol::Symbol, int>>> Grammar::Grammar::build_compatible_lists() {
+    std::map<int, std::vector<std::pair<Symbol::Symbol, int>>> compatible_lists;
+    int count_nt = 0;
+    for (auto nt: non_terminals) {
+        if ((count_nt+1) % (n_non_terminals/10) == 0 )
+            cout << "   Build compatible list  at " << (100.0*(count_nt+1)/(n_non_terminals*1.0)) << "%" << endl;
+        queue<pair<Symbol::Symbol, int>> queue_symbol_auto_similarity;
+        vector<pair<Symbol::Symbol, int>> list_symbol_auto_similarity;
+        for (auto rhs: rules[nt.id].right)
+            if (rhs.first.size() == 2)
+                queue_symbol_auto_similarity.push(make_pair(rhs.first[1], 1));
+        while (!queue_symbol_auto_similarity.empty()) {
+            if (fpta_pumping_compatible_tree2( nt, queue_symbol_auto_similarity.front().first,1.5, rules, non_terminals)) {//if (check_auto_similarity(path_to_accept, queue_symbol_auto_similarity.front().first)) {
+                //fpta_pumping_compatible_tree2( path_to_accept[path_to_accept.size()-1], queue_symbol_auto_similarity.front().first,1.5, rules, non_terminals);
+                list_symbol_auto_similarity.push_back(queue_symbol_auto_similarity.front());
+            }
+            for (auto rhs: rules[queue_symbol_auto_similarity.front().first.id].right)
+                if (rhs.first.size() == 2)
+                    queue_symbol_auto_similarity.push(make_pair(rhs.first[1], queue_symbol_auto_similarity.front().second+1));
+            queue_symbol_auto_similarity.pop();
+
+        }
+        compatible_lists[nt.id] =  list_symbol_auto_similarity;
+        count_nt++;
+    }
+    return compatible_lists;
 }
