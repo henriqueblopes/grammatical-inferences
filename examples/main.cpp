@@ -3,6 +3,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/unordered_map.hpp>
+#include <cfloat>
 #include <gInfer/Grammar.h>
 #include <iostream>
 #include <map>
@@ -24,7 +25,8 @@ void load_map_pump_to_word(std::unordered_map<std::string, std::vector<std::vect
 void save_map(unordered_map<std::string, int> &map, std::string filename);
 void load_map(unordered_map<std::string, int> &map, std::string filename);
 void load_pautomac_file(string filename, vector<Symbol::Symbol> & terminals, vector<vector<Symbol::Symbol>> &words, int index);
-void load_spice_file(string filename, vector<Symbol::Symbol> & terminals, vector<vector<Symbol::Symbol>> &words, int index);
+void load_spice_file(string filename, vector<Symbol::Symbol> &terminals, vector<vector<Symbol::Symbol>> &words_to_infer, int index, int n_symbol_max);
+void chord_to_char(vector<Symbol::Symbol> &terminals, vector<vector<Symbol::Symbol>> &words_to_infer, vector<Symbol::Symbol> &char_symbols, vector<vector<Symbol::Symbol>> &char_words);
 vector<double> load_pautomac_solution_file(string filename, int index);
 vector<vector<Symbol::Symbol>> generate_palindromes(int max_length);
 vector<vector<Symbol::Symbol>> generate_mod_a_eq_mod_b(int max_length);
@@ -32,8 +34,13 @@ vector<vector<Symbol::Symbol>> generate_expression_language(int max_length);
 
 
 int main(int argc, char** argv) {
-    if (argc < 11)
+    if (argc < 9)
         exit(1);
+    srand(time(0));
+
+
+
+    //For ICAART
     //argv[1] = n_terminals
     //argv[2] = n_shares_or_amount
     //argv[3] = by_share
@@ -45,7 +52,8 @@ int main(int argc, char** argv) {
     //argv[9] = normalized_perplexity
     //argv[10] = timedInt
     //argv[11] = n_non_terminals
-    int n_terminals = stoi((argv[1]));
+
+    /*int n_terminals = stoi((argv[1]));
     int n_shares_or_amount = stoi((argv[2]));
     size_t n_input_for_training = stoi((argv[4]));
     int context_left_size = stoi((argv[5]));
@@ -61,384 +69,152 @@ int main(int argc, char** argv) {
         normalized_perplexity = false;
     bool timed = true;
     if(!stoi(argv[10]))
-        timed = false;
+        timed = false;*/
 
-    InputWords iw = InputWords(timed, n_terminals);
-    iw.read_words();
-    //iw.input_words.erase(iw.input_words.begin(), iw.input_words.begin()+995);
+
 
     std::vector<Symbol::Symbol> expression_terms = {Symbol::Symbol("(", 0, true, false), Symbol::Symbol(")", 1, true,false), Symbol::Symbol("a", 2, true,false), Symbol::Symbol("+", 3, true,false)};
     std::vector<Symbol::Symbol> terms = {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true,false) /*};*/, Symbol::Symbol("2", 2, true,false)};
-    vector<vector<Symbol::Symbol>> words = {{Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},
+    vector<vector<Symbol::Symbol>> words, chord_words;
+    /*words = {{Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},
                                     {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true,false),  Symbol::Symbol("1", 1, true,false),  Symbol::Symbol("1", 1,true,false)},
-                                                                            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1,true,false)}};
-    vector<vector<Symbol::Symbol>> lastWord = { {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("2", 2, true, false),Symbol::Symbol("3", 3, true, false), Symbol::Symbol("1", 1, true, false),Symbol::Symbol("2", 2, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("2", 2, true, false),Symbol::Symbol("3", 3, true, false)}};
+                                                                            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1,true,false)}};*/
 
-
-    lastWord = { {Symbol::Symbol("a",0,true,false),//a
-                  Symbol::Symbol("b",1,true,false),//b
-                  Symbol::Symbol("d",2,true,false),//d
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  //Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("d",2,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("s",3,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("b",1,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("b",1,true,false),
-                  Symbol::Symbol("a",0,true,false),
-                  Symbol::Symbol("b",1,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("g",5,true,false),
-                  Symbol::Symbol("f",4,true,false),
-                  Symbol::Symbol("g",5,true,false)}};
-
-
-
-
-
-    vector<vector<Symbol::Symbol>> words2 = {/*{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
-                                             {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
-                                             {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
-                                             {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
-                                             {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},*/
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},{Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false)},
-
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-
-                                             {Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false)},
-                                             {Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false)}};
-
-    vector<vector<Symbol::Symbol>> mod_a_eq_mod_b = generate_mod_a_eq_mod_b(15);
-
-    vector<vector<Symbol::Symbol>> anbn = {
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)},
-            {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false), Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("0", 0, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false),Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false), Symbol::Symbol("1", 1, true, false)}
-    };
-    vector<vector<Symbol::Symbol>> palindromes = generate_palindromes(30);
-    vector<vector<Symbol::Symbol>> reverse_palindromes;
-    for (auto p: palindromes) {
-        vector<Symbol::Symbol> rp;
-        for (int i = p.size()-1; i >=0; i--) {
-            rp.push_back(p[i]);
-        }
-        reverse_palindromes.push_back(rp);
-    }
-    vector<vector<Symbol::Symbol>> expressions = generate_expression_language(25);
-
-
-
-    /*Grammar::Grammar g = Grammar::Grammar(terms, 3, words2, g.pfa, make_pair(0, 0));
-    g.train(g.pfa_alergia, 10);*/
-    //iw.input_words.erase(iw.input_words.begin()+5790,iw.input_words.end());
-    //iw.input_words.erase(iw.input_words.begin(),iw.input_words.begin()+5010);
-
-
-
-    /*iw.iterate_chords();
+     //READ MUSICAL DATABASE
+    InputWords iw = InputWords(false, 50);
+    iw.read_words();
+    //iw.input_words.erase(iw.input_words.begin(), iw.input_words.begin()+995);
+    iw.iterate_chords();
     iw.change_words_to_reducted_chords();
-    vector<Symbol::Symbol> music_terminals = iw.generate_terminals(iw.reducted_chord_counts);
-    Grammar::Grammar g = Grammar::Grammar(music_terminals, 3, iw.input_words, g.pcfg, make_pair(0, 0));*/
-
-    int index_p_file = 3;
-
-    load_pautomac_file(".pautomac.train", terms, words2, index_p_file);
-    //load_spice_file(".spice.train", terms, words2, index_p_file);
-    //words2.erase(words2.begin()+1000, words2.end());
-
-    Grammar::Grammar g = Grammar::Grammar(terms, 3, words2, g.pfa, make_pair(0, 0));
-    /*g.train(Grammar::Grammar::pfa_alergia, 50);
-    //g.print_grammar();
-    exit(0);*/
-    /*for (auto nt: g.non_terminals)
-        for (auto nt2: g.non_terminals)
-            if (g.compatible_alergia(nt, nt2, 0.95, g.rules))
-                cout << nt.name << " and " << nt2.name << " compatible: " << g.compatible_alergia(nt, nt2, 0.95, g.rules) << endl;*/
-    //g.words.erase(g.words.begin()+1000, g.words.end());
-
-    /*for (auto e: g.words)
-        cout << g.convert_vector_to_string(e) << endl;
-    cout << "size: " <<g.words.size() << endl;*/
+    vector<Symbol::Symbol> chord_terms = iw.generate_terminals(iw.reducted_chord_counts);
+    chord_words = iw.input_words;
+    chord_to_char(chord_terms, chord_words, terms, words);
 
 
-                // PUMPING INFERENCE BELOW //
-    unordered_map<std::string, std::vector<int>> map_pump_to_word;
-    unordered_map<std::string, int> map;
-    unordered_map<int, vector<string>> node_pump_map;
+    /* CREATE |a| = |b|
+    Grammar::Grammar g_mod_a_mod_b = Grammar::Grammar(terms, 1, mod_a_eq_mod_b, g_mod_a_mod_b.pfa, make_pair(0, 0));
+    vector<Symbol::Symbol> lhs;
+    lhs.push_back(g_mod_a_mod_b.non_terminals[0]);
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right;
+    vector<Symbol::Symbol> rhs;
+    rhs.push_back(terms[0]); rhs.push_back(g_mod_a_mod_b.non_terminals[0]); rhs.push_back(terms[1]); rhs.push_back(g_mod_a_mod_b.non_terminals[0]);
+    right.push_back(make_pair(rhs, make_pair(1, 0))); rhs.clear();
+    rhs.push_back(terms[1]); rhs.push_back(g_mod_a_mod_b.non_terminals[0]); rhs.push_back(terms[0]); rhs.push_back(g_mod_a_mod_b.non_terminals[0]);
+    right.push_back(make_pair(rhs, make_pair(1, 0))); rhs.clear();
+    rhs.push_back(Symbol::Symbol("", -1, true, false));
+    right.push_back(make_pair(rhs, make_pair(1, 0))); rhs.clear();
+    Rule::Rule raux = Rule::Rule(lhs, right);
+    g_mod_a_mod_b.rules.clear(); g_mod_a_mod_b.rules.push_back(raux);
+    words = g_mod_a_mod_b.generate_max_size_words_from_rules(16);*/
 
-/*
-    vector<vector<Symbol::Symbol>> test_words;
-    vector<Symbol::Symbol> aux;
-    load_pautomac_file(".pautomac.test", aux, test_words, index_p_file);
-    vector<double> sol = load_pautomac_solution_file(".pautomac_solution.txt", index_p_file);*/
-    /*double e = 0.0;
-    double psol;
-    for (int i = 0 ; i < test_words.size(); i++)
-        e += sol[i] * log2(sol[i]);
-    cout << "perplexitiyy sol: " << pow(2,-e);
-    exit(0);*/
-    //inferir para cnf e salvar
-    /*g.prob_sequitur();
-    g.convert_to_cnf();
-    g.remove_unused_rules();
-*/
-    //exit(0);
-    //save_grammar(g, "grammar.txt");
 
-    //verifica se gramática gera base de dados
-    /*for (int i = 0; i < g.words.size(); i++) {
-        std::vector<Symbol::Symbol> w = g.yield_string(g.rules[0].right[i].first);
-        if(g.equal_word(w,g.words[776]))
-            cout << "word " << i << " OK!" << endl;
+    //For MLJ
+    //argv[0] = train method 0 alergia, 1 PInference, 2 MH (int)
+    //argv[1] = alhpa for alergia and PInference (double)
+    //argv[2] = ratio for PInference
+    //argv[3] = n_Nonterminals for MH
+    //argv[4] = time limite (for all?)
+    //argv[5] = n_iterations for MH
+    //argv[6] = database (6, 14, 16, 18)
+    //argv[7] = max word lenght (20 for 6 and 14 spice, 99 for 16, ? for 18)
+    // pumpns achados em spice: 6, 14,
+    int training_method = stoi((argv[1]));
+    double alpha = stod(argv[2]);
+    double p_ratio = stod(argv[3]);
+    int n_non_terminals = stoi(argv[4]);
+    double time_limit = stod(argv[5]);
+    int iterations = stoi((argv[6]));
+    int index_p_file = stoi((argv[7]));
+    int max_word_lenght = stoi((argv[8]));
+
+
+
+    //load_pautomac_file(".pautomac.train", terms, words, index_p_file);
+    //load_spice_file(".spice.train", terms, words, index_p_file, max_word_lenght);
+    double avg_score = 0.0;
+    training_method = 1;
+    for (int i = 0; i < 1; i ++) {
+        cout << "it: " << i+1 << ": ";
+
+
+
+        //std::random_shuffle ( words.begin(), words.end());
+        vector<vector<Symbol::Symbol>> test_words;
+        vector<vector<Symbol::Symbol>> train_words;
+        test_words.insert(test_words.end(), words.begin(), words.begin()+words.size()/10);
+        train_words.insert(train_words.end(), words.begin()+words.size()/10,  words.end());
+        train_words = words;
+        Grammar::Grammar g = Grammar::Grammar(terms, n_non_terminals, train_words, g.pcsg, make_pair(0, 0));
+        /*for (auto w: g.words)
+            cout << g.convert_vector_to_string(w) << endl;
+        exit(0);*/
+        if (training_method == 0) {
+            g.g_tp = g.pfa;
+        } else if (training_method == 1)
+            g.g_tp = g.pcfg;
+        else if (training_method == 2)
+            g.g_tp = g.pcsg;
+        else if (training_method == 3)
+            g.g_tp = g.n_gram;
         else
-            cout << "word " << i << " Fail!" << endl;
-    }*/
+            exit(-1);
 
+        vector<double> sol_pal;
+        for (auto w: test_words) {
+            double count = 0;
+            for (auto w2: test_words) {
+                if (g.equal_word(w, w2)) {
+                    count += 1.0;
+                }
+            }
+            sol_pal.push_back(1.0 * count/(1.0 * test_words.size()));
+        }
+
+        if (training_method == 0)
+            g.train(g.pfa_alergia, iterations, alpha, p_ratio, time_limit);
+        else if (training_method == 1)
+            g.train(g.pcfg_pumping_inference, iterations, alpha, p_ratio, time_limit);
+        else if (training_method == 2)
+            g.train(g.pcsg_metropolis_hastings, iterations, alpha, p_ratio, time_limit);
+
+        long double exp = 0.0;
+        long double expI = 0.0;
+        long double pcx = 0.0;
+        for (int i = 0 ; i < test_words.size(); i++) {
+            if (training_method == 3)
+                pcx = 1/ (1.0 * pow(terms.size()+1, test_words[i].size()));
+            else if (training_method == 2)
+                pcx = g.find_word_probabilities_from_pcfg_inside_table(test_words[i]);
+            else
+                pcx = g.find_word_probabilities(test_words[i]);
+
+            //cout << "word "<< i << " prob: "<< pcx <<" - probSol:  " << sol_pal[i] << endl;
+            if (pcx == 0.0)
+                pcx = 1/ (1.0 * train_words.size() * (1.0 * pow(terms.size()+1, test_words[i].size())));
+
+            exp += sol_pal[i] * log2(pcx);
+            expI += sol_pal[i] * log2(sol_pal[i]);
+        }
+        avg_score += pow(2, -exp);
+        cout << " Score: " << pow(2, -exp) << " IdealScore: " << pow(2, -expI)<< endl;
+        g.print_grammar();
+    }
+    cout << "AVG Score: " << avg_score/30;
+
+     //save_grammar(g, "grammar.txt");
     //Carregar Gramatica e gerar mapas
     //load_grammar(g, "grammar.txt");
-    auto end = std::chrono::system_clock::now();
-    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-    /*cout <<"Starting to find Pumps by Slice at " << std::ctime(&end_time) << endl;
-    for (int i = 0; i < g.words.size(); i++) {
-        if ((i+1) % (g.words.size()/5) == 0 )
-            cout << "   word: " << i + 1 << ". " << (100.0*(i+1)/(g.words.size()*1.0)) << "%" << endl;
-        if (g.words[i].size() <= 999999) {
-            //g.count_pumping_str(map, g.words[i], 0, map_pump_to_word, g.words[i]);]
-            g.count_pumping_str_by_slice(map, g.words[i], map_pump_to_word, i, 0.0);
-        }
-    }
 
-    for (auto i = map.begin(), j = map.end(); i!= j; ) {
-        if (i->second < 2) {
-            map_pump_to_word.erase(i->first);
-            i = map.erase(i);
-        } else
-            ++i;
-    }
-    g.eliminate_covered_pumpings(map_pump_to_word, map);
-
-
-
-
-    vector<pair<string,int>> ordered;
-    for (auto w : map)
-        ordered.push_back(w);
-    std::sort(ordered.begin(), ordered.end(), sortbysecond);
-    for(auto it = ordered.begin(); it != ordered.end(); ++it)
-        std::cout << it->first << ": " << it->second << endl;*/
-    cout << "size: " << map.size() << " size database: " << g.words.size() << endl;
-    end = std::chrono::system_clock::now();
-    end_time = std::chrono::system_clock::to_time_t(end);
-    cout << "Starting to Infer at " << std::ctime(&end_time) << endl;
-    //g2.fpta_pumping_inference(map, map_pump_to_word, 1, 1, 3, 0);
-    g.super_duper_pumping_inference();
-    end = std::chrono::system_clock::now();
-    end_time = std::chrono::system_clock::to_time_t(end);
-    cout << "Finished  to Infer at " << std::ctime(&end_time) << endl;
-    //g.print_grammar();
-    //cout << "Finished  to Infer at " << std::ctime(&end_time) << endl;
-    /*for (int i = 0; i < g.words.size(); i++)
-        cout << "Word " << i << ": " << g.convert_vector_to_string(g.words[i]) << endl;*/
-    /*vector<Symbol::Symbol> prefix = g.words[18];
-    prefix.erase(prefix.begin()+4, prefix.end());
-    cout << "Prefix " << 20 << ": " << g.convert_vector_to_string(prefix) << endl;
-    vector<pair<int, double>> v = g.find_prefix_ranking_probabilities(prefix);
+    /* vector<pair<int, double>> v = g.find_prefix_ranking_probabilities(prefix);
     for (auto p: v)
         cout << " terminal: " << p.first << " prob " << p.second << endl;*/
     exit(0);
 
-    /*for (auto s: ordered)
-        cout << s.first << ": " << s.second << endl;*/
-
-    /*save_map(map, "map.txt");
-    save_map_pump_to_word(map_pump_to_word, "map_pump_to_word.txt");*/
 
 
-    //Pumping Inference
-    /*load_grammar(g, "grammar.txt");
-    load_map_pump_to_word(map_pump_to_word, "map_pump_to_word.txt");
-    load_map(map, "map.txt");*/
-    //vector<pair<string,int>> ordered;
-    //g.print_grammar();
-    std::cout << "Before pump: Total Rules: " << g.rules.size() << " Total initial rules: " << g.rules[0].right.size() << endl;
-    g.pumping_inference(map, map_pump_to_word);
-    std::cout << "After pump: Total Rules: " << g.rules.size() << " Total initial rules: " << g.rules[0].right.size() << endl;
-    int count = 0;
-    for (const auto& r: g.rules[0].right) {
-        if (r.second.first > 0.0)
-            count ++;
-    }
-    cout << "Righties: " << count << endl;
-    //g.print_grammar();
-
-   /* long double exp = 0.0;
-    long double pcx = 0.0;
-    for (int i = 0 ; i < test_words.size(); i++) {
-        pcx = g.calculate_parse_tree_prob_top_down(test_words[i]);
-        cout << "word "<< i << " prob: "<< pcx <<" - probSol:  " << sol[i] << endl;
-        exp += sol[i] * log2(pcx);
-    }
-    cout << "Score: " << pow(2, -exp) << endl;*/
-    //save_grammar(g, "grammarPumped.txt");
-
-    /*g.count_pumping_str(map, iw.input_words[21], 0);
-    for (int i = 0; i < iw.input_words.size(); i++) {
-        cout << "word: " << i+1 << endl;
-        cout << "chords: "+ to_string(iw.input_words[i].size()) + " - ";
-        for (auto a: iw.input_words[i])
-            cout << a.name + " ";
-        cout << endl;
-        //30 é muito
-        if (iw.input_words[i].size() < 24)
-            g.count_pumping_str(map, iw.input_words[i], 0);
-    }*/
 
 
-    exit(0);
-    //g.print_grammar();
-    //g.train_n_gram();
-    //g.print_grammar();
-    //g.inside_outside(20);
-    //g.print_grammar();
-
-
-    vector<Symbol::Symbol> terminals = iw.generate_terminals(std::unordered_map<string, int>());
-    iw.select_training_words(n_shares_or_amount, by_share);
-    if(iw.input_words.size() < n_input_for_training)
-        n_input_for_training = iw.input_words.size();
-
-    pair<int,int> context_size;
+    /*pair<int,int> context_size;
     context_size = make_pair(context_left_size, context_right_size);
 
     cout << "n_terminals: " << n_terminals << " " << "n_shares_or_amount: " << n_shares_or_amount << " by_share: " << by_share << " n_input_for_training: " <<
@@ -453,7 +229,7 @@ int main(int argc, char** argv) {
         i_words_lim.reserve(n_input_for_training);
         for (unsigned long i = 0; i < n_input_for_training; i++)
             i_words_lim.push_back(iw.input_words[i]);
-        Grammar::Grammar g = Grammar::Grammar(terms, 3, words2, g.pfa, make_pair(0, 0));
+        Grammar::Grammar g = Grammar::Grammar(terms, 3, words, g.pfa, make_pair(0, 0));
         g.train(g.pfa_collapsed_gibbs_sample, iterations);
 
         g.print_grammar();
@@ -462,47 +238,21 @@ int main(int argc, char** argv) {
         std::chrono::duration<double> elapsed_seconds = end-start;
         pair<double,double> p1;
         cout  << " Calcutating perplexity..." << endl;
-        /*if (training_method == 3 || training_method == 1)
+        *//*if (training_method == 3 || training_method == 1)
             p1 = g.perplexity(iw.test_words);
         else if (training_method == 4 || training_method == 2)
-            p1 = g.perplexity_kl(iw.test_words);*/
+            p1 = g.perplexity_kl(iw.test_words);*//*
 
         cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
         cout << "Share: " << iw.actual_share << " - Final Perplexity: " << p1.first << " - Final NPerplexity: " << p1.second << endl;
         end = std::chrono::system_clock::now();
         elapsed_seconds = end-start;
         cout << "elapsed time with perplexity time: " << elapsed_seconds.count() << "s" << endl  << endl;
-    } while (iw.next_share_training_words());
+    } while (iw.next_share_training_words());*/
 
 
 
 }
-
-/*std::string sentences[] = {
-            "01",
-            "000111",
-            "00001111",
-            "0011",
-            "0000011111",
-            "0101",
-            "001101",
-            "001011",
-            "00011011",
-            "010011",
-            "001101",
-            "010101",
-            "00100111",
-            "010011",
-            "00110011",
-            "000111",
-            "0011",
-            "0011001101",
-            "01001101",
-            "0101010101",
-            "0001110011",
-            "0011000111",
-            "00101010101010101010010101010101010101010101"
-    };*/
 
 void save_grammar(Grammar::Grammar &g, std::string filename) {
     std::ofstream ofs(filename);
@@ -571,7 +321,7 @@ void load_pautomac_file(string filename, vector<Symbol::Symbol> & terminals, vec
     } while (ifs.good());
 }
 
-void load_spice_file(string filename, vector<Symbol::Symbol> & terminals, vector<vector<Symbol::Symbol>> &words_to_infer, int index) {
+void load_spice_file(string filename, vector<Symbol::Symbol> &terminals, vector<vector<Symbol::Symbol>> &words_to_infer, int index, int n_symbol_max) {
     terminals.clear();
     words_to_infer.clear();
     fs::path p = fs::current_path().parent_path();
@@ -581,33 +331,40 @@ void load_spice_file(string filename, vector<Symbol::Symbol> & terminals, vector
     getline(ifs,line);
     size_t tokenPos = line.find(" ");
     int n_terminals = stoi(line.substr(tokenPos,string::npos));
-    if (n_terminals >= 35) {
-        cout << "Error. Too many terminals. Max allowed is 35 terminals" << endl;
+    if (n_terminals >= 71) {
+        cout << "Error. Too many terminals. Max allowed is 71 terminals" << endl;
         return;
     }
     for (int i = 0; i < n_terminals; i++) {
-        char symbol_name = 87;
-        if (i < 10)
+        char symbol_name = 65;
+        if (i < 10000)
             terminals.push_back(Symbol::Symbol( to_string(i), i, true, false));
-        else {
+        /*else {
             symbol_name += i;
             terminals.push_back(Symbol::Symbol( string(1, symbol_name), i, true, false));
-        }
+        }*/
     }
     do  {
         getline(ifs,line);
         size_t tokenPos = line.find(" ");
-        line = line.substr(tokenPos+1, string::npos);
+        int n_symbol = 0;
+        if (tokenPos != string::npos)
+            n_symbol = stoi(line.substr(0,tokenPos+1));
         vector<Symbol::Symbol> word;
-        while (tokenPos != string::npos) {
 
-            tokenPos = line.substr(0, string::npos).find(" ");
-            int symbol = stoi(line.substr(0,tokenPos));
-            word.push_back(terminals[symbol]);
+        if (n_symbol <=  n_symbol_max && n_symbol > 0 ) {
             line = line.substr(tokenPos+1, string::npos);
-        }
+            while (tokenPos != string::npos) {
+
+                tokenPos = line.substr(0, string::npos).find(" ");
+                int symbol = stoi(line.substr(0,tokenPos));
+                word.push_back(terminals[symbol]);
+                line = line.substr(tokenPos+1, string::npos);
+            }
         //if (!word.empty())
             words_to_infer.push_back(word);
+        }
+
 
 
     } while (ifs.good());
@@ -653,11 +410,11 @@ vector<vector<Symbol::Symbol>> generate_palindromes(int max_length) {
                 vector<Symbol::Symbol> aux = pal;
                 pal.clear();
                 pal.insert(pal.end(), bpal.begin(), bpal.end());
-                pal.insert(pal.end(), bpal.begin(), bpal.end());
+                //pal.insert(pal.end(), bpal.begin(), bpal.end());
                 //pal.insert(pal.end(), bpal.begin(), bpal.end());
                 pal.insert(pal.end(), aux.begin(), aux.end());
                 pal.insert(pal.end(), bpal.begin(), bpal.end());
-                pal.insert(pal.end(), bpal.begin(), bpal.end());
+                //pal.insert(pal.end(), bpal.begin(), bpal.end());
                 pal.insert(pal.end(), bpal.begin(), bpal.end());
                 next_palindromes_aux.push_back(pal);
             }
@@ -707,9 +464,31 @@ vector<vector<Symbol::Symbol>> generate_mod_a_eq_mod_b(int max_length) {
             pal.insert(pal.end(), modb_1.begin(), modb_1.end());
             next_moda_modb_aux.push_back(pal);
             pal.clear();
+            pal.insert(pal.end(), moda_0.begin(), moda_0.end());
+            pal.insert(pal.end(), modb_1.begin(), modb_1.end());
+            pal.insert(pal.end(), aux.begin(), aux.end());
+            next_moda_modb_aux.push_back(pal);
+            pal.clear();
+            pal.insert(pal.end(), moda_0.begin(), moda_0.end());
+            pal.insert(pal.end(), aux.begin(), aux.end());
+            pal.insert(pal.end(), modb_1.begin(), modb_1.end());
+            pal.insert(pal.end(), aux.begin(), aux.end());
+            next_moda_modb_aux.push_back(pal);
+            pal.clear();
             pal.insert(pal.end(), modb_1.begin(), modb_1.end());
             pal.insert(pal.end(), aux.begin(), aux.end());
             pal.insert(pal.end(), moda_0.begin(), moda_0.end());
+            next_moda_modb_aux.push_back(pal);
+            pal.clear();
+            pal.insert(pal.end(), modb_1.begin(), modb_1.end());
+            pal.insert(pal.end(), moda_0.begin(), moda_0.end());
+            pal.insert(pal.end(), aux.begin(), aux.end());
+            next_moda_modb_aux.push_back(pal);
+            pal.clear();
+            pal.insert(pal.end(), modb_1.begin(), modb_1.end());
+            pal.insert(pal.end(), aux.begin(), aux.end());
+            pal.insert(pal.end(), moda_0.begin(), moda_0.end());
+            pal.insert(pal.end(), aux.begin(), aux.end());
             next_moda_modb_aux.push_back(pal);
         }
         all_moda_modb.insert(all_moda_modb.end(), next_moda_modb_aux.begin(), next_moda_modb_aux.end());
@@ -755,4 +534,16 @@ vector<vector<Symbol::Symbol>> generate_expression_language(int max_length) {
         next_expressions_aux.clear();
     }
     return all_expressions;
+}
+void chord_to_char(vector<Symbol::Symbol> &terminals, vector<vector<Symbol::Symbol>> &words_to_infer, vector<Symbol::Symbol> &char_symbols, vector<vector<Symbol::Symbol>> &char_words) {
+    char_symbols.clear();
+    for (int i = 0; i < terminals.size(); i++ ) {
+
+        char c = 40 + i;
+        char_symbols.push_back(Symbol::Symbol(std::string(1,c), terminals[i].id, terminals[i].terminal, terminals[i].context));
+    }
+    char_words = words_to_infer;
+    for (auto & w: char_words)
+        for (auto & t: w)
+            t = char_symbols[t.id];
 }

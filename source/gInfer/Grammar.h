@@ -23,7 +23,7 @@ class Grammar
 
 public:
     //Grammar();
-    enum training_method {n_gram_count, pfa_baum_welch, pfa_collapsed_gibbs_sample, pfa_alergia, pcfg_inside_outside, pcfg_metropolis_hastings, pcfg_gibbs_sampling, pcsg_metropolis_hastings, pcsg_gibbs_sampling};
+    enum training_method {n_gram_count, pfa_baum_welch, pfa_collapsed_gibbs_sample, pfa_alergia, pcfg_inside_outside, pcfg_metropolis_hastings, pcfg_gibbs_sampling, pcsg_metropolis_hastings, pcsg_gibbs_sampling, pcfg_pumping_inference};
     enum grammar_type {n_gram, pfa, pcfg, pcsg};
     const double ALFA = 0.1;
     std::vector<Symbol::Symbol> terminals;
@@ -69,7 +69,7 @@ public:
     void print_rules();
 
     [[maybe_unused]] std::string rules_to_string();
-    void train(training_method algorithm, int iterations);
+    void train(training_method algorithm, int iterations, double alpha_alergia, double p_ratio, double time_limite);
     std::pair<double,double> perplexity(const std::vector<std::vector<Symbol::Symbol>>& test_data);
     std::pair<double,double> perplexity_kl(const std::vector<std::vector<Symbol::Symbol>>& test_data);
     void prob_sequitur();
@@ -117,11 +117,13 @@ public:
     std::map<std::pair<std::string,std::string>,bool>  build_compatible_matrix();
     std::map<std::vector<std::pair<int,int>>, std::map<int, double>> find_next_prefix_probabilities(std::vector<Symbol::Symbol> prefix);
     std::vector<std::pair<int, double>>  find_prefix_ranking_probabilities(std::vector<Symbol::Symbol> prefix);
+    double find_word_probabilities(std::vector<Symbol::Symbol> word);
+    double find_word_probabilities_from_pcfg_inside_table(std::vector<Symbol::Symbol> word);
     bool compatible_alergia(const Symbol::Symbol &a, const Symbol::Symbol &b, double alpha, std::vector<Rule::Rule> & vector_rules );
     void pumping_alergia(double alpha, std::vector<Symbol::Symbol> & pumped_nts);
     void eliminate_covered_pumpings(std::unordered_map<std::string, std::vector<int>> &map_pump_to_word, std::unordered_map<std::string, int> &map);
     void find_pumping_rule(Symbol::Symbol nt1, Symbol::Symbol nt2);
-    std::vector<Rule::Rule> find_pumping_rule_by_auto_similarity(Symbol::Symbol nt, std::set<int> &not_search_nts, std::map<int, std::vector<std::pair<Symbol::Symbol, int>>> compatible_lists);
+    std::vector<Rule::Rule> find_pumping_rule_by_auto_similarity(Symbol::Symbol nt, std::set<int> &not_search_nts, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> compatible_lists, double p_ratio);
     bool check_auto_similarity(std::vector<Symbol::Symbol> path_to_accept, Symbol::Symbol start);
     bool exist_empty_rule(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right);
     void build_rhs_until_empty_rule(Symbol::Symbol nt1, std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> &right, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> rhs_pumping);
@@ -131,10 +133,13 @@ public:
     bool check_derivation_from_nt_with_v_w_x_z(Symbol::Symbol nt, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, std::vector<Symbol::Symbol> &z, int pumping_times);
     bool check_reachable_node_from_nt_with_v_w_x_z(Symbol::Symbol nt, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, std::vector<Symbol::Symbol> &z, int pumping_times, int already_pumped_v);
     bool check_v_pumping_use(Symbol::Symbol nt, Symbol::Symbol nt_target, std::vector<Symbol::Symbol> &v, int pumping_times);
-    std::vector<Rule::Rule> mount_pumping_rules(std::map<int, std::vector<std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int>>> nts_pumpings, std::set<int> &not_search_nts, Symbol::Symbol nt);
-    void super_duper_pumping_inference();
+    std::vector<Rule::Rule> mount_pumping_rules(std::map<int, std::vector<std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int>>> nts_pumpings, std::set<int> &not_search_nts, Symbol::Symbol nt, int max_height);
+    void super_duper_pumping_inference(double alpha, double p_ratio, double time_limite);
     void pump_and_reduce_w(Rule::Rule &r);
-    std::map<int, std::vector<std::pair<Symbol::Symbol, int>>> build_compatible_lists();
+    std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> build_compatible_lists(double alpha);
+    void decrease_rules_from_pumping(Symbol::Symbol nt, std::vector<Rule::Rule> & rs, int max_height, std::vector<Symbol::Symbol> & z);
+    void recursive_build_parse_tree_indexes(std::vector<Rule::Rule> & rs, int & max_height, std::vector<Symbol::Symbol> & z, std::vector<std::pair<int,int>> parse_tree_indexes, std::vector<std::vector<std::pair<int,int>>> & parse_trees);
+    bool check_reacheable_multiple_pumpings(Symbol::Symbol nt, std::vector<std::pair<int, int>> parse_tree_indexes, std::vector<Rule::Rule> &rs);
 
 
 
@@ -156,7 +161,7 @@ private:
     void metropolis_hastings_pcfg(int iterations);
     void gibbs_sampling_pcfg(int iterations);
     void gibbs_sampling_pcsg(int iterations);
-    void metropolis_hastings_pcsg(int iterations);
+    void metropolis_hastings_pcsg(int iterations, double time_limit);
     void check_digram_position_integrity(std::unordered_map<std::string, std::tuple<int, int, int>> & digram_position);
     void check_digram_position_integrity_by_rules(std::unordered_map<std::string, std::tuple<int, int, int>> &digram_position);
 
@@ -227,6 +232,8 @@ private:
     void add_n_gram_rule_frequency(const Symbol::Symbol& lhs, const Symbol::Symbol& next_symbol);
     Symbol::Symbol is_handle(std::vector<Symbol::Symbol> sub_word);
     std::vector<Symbol::Symbol> remove_empty_substring(std::vector<Symbol::Symbol> word);
+    void nullify_unreacheble_rules();
+    bool build_words_from_rule(Symbol::Symbol nt, std::vector<std::pair<int, int>> parse_tree_indexes, std::vector<Rule::Rule> &rs);
 
 
 public:
@@ -237,6 +244,8 @@ public:
     void calculate_new_rule_from_starting_symbol(std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> &new_start_right, int v, std::string uvxyz, std::unordered_map<std::string, Symbol::Symbol> &non_terminal_string_map);
     std::vector<Symbol::Symbol> yield_string(std::vector<Symbol::Symbol> vector);
     int load_map_pump_to_word(std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> map_pump_to_word);
+    std::vector<std::vector<Symbol::Symbol>> generate_max_size_words_from_rules (int max_t);
+    void generate_nt_for_t ();
 };
 }
 
