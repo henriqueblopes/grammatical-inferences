@@ -45,7 +45,7 @@ private:
 
 public:
     InputWords(bool timed, int n);
-    void read_words();
+    void read_words(bool is_entire_music);
     void convert_file_to_word (const fs::path& path, unsigned long minSize);
     static void transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol::Symbol> & word);
     vector<Symbol::Symbol> generate_terminals(std::unordered_map<string, int> counted_chords);

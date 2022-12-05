@@ -77,7 +77,19 @@ add_executable(grammatical-inferences
         source/gInfer/Symbol.h
         examples/main.cpp
         examples/InputWords.cpp
-        examples/InputWords.h)
+        examples/InputWords.h
+        examples/midi_handler/Binasc.cpp
+        examples/midi_handler/Binasc.h
+        examples/midi_handler/MidiEvent.cpp
+        examples/midi_handler/MidiEvent.h
+        examples/midi_handler/MidiEventList.cpp
+        examples/midi_handler/MidiEventList.h
+        examples/midi_handler/MidiFile.cpp
+        examples/midi_handler/MidiFile.h
+        examples/midi_handler/Options.cpp
+        examples/midi_handler/Options.h
+        examples/midi_handler/MidiMessage.cpp
+        examples/midi_handler/MidiMessage.h)
 
 
 #[[target_link_libraries(grammatical-inferences ${PYTHON_LIBRARIES} pybind11::embed Catch2::Catch2 gInfer std::filesystem)]]

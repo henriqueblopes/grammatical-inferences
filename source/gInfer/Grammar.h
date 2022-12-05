@@ -140,6 +140,7 @@ public:
     void decrease_rules_from_pumping(Symbol::Symbol nt, std::vector<Rule::Rule> & rs, int max_height, std::vector<Symbol::Symbol> & z);
     void recursive_build_parse_tree_indexes(std::vector<Rule::Rule> & rs, int & max_height, std::vector<Symbol::Symbol> & z, std::vector<std::pair<int,int>> parse_tree_indexes, std::vector<std::vector<std::pair<int,int>>> & parse_trees);
     bool check_reacheable_multiple_pumpings(Symbol::Symbol nt, std::vector<std::pair<int, int>> parse_tree_indexes, std::vector<Rule::Rule> &rs);
+    std::vector<Symbol::Symbol> generate_string(int max_size);
 
 
 

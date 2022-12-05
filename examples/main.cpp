@@ -1,4 +1,6 @@
 #include "InputWords.h"
+#include "midi_handler/MidiFile.h"
+#include "midi_handler/Options.h"
 #include <algorithm>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
@@ -27,10 +29,12 @@ void load_map(unordered_map<std::string, int> &map, std::string filename);
 void load_pautomac_file(string filename, vector<Symbol::Symbol> & terminals, vector<vector<Symbol::Symbol>> &words, int index);
 void load_spice_file(string filename, vector<Symbol::Symbol> &terminals, vector<vector<Symbol::Symbol>> &words_to_infer, int index, int n_symbol_max);
 void chord_to_char(vector<Symbol::Symbol> &terminals, vector<vector<Symbol::Symbol>> &words_to_infer, vector<Symbol::Symbol> &char_symbols, vector<vector<Symbol::Symbol>> &char_words);
+void write_string_to_midi(vector<Symbol::Symbol> string, std::string filename);
 vector<double> load_pautomac_solution_file(string filename, int index);
 vector<vector<Symbol::Symbol>> generate_palindromes(int max_length);
 vector<vector<Symbol::Symbol>> generate_mod_a_eq_mod_b(int max_length);
 vector<vector<Symbol::Symbol>> generate_expression_language(int max_length);
+
 
 
 int main(int argc, char** argv) {
@@ -81,14 +85,17 @@ int main(int argc, char** argv) {
                                                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1,true,false)}};*/
 
      //READ MUSICAL DATABASE
-    InputWords iw = InputWords(false, 50);
-    iw.read_words();
+    InputWords iw = InputWords(false, 70);
+    iw.read_words(true);
     //iw.input_words.erase(iw.input_words.begin(), iw.input_words.begin()+995);
     iw.iterate_chords();
     iw.change_words_to_reducted_chords();
     vector<Symbol::Symbol> chord_terms = iw.generate_terminals(iw.reducted_chord_counts);
     chord_words = iw.input_words;
+    cout << chord_terms.size() << endl;
     chord_to_char(chord_terms, chord_words, terms, words);
+
+
 
 
     /* CREATE |a| = |b|
@@ -133,18 +140,31 @@ int main(int argc, char** argv) {
     //load_spice_file(".spice.train", terms, words, index_p_file, max_word_lenght);
     double avg_score = 0.0;
     training_method = 1;
-    for (int i = 0; i < 1; i ++) {
+    for (int i = 0; i < 2; i ++) {
         cout << "it: " << i+1 << ": ";
 
 
 
-        //std::random_shuffle ( words.begin(), words.end());
+        std::random_shuffle ( words.begin(), words.end());
         vector<vector<Symbol::Symbol>> test_words;
         vector<vector<Symbol::Symbol>> train_words;
         test_words.insert(test_words.end(), words.begin(), words.begin()+words.size()/10);
         train_words.insert(train_words.end(), words.begin()+words.size()/10,  words.end());
-        train_words = words;
-        Grammar::Grammar g = Grammar::Grammar(terms, n_non_terminals, train_words, g.pcsg, make_pair(0, 0));
+        //train_words = words;
+        Grammar::Grammar g = Grammar::Grammar(terms, 3, train_words, g.pcsg, make_pair(0, 0));
+        load_grammar(g, "music_grammar_full_"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
+        //g.print_grammar();
+        for (int j = 0; j < 100; j++) {
+            string name = "midi_out_full_";
+            name += to_string(j);
+            name += ".midi";
+            vector<Symbol::Symbol> str = g.generate_string(30);
+            for (auto &s: str)
+                s = chord_terms[s.id];
+            cout << "chord sequence " << j<< ": " << g.convert_vector_to_string(str) << endl << endl;
+            //write_string_to_midi(str, name);
+        }
+        exit(0);
         /*for (auto w: g.words)
             cout << g.convert_vector_to_string(w) << endl;
         exit(0);*/
@@ -169,37 +189,41 @@ int main(int argc, char** argv) {
             }
             sol_pal.push_back(1.0 * count/(1.0 * test_words.size()));
         }
-
+        cout << "start training" << endl;
         if (training_method == 0)
             g.train(g.pfa_alergia, iterations, alpha, p_ratio, time_limit);
         else if (training_method == 1)
             g.train(g.pcfg_pumping_inference, iterations, alpha, p_ratio, time_limit);
         else if (training_method == 2)
             g.train(g.pcsg_metropolis_hastings, iterations, alpha, p_ratio, time_limit);
-
+        /*save_grammar(g, "music_grammar_full_"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
+        exit(0);*/
         long double exp = 0.0;
         long double expI = 0.0;
         long double pcx = 0.0;
-        for (int i = 0 ; i < test_words.size(); i++) {
+        for (int i2 = 0 ; i2 < test_words.size(); i2++) {
             if (training_method == 3)
-                pcx = 1/ (1.0 * pow(terms.size()+1, test_words[i].size()));
+                pcx = 1/ (1.0 * pow(terms.size()+1, test_words[i2].size()));
             else if (training_method == 2)
-                pcx = g.find_word_probabilities_from_pcfg_inside_table(test_words[i]);
+                pcx = g.find_word_probabilities_from_pcfg_inside_table(test_words[i2]);
             else
-                pcx = g.find_word_probabilities(test_words[i]);
+                pcx = g.find_word_probabilities(test_words[i2]);
 
-            //cout << "word "<< i << " prob: "<< pcx <<" - probSol:  " << sol_pal[i] << endl;
+            //cout << "word "<< i2 << " prob: "<< pcx <<" - probSol:  " << sol_pal[i2] << endl;
+            //pcx = 0.0;
             if (pcx == 0.0)
-                pcx = 1/ (1.0 * train_words.size() * (1.0 * pow(terms.size()+1, test_words[i].size())));
+                pcx = 1/ (1.0 * train_words.size() * (1.0 * pow(terms.size()+1, test_words[i2].size())));
+            if (pcx == 0.0)
+                pcx =  DBL_MIN;
 
-            exp += sol_pal[i] * log2(pcx);
-            expI += sol_pal[i] * log2(sol_pal[i]);
+            exp += sol_pal[i2] * log2(pcx);
+            expI += sol_pal[i2] * log2(sol_pal[i2]);
         }
         avg_score += pow(2, -exp);
         cout << " Score: " << pow(2, -exp) << " IdealScore: " << pow(2, -expI)<< endl;
-        g.print_grammar();
+        //g.print_grammar();
     }
-    cout << "AVG Score: " << avg_score/30;
+    //cout << "AVG Score: " << avg_score/30;
 
      //save_grammar(g, "grammar.txt");
     //Carregar Gramatica e gerar mapas
@@ -336,13 +360,13 @@ void load_spice_file(string filename, vector<Symbol::Symbol> &terminals, vector<
         return;
     }
     for (int i = 0; i < n_terminals; i++) {
-        char symbol_name = 65;
-        if (i < 10000)
+        char symbol_name = 40;
+        if (i < 0)
             terminals.push_back(Symbol::Symbol( to_string(i), i, true, false));
-        /*else {
+        else {
             symbol_name += i;
             terminals.push_back(Symbol::Symbol( string(1, symbol_name), i, true, false));
-        }*/
+        }
     }
     do  {
         getline(ifs,line);
@@ -546,4 +570,55 @@ void chord_to_char(vector<Symbol::Symbol> &terminals, vector<vector<Symbol::Symb
     for (auto & w: char_words)
         for (auto & t: w)
             t = char_symbols[t.id];
+}
+void write_string_to_midi(vector<Symbol::Symbol> string, std::string filename) {
+    random_device rd;
+    mt19937 mt(rd());
+    uniform_int_distribution<int> starttime(0, 100);
+    uniform_int_distribution<int> duration(1, 8);
+    uniform_int_distribution<int> pitch(36, 84);
+    uniform_int_distribution<int> velocity(40, 100);
+    smf::Options options;
+    options.define("n|note-count=i:10", "How many notes to randomly play");
+    options.define("o|output-file=s",   "Output filename (stdout if none)");
+    options.define("i|instrument=i:0",  "General MIDI instrument number");
+    options.define("x|hex=b",           "Hex byte-code output");
+    //options.process(argc, argv);
+    smf::MidiFile midifile;
+    int track   = 0;
+    int channel = 0;
+    int instr   = options.getInteger("instrument");
+    // acounstic piano 1
+    //guitar 27
+    //string ensemble 49
+    instr = 49;
+    midifile.addTimbre(track, 0, channel, instr);
+    int tpq     = midifile.getTPQ();
+    int count   = options.getInteger("note-count");
+    for (int i=0; i<string.size(); i++) {
+        for (int j=0; j < 12; j ++) {
+            if (string[i].name.compare("Other") != 0 && string[i].name[j] == '1') {
+                for (int k = 0; k < 5; k++) {
+                    int starttick = int((16 * (i + 1) + 4*k)/ 4.0 * tpq);
+                    if (k >= 2 )
+                        starttick -= 2/ 4.0 * tpq;
+                    if (k >= 4 )
+                        starttick -= 2/ 4.0 * tpq;
+                    int key =  j+  48;
+
+                    int endtick = starttick + int(4 / 4.0 * tpq);
+                    if (k == 1 || k == 3)
+                        endtick -= 2/ 4.0 * tpq;
+                    midifile.addNoteOn(track, starttick, channel, key, 70);
+                    midifile.addNoteOff(track, endtick, channel, key);
+                }
+            }
+        }
+    }
+    midifile.sortTracks();
+    if (filename.empty()) {
+        if (options.getBoolean("hex")) midifile.writeHex(cout);
+        else cout << midifile;
+    } else
+        midifile.write(filename);
 }

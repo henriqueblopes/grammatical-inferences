@@ -6953,10 +6953,10 @@ std::vector<Rule::Rule> Grammar::Grammar::find_pumping_rule_by_auto_similarity(S
                         }
 
                         if (total_yielded_words_p/total_words_p > p_ratio) { // e nts_that_pumps vazio
-                            cout << endl <<  "          found P-RULE! " << "u "<< queue_symbol.front().name << ", v " << convert_vector_to_string(v) <<  ", w " << convert_vector_to_string(w) << ", x " << convert_vector_to_string(x) << ", z " << convert_vector_to_string(z) << ", p_use: " << pumpings_use;
+                            //cout << endl <<  "          found P-RULE! " << "u "<< queue_symbol.front().name << ", v " << convert_vector_to_string(v) <<  ", w " << convert_vector_to_string(w) << ", x " << convert_vector_to_string(x) << ", z " << convert_vector_to_string(z) << ", p_use: " << pumpings_use;
                             nts_pumpings[queue_symbol.front().id].push_back(make_tuple(v, w, x, z, nts_that_pumps, pumping_size));
                         } else if (total_yielded_words_p > 1.0){
-                            cout << endl <<  "          not found P-RULE! " << "u "<< queue_symbol.front().name << ", v " << convert_vector_to_string(v) <<  ", w " << convert_vector_to_string(w) << ", x " << convert_vector_to_string(x) << ", z " << convert_vector_to_string(z) << ", total words: " << total_yielded_words_p <<  ", ratio: " << total_yielded_words_p/total_words_p;
+                            //cout << endl <<  "          not found P-RULE! " << "u "<< queue_symbol.front().name << ", v " << convert_vector_to_string(v) <<  ", w " << convert_vector_to_string(w) << ", x " << convert_vector_to_string(x) << ", z " << convert_vector_to_string(z) << ", total words: " << total_yielded_words_p <<  ", ratio: " << total_yielded_words_p/total_words_p;
                         }
 
                     } else
@@ -7338,7 +7338,7 @@ void Grammar::Grammar::super_duper_pumping_inference(double alpha, double p_rati
     rules.clear();
     n_non_terminals = 0;
     gen_fpta();
-    print_grammar();
+    //print_grammar();
     //cout <<" Finished FPTA" << endl;
     std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> compatible_lists = build_compatible_lists(alpha);
     set<int> not_search_nts;
@@ -7364,8 +7364,8 @@ void Grammar::Grammar::super_duper_pumping_inference(double alpha, double p_rati
         }
         count_nt++;
         if (time_limite < std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startIt).count()/1000) {
-            //cout << "   Time Limit Reached" << endl;
-            //break;
+            cout << "   Time Limit Reached" << endl;
+            break;
         }
     }
     for (auto r: pumped_rules) {
@@ -7502,7 +7502,7 @@ std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> Gramm
         int max_height = 0;
         /*if ((count_nt+1) % (n_non_terminals/10) == 0 )
             cout << "   Build compatible list  at " << (100.0*(count_nt+1)/(n_non_terminals*1.0)) << "%" << endl;*/
-        cout << "   Build compatible list  at " << nt.id << "/" << non_terminals.size() << endl ;
+        //cout << "   Build compatible list  at " << nt.id << "/" << non_terminals.size() << endl ;
         queue<pair<Symbol::Symbol, int>> queue_symbol_auto_similarity;
         vector<pair<Symbol::Symbol, int>> list_symbol_auto_similarity;
         for (auto rhs: rules[nt.id].right)
@@ -7529,6 +7529,15 @@ std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> Gramm
 void Grammar::Grammar::decrease_rules_from_pumping(Symbol::Symbol nt, std::vector<Rule::Rule> & rs, int max_height, std::vector<Symbol::Symbol> & z) {
     vector<vector<pair<int,int>>> parse_trees;
     vector<pair<int,int>> parse_tree_indexes;
+    double min_size = std::numeric_limits<double>::max();
+    //CALCULO DE PROFUNDIDADE MÁXIMA
+    for (auto r: rs[0].right)
+        if (min_size > r.first.size())
+            min_size = r.first.size();
+    double base = rs[0].right.size()-1;
+    double expoente = log(500000)/log(base);
+    if (max_height > expoente* (min_size-1))
+        max_height = expoente* (min_size-1);
     recursive_build_parse_tree_indexes(rs, max_height, z, parse_tree_indexes, parse_trees);
     for (auto & rhs: rs[0].right)
         rhs.second.first = 0.0;
@@ -7541,7 +7550,6 @@ void Grammar::Grammar::recursive_build_parse_tree_indexes(std::vector<Rule::Rule
     int tree_height = rs[0].right[rs[0].right.size()-1].first.size() + z.size();
     for (int i = 0; i < parse_tree_indexes.size(); i++)
         tree_height += rs[parse_tree_indexes[i].first].right[parse_tree_indexes[i].second].first.size()-1;
-
     if (tree_height <= max_height) {
 
 
@@ -7885,4 +7893,45 @@ double Grammar::Grammar::find_word_probabilities_from_pcfg_inside_table(std::vec
     double pX = iTable[0][0][word.size()-1] ;
     free_inside_table(iTable, word.size());
     return pX;
+}
+std::vector<Symbol::Symbol> Grammar::Grammar::generate_string(int max_size) {
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    std::vector<Symbol::Symbol> string;
+    std::stack<Symbol::Symbol> stack_symbol;
+    stack_symbol.push(rules[0].left[0]);
+    while (!stack_symbol.empty()) {
+        Symbol::Symbol aux = stack_symbol.top();
+        stack_symbol.pop();
+        if (aux.terminal) {
+            if (!aux.name.empty())
+                string.push_back(aux);
+        } else {
+            cout << rules[aux.id].left[0].name << " -> ";
+            if (string.size() >=max_size && aux.name.find("!#$") != string::npos) {
+                int last = rules[aux.id].right.size()-1;
+                for (int i = rules[aux.id].right[last].first.size() -1; i >=0; i--) {
+                    stack_symbol.push(rules[aux.id].right[last].first[i]);
+                    cout << rules[aux.id].right[last].first[i].name;
+                }
+            }
+            else {
+                double p = dist(mt);
+                double sum_prob = 0.0;
+                for (auto rhs: rules[aux.id].right) {
+                    if (p < sum_prob+ rhs.second.first) {
+                        for (int i = rhs.first.size() -1; i >=0; i--) {
+                            stack_symbol.push(rhs.first[i]);
+                            cout << rhs.first[i].name;
+                        }
+                        break;
+                    } else {
+                        sum_prob += rhs.second.first;
+                    }
+                }
+            }
+            cout << endl;
+        }
+    }
+    return string;
 }

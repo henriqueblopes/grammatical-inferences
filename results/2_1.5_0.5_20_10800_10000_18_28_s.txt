@@ -1,0 +1,61 @@
+it: 1:    Time Limit Reached
+RunTime: 10806822 Score: 2.07966e+11 IdealScore: 53
+it: 2:    Time Limit Reached
+RunTime: 10803411 Score: 4.62793e+11 IdealScore: 53
+it: 3:    Time Limit Reached
+RunTime: 10805560 Score: 4.2095e+11 IdealScore: 53
+it: 4:    Time Limit Reached
+RunTime: 10804351 Score: 3.34537e+11 IdealScore: 53
+it: 5:    Time Limit Reached
+RunTime: 10804701 Score: 8.2009e+11 IdealScore: 53
+it: 6:    Time Limit Reached
+RunTime: 10803152 Score: 4.58094e+11 IdealScore: 53
+it: 7:    Time Limit Reached
+RunTime: 10801154 Score: 1.79326e+11 IdealScore: 53
+it: 8:    Time Limit Reached
+RunTime: 10801580 Score: 5.36377e+11 IdealScore: 53
+it: 9:    Time Limit Reached
+RunTime: 10804955 Score: 2.16098e+11 IdealScore: 53
+it: 10:    Time Limit Reached
+RunTime: 10806024 Score: 5.19314e+11 IdealScore: 53
+it: 11:    Time Limit Reached
+RunTime: 10806908 Score: 5.10554e+11 IdealScore: 53
+it: 12:    Time Limit Reached
+RunTime: 10806164 Score: 1.66174e+11 IdealScore: 53
+it: 13:    Time Limit Reached
+RunTime: 10803339 Score: 1.35848e+12 IdealScore: 53
+it: 14:    Time Limit Reached
+RunTime: 10808496 Score: 1.41934e+11 IdealScore: 53
+it: 15:    Time Limit Reached
+RunTime: 10804344 Score: 2.45496e+12 IdealScore: 53
+it: 16:    Time Limit Reached
+RunTime: 10802737 Score: 2.81752e+11 IdealScore: 53
+it: 17:    Time Limit Reached
+RunTime: 10803215 Score: 4.9232e+11 IdealScore: 53
+it: 18:    Time Limit Reached
+RunTime: 10804504 Score: 4.1939e+11 IdealScore: 53
+it: 19:    Time Limit Reached
+RunTime: 10806339 Score: 3.39278e+11 IdealScore: 53
+it: 20:    Time Limit Reached
+RunTime: 10801933 Score: 1.85406e+11 IdealScore: 53
+it: 21:    Time Limit Reached
+RunTime: 10807691 Score: 1.38381e+12 IdealScore: 53
+it: 22:    Time Limit Reached
+RunTime: 10806905 Score: 1.85511e+11 IdealScore: 53
+it: 23:    Time Limit Reached
+RunTime: 10804077 Score: 8.73484e+11 IdealScore: 53
+it: 24:    Time Limit Reached
+RunTime: 10806029 Score: 8.77761e+10 IdealScore: 53
+it: 25:    Time Limit Reached
+RunTime: 10801007 Score: 1.52735e+11 IdealScore: 53
+it: 26:    Time Limit Reached
+RunTime: 10804082 Score: 9.70963e+11 IdealScore: 53
+it: 27:    Time Limit Reached
+RunTime: 10806196 Score: 2.72449e+11 IdealScore: 53
+it: 28:    Time Limit Reached
+RunTime: 10801196 Score: 2.90976e+11 IdealScore: 53
+it: 29:    Time Limit Reached
+RunTime: 10801707 Score: 3.25327e+11 IdealScore: 53
+it: 30:    Time Limit Reached
+RunTime: 10804837 Score: 4.90497e+11 IdealScore: 53
+AVG Score: 5.17977e+11
