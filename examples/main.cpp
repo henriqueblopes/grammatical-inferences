@@ -10,6 +10,31 @@
 #include <iostream>
 #include <map>
 #include <vector>
+/*My SPiCe
+ * 20 Billboard Songs
+ * 21 Billboard Phrases
+ * 22 Brown Tokens 10%
+ * 23 Brown Tokens Complete
+ * 24 Brown Part of Speech Complete (Acha PumpDet Duplo)
+ * 25 is tail embedding
+ * 26 Dyck Language 2_10 (Acha Pump duplo)
+ * 27 Dyck Language 2_12 (Acha Pump duplo)
+ * 28 Dyck Language 2_14 (Acha Pump
+ * 29 Dyck Language 2_16
+ * 30 Dyck Language 3_8
+ * 31 Dyck Language 3_10 (Acha Pump)
+ * 32 Dyck Language 3_12
+ * 33 Dyck Language 4_8
+ * 34 Dyck Language 4_10 (Acha Pump)
+ * 35 Dyck Language 5_8 (Acha Pump
+ * 36 Dyck Language 5_10
+ * 37 Dyck Language 6_6
+ * 38 Dyck Language 6_8
+ * 39 Dyck Language 6_10
+ * 40 Dyck Language 4_12
+ * 41 Conll2003 POS full:14987 11:8751 21:11289
+ * 42 Conll2003 POS with Valid full: 18450 11:10659 21: 13789
+ * */
 
 
 using namespace std;
@@ -34,6 +59,21 @@ vector<double> load_pautomac_solution_file(string filename, int index);
 vector<vector<Symbol::Symbol>> generate_palindromes(int max_length);
 vector<vector<Symbol::Symbol>> generate_mod_a_eq_mod_b(int max_length);
 vector<vector<Symbol::Symbol>> generate_expression_language(int max_length);
+vector<vector<Symbol::Symbol>> generate_tail_embedding_language(int max_length);
+vector<vector<Symbol::Symbol>> generate_dyck_n_embedding_language(int n, int max_length);
+/*TODO
+ * gerações Conll 10 20 30 size word - 2,3,5,7,10,15 NTs, 1000 iterações
+ *
+ * Fazer o Brown com POS
+ * Experimento com spice 13 NLP (English spelling correction from Twitter Typos Corpus) (achou pumping v14 e v89)
+ * Generate Dyck Languges ()[]{} length less than 55, 6230 words, test with 1000 words with length 20<l<70 (d6 have 15000 for Train,  2000 for test)
+ * And this grammar (tail embedding english)
+ *  S→NP VP
+ *  VP→V1 | V2 NP
+ *  NP→N | N CP
+ *  CP→R VP
+ *
+ *  */
 
 
 
@@ -85,16 +125,15 @@ int main(int argc, char** argv) {
                                                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1,true,false)}};*/
 
      //READ MUSICAL DATABASE
-    InputWords iw = InputWords(false, 70);
-    iw.read_words(true);
+    /*InputWords iw = InputWords(false, 70);
+    //iw.read_words_beatles(true);
     //iw.input_words.erase(iw.input_words.begin(), iw.input_words.begin()+995);
     iw.iterate_chords();
     iw.change_words_to_reducted_chords();
     vector<Symbol::Symbol> chord_terms = iw.generate_terminals(iw.reducted_chord_counts);
     chord_words = iw.input_words;
     cout << chord_terms.size() << endl;
-    chord_to_char(chord_terms, chord_words, terms, words);
-
+    chord_to_char(chord_terms, chord_words, terms, words);*/
 
 
 
@@ -133,29 +172,111 @@ int main(int argc, char** argv) {
     int iterations = stoi((argv[6]));
     int index_p_file = stoi((argv[7]));
     int max_word_lenght = stoi((argv[8]));
+    //index_p_file = 23;
 
+    //words = generate_dyck_n_embedding_language(index_p_file,max_word_lenght);
+    /*InputWords iw = InputWords(false, INT64_MAX);
+    iw.read_words_conll2003();
+    iw.count_chords();
+    vector<Symbol::Symbol> chord_terms = iw.generate_terminals(iw.chord_counts);
+    chord_terms = iw.change_symbols_to_numbers(chord_terms);
+    words = iw.input_words;
+    ofstream myfile;
+    myfile.open ("42.spice.train");
+    myfile << words.size();
+    myfile << " " << chord_terms.size() << endl;
+    for (auto w: words) {
+        myfile << w.size();
+        for (auto s: w)
+            myfile << " " << s.name;
+        myfile << endl;
+    }
+    myfile.close();
+    exit(1);*/
+    /*
+    Grammar::Grammar g = Grammar::Grammar(chord_terms, 3, chord_words, g.pcfg, make_pair(0, 0));
+    g.train(g.pcfg_pumping_inference, iterations, alpha, p_ratio, time_limit);
+    //load_grammar(g, "cfdg_grammar_full_beatles1.500000_0.200000_21.txt");
+    //g.print_grammar();
+    exit(0);*/
+
+
+    /*for (int i = 0; i < 565; i++)
+        cout << "0.1 NT0 --> " << to_string(i) << endl;
+    exit(0);*/
 
 
     //load_pautomac_file(".pautomac.train", terms, words, index_p_file);
-    //load_spice_file(".spice.train", terms, words, index_p_file, max_word_lenght);
+    load_spice_file(".spice.train", terms, words, index_p_file, max_word_lenght);
+    
+    //contar termiunais usados
+    /*int count_t = 0;
+    for (auto t: terms) {
+        bool there_is_t = false;
+        for (auto w: words)
+            for (auto s: w)
+                if (s.equal_symbol(t))
+                    there_is_t = true;
+
+
+        if (there_is_t) count_t ++;
+    }*/
+
+    /*ofstream myfile;
+    myfile.open ("-conll.spice.train");
+    myfile << words.size();
+    myfile << " " << words.size() << endl;
+    for (auto w: words) {
+        if (w.size() <= 30) {
+            //myfile << w.size();
+            for (auto s: w)
+                myfile  << s.name << " ";
+            myfile << endl;
+        }
+    }
+    myfile.close();
+    exit(0);*/
+    //words.erase(words.begin()+5000, words.end());
+    cout << words.size() << " words" << endl;
     double avg_score = 0.0;
+    double avg_log10s = 0.0;
+    double avg_log2s = 0.0;
+    double avg_loges = 0.0;
+    double avg_log10sol = 0.0;
+    double exp_avg_logs = 0.0;
+
     training_method = 1;
-    for (int i = 0; i < 2; i ++) {
+    for (int i = 0; i < 1; i ++) {
         cout << "it: " << i+1 << ": ";
 
 
 
-        std::random_shuffle ( words.begin(), words.end());
+        //std::random_shuffle ( words.begin(), words.end());
         vector<vector<Symbol::Symbol>> test_words;
         vector<vector<Symbol::Symbol>> train_words;
-        test_words.insert(test_words.end(), words.begin(), words.begin()+words.size()/10);
-        train_words.insert(train_words.end(), words.begin()+words.size()/10,  words.end());
-        //train_words = words;
+        //test_words.insert(test_words.end(), words.begin(), words.begin()+words.size()/10);
+        //train_words.insert(train_words.end(), words.begin()+words.size()/10,  words.end());
+        //train_words = words; //to train with all words
+        if (max_word_lenght == 10) {
+            train_words.insert(train_words.end(), words.begin(),  words.begin()+8751);
+            test_words.insert(test_words.end(), words.begin()+8751, words.end());
+        } else if (max_word_lenght == 20) {
+
+            train_words.insert(train_words.end(), words.begin(),  words.begin()+11076);
+            test_words.insert(test_words.end(), words.begin()+11076, words.end());
+        }
+        else if (max_word_lenght == 30){
+            train_words.insert(train_words.end(), words.begin(), words.begin() +13201);
+            test_words.insert(test_words.end(), words.begin() +13201, words.end());
+        } else {
+            train_words = words;
+        }
         Grammar::Grammar g = Grammar::Grammar(terms, 3, train_words, g.pcsg, make_pair(0, 0));
-        load_grammar(g, "music_grammar_full_"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
+
+        /*load_grammar(g, "music_grammar_full_beatles"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
         //g.print_grammar();
         for (int j = 0; j < 100; j++) {
-            string name = "midi_out_full_";
+            string name = "midi_out_full_beatles";
             name += to_string(j);
             name += ".midi";
             vector<Symbol::Symbol> str = g.generate_string(30);
@@ -164,7 +285,7 @@ int main(int argc, char** argv) {
             cout << "chord sequence " << j<< ": " << g.convert_vector_to_string(str) << endl << endl;
             //write_string_to_midi(str, name);
         }
-        exit(0);
+        exit(0);*/
         /*for (auto w: g.words)
             cout << g.convert_vector_to_string(w) << endl;
         exit(0);*/
@@ -178,6 +299,7 @@ int main(int argc, char** argv) {
             g.g_tp = g.n_gram;
         else
             exit(-1);
+
 
         vector<double> sol_pal;
         for (auto w: test_words) {
@@ -196,11 +318,16 @@ int main(int argc, char** argv) {
             g.train(g.pcfg_pumping_inference, iterations, alpha, p_ratio, time_limit);
         else if (training_method == 2)
             g.train(g.pcsg_metropolis_hastings, iterations, alpha, p_ratio, time_limit);
-        /*save_grammar(g, "music_grammar_full_"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
-        exit(0);*/
+        //g.print_grammar();
+        //save_grammar(g, "cfdg_grammar_full_dyck"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
+
+        long double log2s = 0.0;
+        long double log10s = 0.0;
+        long double loges = 0.0;
         long double exp = 0.0;
         long double expI = 0.0;
         long double pcx = 0.0;
+        long double log10sol = 0.0;
         for (int i2 = 0 ; i2 < test_words.size(); i2++) {
             if (training_method == 3)
                 pcx = 1/ (1.0 * pow(terms.size()+1, test_words[i2].size()));
@@ -213,21 +340,34 @@ int main(int argc, char** argv) {
             //pcx = 0.0;
             if (pcx == 0.0)
                 pcx = 1/ (1.0 * train_words.size() * (1.0 * pow(terms.size()+1, test_words[i2].size())));
-            if (pcx == 0.0)
-                pcx =  DBL_MIN;
+            /*if (pcx == 0.0)
+                pcx =  DBL_MIN;*/
 
             exp += sol_pal[i2] * log2(pcx);
             expI += sol_pal[i2] * log2(sol_pal[i2]);
+            log10s -= log10(pcx);
+            log2s -= log2(pcx);
+            loges -= log(pcx);
+            log10sol -= log10(sol_pal[i2]);
+
         }
         avg_score += pow(2, -exp);
+        exp_avg_logs += pow(10, log10s);
+        avg_log10s += log10s;
+        avg_log2s += log2s;
+        avg_loges += loges;
+        avg_log10sol += log10sol;
+        cout << " log10s: " << log10s << " - log2s: " << log2s << " - loges: " << loges<< " - logsol: " << log10sol << endl;
+        cout << " s-log10s: " << pow(10,log10s) << " - s-log2s: " << pow(2,log2s) << " - s-loges: " << pow(M_E,loges)<< " - s-logsol: " << pow(10,log10sol) << endl;
         cout << " Score: " << pow(2, -exp) << " IdealScore: " << pow(2, -expI)<< endl;
         //g.print_grammar();
     }
-    //cout << "AVG Score: " << avg_score/30;
+    cout << " avg_log10s: " << avg_log10s/30 << " - avg_log2s: " << avg_log2s/30 << " - avg_loges: " << avg_loges/30<< " - avg_logsol: " << avg_log10sol/30 << endl;
+    cout << " s-log10s: " << exp_avg_logs/30<< " - AVG Score: " << avg_score/30;
 
      //save_grammar(g, "grammar.txt");
     //Carregar Gramatica e gerar mapas
-    //load_grammar(g, "grammar.txt");
+    //load_grammar(g, "cfdg_grammar_full_beatles1.500000_0.200000_21.txt");
 
     /* vector<pair<int, double>> v = g.find_prefix_ranking_probabilities(prefix);
     for (auto p: v)
@@ -355,17 +495,20 @@ void load_spice_file(string filename, vector<Symbol::Symbol> &terminals, vector<
     getline(ifs,line);
     size_t tokenPos = line.find(" ");
     int n_terminals = stoi(line.substr(tokenPos,string::npos));
-    if (n_terminals >= 71) {
+    /*if (n_terminals >= 71) {
         cout << "Error. Too many terminals. Max allowed is 71 terminals" << endl;
         return;
-    }
+    }*/
     for (int i = 0; i < n_terminals; i++) {
-        char symbol_name = 40;
+        //char symbol_name = 40;
+        /*if ( index == 18)
+            symbol_name+=8;*/
         if (i < 0)
             terminals.push_back(Symbol::Symbol( to_string(i), i, true, false));
         else {
-            symbol_name += i;
-            terminals.push_back(Symbol::Symbol( string(1, symbol_name), i, true, false));
+            //symbol_name += i;
+            //terminals.push_back(Symbol::Symbol( string(1, symbol_name), i, true, false));
+            terminals.push_back(Symbol::Symbol(to_string(i), i, true, false));
         }
     }
     do  {
@@ -387,12 +530,14 @@ void load_spice_file(string filename, vector<Symbol::Symbol> &terminals, vector<
             }
         //if (!word.empty())
             words_to_infer.push_back(word);
+        } else if (n_symbol == 0){
+            words_to_infer.push_back(word);
         }
 
 
 
     } while (ifs.good());
-    words_to_infer.erase(words_to_infer.end()-1, words_to_infer.end());
+    //words_to_infer.erase(words_to_infer.end()-1, words_to_infer.end());
 }
 
 vector<double> load_pautomac_solution_file(string filename, int index) {
@@ -621,4 +766,96 @@ void write_string_to_midi(vector<Symbol::Symbol> string, std::string filename) {
         else cout << midifile;
     } else
         midifile.write(filename);
+}
+vector<vector<Symbol::Symbol>> generate_tail_embedding_language(int max_length) {
+    std::vector<Symbol::Symbol> terms = {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1, true,false) /*};*/, Symbol::Symbol("2", 2, true,false), Symbol::Symbol("3", 3, true,false)};
+    //std::vector<Symbol::Symbol> terms = {Symbol::Symbol("V1", 0, true, false), Symbol::Symbol("V2", 1, true,false) /*};*/, Symbol::Symbol("N", 2, true,false), Symbol::Symbol("R", 3, true,false)};
+    vector<vector<Symbol::Symbol>> words;
+    Grammar::Grammar g = Grammar::Grammar(terms, 4, words, g.pcsg, make_pair(0, 0));
+    // NT0:S NT1:NP NT2:VP NT3:CP
+    // NT0 - > NT1 NT2
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right;
+    std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rhs;
+    rhs.first.push_back(g.non_terminals[1]);
+    rhs.first.push_back(g.non_terminals[2]);
+    rhs.second.first = 1.0;
+    right.push_back(rhs);
+    g.rules[0].right = right;
+
+    // NT1 - > T2 | T2 NT3
+    right.clear();
+    rhs.first.clear();
+    rhs.first.push_back(terms[2]);
+    right.push_back(rhs);
+    g.rules[1].right = right;
+    rhs.first.push_back(g.non_terminals[3]);
+    g.rules[1].right.push_back(rhs);
+
+    //NT2 -> V1 | V2 NT1
+    right.clear();
+    rhs.first.clear();
+    rhs.first.push_back(terms[0]);
+    right.push_back(rhs);
+    rhs.first.clear();
+    rhs.first.push_back(terms[1]);
+    rhs.first.push_back(g.non_terminals[1]);
+    right.push_back(rhs);
+    g.rules[2].right = right;
+
+    //NT3 -> R NT2
+    right.clear();
+    rhs.first.clear();
+    rhs.first.push_back(terms[3]);
+    rhs.first.push_back(g.non_terminals[2]);
+    right.push_back(rhs);
+    g.rules[3].right = right;
+
+    g.print_grammar();
+    words = g.generate_max_size_words_from_rules(max_length);
+    cout << words.size() << " " << terms.size() << endl;
+    for (auto w: words)
+        cout << w.size() << " " << g.convert_vector_to_string(w) << endl;
+
+    return words;
+
+}
+vector<vector<Symbol::Symbol>> generate_dyck_n_embedding_language(int n, int max_length) {
+    std::vector<Symbol::Symbol> terms;
+    for (int i = 0; i  < n ; i++) {
+        terms.push_back(Symbol::Symbol((to_string(2*i)), 2*i, true, false));
+        terms.push_back(Symbol::Symbol((to_string(2*i+1)), 2*i+1, true, false));
+    }
+    vector<vector<Symbol::Symbol>> words;
+    Grammar::Grammar g = Grammar::Grammar(terms, 1, words, g.pcsg, make_pair(0, 0));
+
+    std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right;
+    std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rhs;
+    rhs.second.first = 1.0;
+    g.rules[0].right = right;
+    for (int i = 0; i < n; i++) {
+        rhs.first.clear();
+        rhs.first.push_back(terms[2*i]);
+        rhs.first.push_back(g.non_terminals[0]);
+        rhs.first.push_back(terms[2*i+1]);
+        g.rules[0].right.push_back(rhs);
+
+        rhs.first.clear();
+        rhs.first.push_back(terms[2*i]);
+        rhs.first.push_back(terms[2*i+1]);
+        g.rules[0].right.push_back(rhs);
+    }
+
+    rhs.first.clear();
+    rhs.first.push_back(g.non_terminals[0]); rhs.first.push_back(g.non_terminals[0]);
+    g.rules[0].right.push_back(rhs);
+    rhs.first.clear();
+    rhs.first.push_back(Symbol::Symbol("", -1, true, false));
+    g.rules[0].right.push_back(rhs);
+    g.print_grammar();
+    words = g.generate_max_size_words_from_rules(max_length);
+    cout << words.size() << " " << terms.size() << endl;
+    for (auto w: words)
+        cout << w.size() << " " << g.convert_vector_to_string(w) << endl;
+
+    return words;
 }

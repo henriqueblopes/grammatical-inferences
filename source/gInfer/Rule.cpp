@@ -16,7 +16,7 @@ void Rule::Rule::print_rule() {
 
     //std::cout << "P_D_A: " << prob_dirichlet_theta << " ";
     for (itRule = left.begin(); itRule != left.end(); itRule++)
-        std::cout << (*itRule).name << " ";
+        std::cout << (*itRule).id << " - " << (*itRule).name << " ";
     std::cout << " <- ";
     double totalP = 0.0;
     for (itVector = right.begin(); itVector != right.end(); itVector++) {

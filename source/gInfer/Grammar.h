@@ -112,6 +112,10 @@ public:
     size_t add_subtrees_of_nt1_to_grammar(Symbol::Symbol nt1, Symbol::Symbol nt2, std::set<std::string> &nt1_pumping_set, Grammar &g, std::vector<Symbol::Symbol> &pumped_nts, size_t index_nt1);
     bool fpta_pumping_compatible_tree(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol);
     bool fpta_pumping_compatible_tree2(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol);
+
+    bool fpta_pumping_compatible_tree_det(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> &height_list);
+    bool check_y_string_compatible(Symbol::Symbol nt1, Symbol::Symbol nt2, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol);
+    bool nts_have_same_children(Symbol::Symbol nt1, Symbol::Symbol nt2, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol);
     bool fpta_single_pumping_compatible_tree(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol);
     void fold_fpta_subtree(Symbol::Symbol nt1, Symbol::Symbol nt2, std::vector<Symbol::Symbol> &pumped_nts, std::vector<Rule::Rule> &vector_rules, std::vector<Symbol::Symbol> &vector_symbol);
     std::map<std::pair<std::string,std::string>,bool>  build_compatible_matrix();
@@ -124,23 +128,28 @@ public:
     void eliminate_covered_pumpings(std::unordered_map<std::string, std::vector<int>> &map_pump_to_word, std::unordered_map<std::string, int> &map);
     void find_pumping_rule(Symbol::Symbol nt1, Symbol::Symbol nt2);
     std::vector<Rule::Rule> find_pumping_rule_by_auto_similarity(Symbol::Symbol nt, std::set<int> &not_search_nts, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> compatible_lists, double p_ratio);
+    std::vector<std::vector<Rule::Rule>> find_pumping_rule_by_auto_similarity_2(Symbol::Symbol nt, std::set<int> &not_search_nts, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> compatible_lists, double p_ratio);
     bool check_auto_similarity(std::vector<Symbol::Symbol> path_to_accept, Symbol::Symbol start);
     bool exist_empty_rule(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right);
     void build_rhs_until_empty_rule(Symbol::Symbol nt1, std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> &right, std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>> rhs_pumping);
     void build_pumping_fronts();
     std::pair<int,int> find_first_compatible_pump();
     void find_v_w_x_z_from_path(std::vector<Symbol::Symbol> path, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, int v_size, int pumping_size, std::vector<Symbol::Symbol> z_path, std::vector<Symbol::Symbol> &z);
-    bool check_derivation_from_nt_with_v_w_x_z(Symbol::Symbol nt, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, std::vector<Symbol::Symbol> &z, int pumping_times);
+    bool check_derivation_from_nt_with_v_w_x_z(Symbol::Symbol nt, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, std::vector<Symbol::Symbol> &z, int pumping_times, std::set<int> & nts_that_pumps);
     bool check_reachable_node_from_nt_with_v_w_x_z(Symbol::Symbol nt, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, std::vector<Symbol::Symbol> &z, int pumping_times, int already_pumped_v);
     bool check_v_pumping_use(Symbol::Symbol nt, Symbol::Symbol nt_target, std::vector<Symbol::Symbol> &v, int pumping_times);
-    std::vector<Rule::Rule> mount_pumping_rules(std::map<int, std::vector<std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int>>> nts_pumpings, std::set<int> &not_search_nts, Symbol::Symbol nt, int max_height);
+    std::vector<std::vector<Rule::Rule>> mount_pumping_rules(std::map<int, std::vector<std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int>>> nts_pumpings, std::set<int> &not_search_nts, Symbol::Symbol nt, int max_height);
     void super_duper_pumping_inference(double alpha, double p_ratio, double time_limite);
+    void super_duper_pumping_inference_det(double alpha, double p_ratio, double time_limite);
     void pump_and_reduce_w(Rule::Rule &r);
     std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> build_compatible_lists(double alpha);
+    void build_concatenation_lists(std::set<int> not_search, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> &concatenation_lists);
+    std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> build_height_lists();
     void decrease_rules_from_pumping(Symbol::Symbol nt, std::vector<Rule::Rule> & rs, int max_height, std::vector<Symbol::Symbol> & z);
     void recursive_build_parse_tree_indexes(std::vector<Rule::Rule> & rs, int & max_height, std::vector<Symbol::Symbol> & z, std::vector<std::pair<int,int>> parse_tree_indexes, std::vector<std::vector<std::pair<int,int>>> & parse_trees);
     bool check_reacheable_multiple_pumpings(Symbol::Symbol nt, std::vector<std::pair<int, int>> parse_tree_indexes, std::vector<Rule::Rule> &rs);
     std::vector<Symbol::Symbol> generate_string(int max_size);
+
 
 
 
@@ -233,7 +242,7 @@ private:
     void add_n_gram_rule_frequency(const Symbol::Symbol& lhs, const Symbol::Symbol& next_symbol);
     Symbol::Symbol is_handle(std::vector<Symbol::Symbol> sub_word);
     std::vector<Symbol::Symbol> remove_empty_substring(std::vector<Symbol::Symbol> word);
-    void nullify_unreacheble_rules();
+    void nullify_unreacheble_rules(std::set<int> is_pumping);
     bool build_words_from_rule(Symbol::Symbol nt, std::vector<std::pair<int, int>> parse_tree_indexes, std::vector<Rule::Rule> &rs);
 
 
@@ -247,6 +256,8 @@ public:
     int load_map_pump_to_word(std::unordered_map<std::string, std::vector<std::vector<Symbol::Symbol>>> map_pump_to_word);
     std::vector<std::vector<Symbol::Symbol>> generate_max_size_words_from_rules (int max_t);
     void generate_nt_for_t ();
+    bool rhs_generates_path(std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>  rhs,  Rule::Rule rule, std::vector<Symbol::Symbol> path);
+    bool fpta_pumping_compatible_tree_det_2(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> & vector_rules, std::vector<Symbol::Symbol> & vector_symbol, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> &height_list );
 };
 }
 

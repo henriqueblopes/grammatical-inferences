@@ -46,7 +46,11 @@ private:
 public:
     InputWords(bool timed, int n);
     void read_words(bool is_entire_music);
+    void read_words_beatles(bool is_entire_music);
+    void read_words_brown();
+    void read_words_conll2003();
     void convert_file_to_word (const fs::path& path, unsigned long minSize);
+    void convert_file_to_word_beatles (const fs::path& path, unsigned long minSize, string tone);
     static void transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol::Symbol> & word);
     vector<Symbol::Symbol> generate_terminals(std::unordered_map<string, int> counted_chords);
     void print_word_sizes();
@@ -58,6 +62,7 @@ public:
     void iterate_chords();
     static string build_chord_vector(const string& mode, const string& addition, const string& bass);
     void change_words_to_reducted_chords();
+    vector<Symbol::Symbol> change_symbols_to_numbers(vector<Symbol::Symbol> v);
 private:
     static string add_chord_note(string chord, string note);
 

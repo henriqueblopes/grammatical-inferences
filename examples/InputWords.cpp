@@ -163,13 +163,18 @@ void InputWords::convert_file_to_word(const fs::path& path, unsigned long minSiz
 }
 
 void InputWords::transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol::Symbol> & word) {
+
+    string aux_actual_tone = actual_tone;
+    if (actual_tone.find(':') != string::npos)
+        aux_actual_tone = actual_tone.substr(0, actual_tone.find(':'));
+
     std::vector<string> tones = {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
     std::vector<string> tonesS = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     while (tones[0] != target_tone)
         rotate(tones.begin(), tones.begin()+1, tones.end());
     int posTone = 0;
     for (unsigned long i = 0; i< tones.size(); i++) {
-        if (tones[i] == actual_tone || tonesS[i] == actual_tone) {
+        if (tones[i] == aux_actual_tone || tonesS[i] == aux_actual_tone) {
             posTone = (int) (tones.size() - i);
             break;
         }
@@ -487,4 +492,179 @@ void InputWords::change_words_to_reducted_chords() {
     for (auto  & w: input_words)
         for (auto & s: w)
             s.name = chord_map_reduction[s.name];
+}
+void InputWords::read_words_beatles(bool is_entire_music) {
+    fs::path p = fs::current_path().parent_path();
+    fs::path p2 = fs::current_path().parent_path();
+    vector<vector<Symbol::Symbol>> input_words_entire;
+    fs::path p1 = (p /= "resources/The_Beatles_Annotations/keylab");
+
+    map<string, string> music_key;
+    for(auto& pl: fs::recursive_directory_iterator(p1)) {
+        if (!fs::is_directory(pl)) {
+            //std::cout << pl.path() << '\n';
+            string file_name = pl.path();
+            //string extension = file_name.substr(file_name.size()-3, 3);
+            if (file_name.substr(file_name.size()-3, 3).compare("lab") == 0) {
+                std::ifstream ifs (pl.path(), std::ifstream::in);
+                string s;
+                getline(ifs,s);
+                while (ifs.good()) {
+                    string key = "";
+                    if (s.find("Key") != string::npos) {
+                        size_t key_start = s.find("Key");
+                        key = s.substr(key_start+4, s.size()-key_start);
+                        music_key[file_name.substr(file_name.find("/The Beatles/"))] = key;
+                        ifs.close();
+                        break;
+                    }
+                    getline(ifs,s);
+                }
+            }
+        }
+    }
+
+    p2 /= "resources/The_Beatles_Annotations/chordlab";
+    for(auto& pl: fs::recursive_directory_iterator(p2)) {
+        if (!fs::is_directory(pl)) {
+            std::cout << pl.path() << '\n';
+            string file_name = pl.path();
+            //string extension = file_name.substr(file_name.size()-3, 3);
+            if (file_name.substr(file_name.size()-3, 3).compare("lab") == 0) {
+                convert_file_to_word_beatles(pl.path(), 7, music_key[file_name.substr(file_name.find("/The Beatles/"))]);
+                if (is_entire_music) {
+                    vector<Symbol::Symbol> entire_word;
+                    for (auto w: input_words)
+                        entire_word.insert(entire_word.end(), w.begin(), w.end());
+                    input_words_entire.push_back(entire_word);
+                    input_words.clear();
+                }
+            }
+        }
+    }
+    if (is_entire_music)
+        input_words = input_words_entire;
+    cout << "nSequences: " << input_words.size() << endl;
+}
+void InputWords::convert_file_to_word_beatles(const fs::path &path, unsigned long minSize, string tone) {
+    string targeTone = "C";
+    std::ifstream ifs (path, std::ifstream::in);
+    string s;
+    getline(ifs,s);
+    vector<Symbol::Symbol> timedWord;
+    vector<Symbol::Symbol> noTimedWord;
+    vector<Symbol::Symbol> timedChordLine;
+    vector<Symbol::Symbol> noTimedChordLine;
+    int beat = 0 ;
+    //string tone;
+    //tone = "";
+    while (ifs.good()) {
+        size_t chord_start = s.find(' ', 0);
+        chord_start = s.find(' ', chord_start+1);
+        string current_symbol = s.substr(chord_start+1, s.size() - chord_start);
+        current_symbol.erase(std::remove(current_symbol.begin(), current_symbol.end(), '*'), current_symbol.end());
+        if (current_symbol.compare("N") != 0) {
+            if (current_symbol.find(':', 0) == string::npos) {
+                if (current_symbol.find('/', 0) == string::npos)
+                    current_symbol += ":maj";
+                else {
+                    string aux = current_symbol.substr(0, current_symbol.find('/', 0));
+                    string aux2 = current_symbol.substr(current_symbol.find('/', 0), current_symbol.size() - current_symbol.find('/', 0));
+                    current_symbol = aux + ":maj" + aux2;
+                }
+            }
+        }
+
+        noTimedWord.emplace_back(current_symbol, 0, true, false);
+        getline(ifs,s);
+    }
+    transpose_to(tone, targeTone, noTimedWord);
+    input_words.push_back(noTimedWord);
+    ifs.close();
+}
+void InputWords::read_words_brown() {
+    fs::path p = fs::current_path().parent_path();
+    cout << "Starting read Brown" << endl;
+    fs::path p1 = (p /= "resources/brown/brownTokenizedPOS.csv");
+    std::ifstream ifs (p1, std::ifstream::in);
+    string s;
+    getline(ifs,s);
+    getline(ifs,s);
+    int n = 1;
+    while (ifs.good()) {
+        vector<Symbol::Symbol> word;
+        size_t bar = 0;
+
+        while (bar != string::npos) {
+            string symbol;
+            size_t next_bar = s.find(' ', bar);
+            if (next_bar != string::npos) {
+                symbol = s.substr(bar, next_bar-bar);
+                if (symbol[0] == '"')
+                    symbol = symbol.substr(1, symbol.size()-1);
+            }
+            else {
+                symbol = s.substr(bar, s.size());
+                if (symbol[symbol.size()-1] == '"')
+                    symbol[symbol.size()-1] =  '\0';
+                word.emplace_back(Symbol::Symbol(symbol, 0, true, false));
+                break;
+            }
+            word.emplace_back(Symbol::Symbol(symbol, 0, true, false));
+            bar = next_bar+1;
+        }
+        //cout << word[0].name;
+        input_words.emplace_back(word);
+        getline(ifs,s);
+    }
+    cout << "Dataset size: " << input_words.size() << endl;
+}
+vector<Symbol::Symbol> InputWords::change_symbols_to_numbers(vector<Symbol::Symbol> v) {
+    for (auto & s: v)
+        s.name = to_string(s.id);
+    for (auto & w: input_words)
+        for (auto & s: w)
+            s.name = v[s.id].name;
+
+    return v;
+}
+void InputWords::read_words_conll2003() {
+    fs::path p = fs::current_path().parent_path();
+    cout << "Starting read Conll2003" << endl;
+    fs::path p1 = (p /= "resources/conll2003/train_valid.txt");
+    std::ifstream ifs (p1, std::ifstream::in);
+    string s;
+    getline(ifs,s);
+    getline(ifs,s);
+    getline(ifs,s);
+    int n = 1;
+    while (ifs.good()) {
+        vector<Symbol::Symbol> word;
+        size_t bar = 0;
+
+        while (!s.empty()) {
+            bar = 0;
+            string symbol;
+            bar = s.find(' ', bar);
+            size_t next_bar = s.find(' ', bar+1);
+            if (next_bar != string::npos) {
+                symbol = s.substr(bar, next_bar-bar);
+
+                symbol = symbol.substr(1, symbol.size()-1);
+            }
+            else {
+                symbol = s.substr(bar, s.size());
+                if (symbol[symbol.size()-1] == '"')
+                    symbol[symbol.size()-1] =  '\0';
+                word.emplace_back(Symbol::Symbol(symbol, 0, true, false));
+                break;
+            }
+            word.emplace_back(Symbol::Symbol(symbol, 0, true, false));
+            getline(ifs,s);
+        }
+        //cout << word[0].name;
+        input_words.emplace_back(word);
+        getline(ifs,s);
+    }
+    cout << "Dataset size: " << input_words.size() << endl;
 }
