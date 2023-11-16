@@ -135,10 +135,11 @@ public:
     void build_pumping_fronts();
     std::pair<int,int> find_first_compatible_pump();
     void find_v_w_x_z_from_path(std::vector<Symbol::Symbol> path, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, int v_size, int pumping_size, std::vector<Symbol::Symbol> z_path, std::vector<Symbol::Symbol> &z);
-    bool check_derivation_from_nt_with_v_w_x_z(Symbol::Symbol nt, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, std::vector<Symbol::Symbol> &z, int pumping_times, std::set<int> & nts_that_pumps);
+    int check_derivation_from_nt_with_v_w_x_z(Symbol::Symbol nt, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, std::vector<Symbol::Symbol> &z, int pumping_times, std::set<int> &nts_that_pumps);
     bool check_reachable_node_from_nt_with_v_w_x_z(Symbol::Symbol nt, std::vector<Symbol::Symbol> &v, std::vector<Symbol::Symbol> &w, std::vector<Symbol::Symbol> &x, std::vector<Symbol::Symbol> &z, int pumping_times, int already_pumped_v);
     bool check_v_pumping_use(Symbol::Symbol nt, Symbol::Symbol nt_target, std::vector<Symbol::Symbol> &v, int pumping_times);
-    std::vector<std::vector<Rule::Rule>> mount_pumping_rules(std::map<int, std::vector<std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int>>> nts_pumpings, std::set<int> &not_search_nts, Symbol::Symbol nt, int max_height);
+    std::vector<std::vector<Rule::Rule>> mount_pumping_rules(std::map<int, std::vector<std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int, int>>> nts_pumpings, std::set<int> &not_search_nts, Symbol::Symbol nt, int max_height);
+    std::vector<std::vector<Rule::Rule>> mount_pumping_rules_wz(std::vector<std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int, int>> nts_pumpings, std::set<int> &not_search_nts, Symbol::Symbol nt, int max_height);
     void super_duper_pumping_inference(double alpha, double p_ratio, double time_limite);
     void super_duper_pumping_inference_det(double alpha, double p_ratio, double time_limite);
     void pump_and_reduce_w(Rule::Rule &r);
@@ -244,6 +245,8 @@ private:
     std::vector<Symbol::Symbol> remove_empty_substring(std::vector<Symbol::Symbol> word);
     void nullify_unreacheble_rules(std::set<int> is_pumping);
     bool build_words_from_rule(Symbol::Symbol nt, std::vector<std::pair<int, int>> parse_tree_indexes, std::vector<Rule::Rule> &rs);
+    /*bool sort_vwxy_by_count(const std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int, int> &a,
+                            std::tuple<std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::vector<Symbol::Symbol>, std::set<int>, int, int> &b);*/
 
 
 public:
