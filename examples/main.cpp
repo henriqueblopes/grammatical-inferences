@@ -34,7 +34,15 @@
  * 40 Dyck Language 4_12
  * 41 Conll2003 POS full:14987 11:8751 21:11289
  * 42 Conll2003 POS with Valid full: 18450 11:10659 21: 13789
- * */
+ * 43 Dyck Language 6_8 with test 6_10
+ * 44 Dyck Language 5_8 with test 5_10
+ * 45 Dyck Language 4_8 with test 4_10
+ * 46 Dyck Language 3_8 with test 3_10
+ * 47 The Beatles Annotations - All Chords (144)
+ * 48 The Beatles Annotations - 100 Chords
+ * 49 The Beatles Annotations - 70 Chords
+ * 50 The Beatles Annotations - 50 Chords
+ * 51 The Beatles Annotations - 20 Chords*/
 
 
 using namespace std;
@@ -125,15 +133,35 @@ int main(int argc, char** argv) {
                                                                             {Symbol::Symbol("0", 0, true, false), Symbol::Symbol("1", 1,true,false)}};*/
 
      //READ MUSICAL DATABASE
-    /*InputWords iw = InputWords(false, 70);
-    //iw.read_words_beatles(true);
+    /*InputWords iw = InputWords(false, 20);
+    iw.read_words_beatles(true);
     //iw.input_words.erase(iw.input_words.begin(), iw.input_words.begin()+995);
     iw.iterate_chords();
     iw.change_words_to_reducted_chords();
     vector<Symbol::Symbol> chord_terms = iw.generate_terminals(iw.reducted_chord_counts);
     chord_words = iw.input_words;
     cout << chord_terms.size() << endl;
-    chord_to_char(chord_terms, chord_words, terms, words);*/
+    //chord_to_char(chord_terms, chord_words, terms, words);
+    ofstream myfile, gsMyFile, myfileMap;
+    myfile.open ("51.spice.train");
+    gsMyFile.open("51.spice.train.gs");
+    myfileMap.open("51.spice.train.map.txt");
+    myfile << chord_words.size();
+    myfile << " " << chord_terms.size() << endl;
+    std::random_shuffle(chord_words.begin(), chord_words.end());
+    for (auto w: chord_words) {
+        myfile << w.size();
+        for (auto s: w) {
+            myfile << " " << s.id;
+            gsMyFile << s.id << " ";
+        }
+        myfile << endl;
+        gsMyFile << endl;
+    }
+    for (auto s: chord_terms)
+        myfileMap << s.id << " " << s.name << endl;
+    exit(0);*/
+
 
 
 
@@ -222,19 +250,80 @@ int main(int argc, char** argv) {
         if (there_is_t) count_t ++;
     }*/
 
-    /*ofstream myfile;
-    myfile.open ("-conll.spice.train");
-    myfile << words.size();
-    myfile << " " << words.size() << endl;
-    for (auto w: words) {
-        if (w.size() <= 30) {
-            //myfile << w.size();
-            for (auto s: w)
-                myfile  << s.name << " ";
-            myfile << endl;
+    //CALCULAR PERP do COnn com tests especificos
+    /*std::ifstream ifs ("1_pi_6_8_probs.txt", std::ifstream::in);
+    std::ifstream ifs2 ("2_pi_6_8_probs.txt", std::ifstream::in);*/
+    /*std::ifstream ifs ("pi-probs-20-0.1.txt", std::ifstream::in);
+    //std::ifstream ifs2 ("jpcfg-probs2-20.txt", std::ifstream::in);
+    std::ifstream ifs2 ("1_3_rand_tr_conll_2_20.txt", std::ifstream::in);
+    string line;
+    string line2;
+    double loglike = 0.0;
+    double loglike2 = 0.0;
+    double negloglike = 0.0;
+    double negloglike2 = 0.0;
+    double n_words = 0.0;
+    double n_words_pos = 0.0;
+    double n_words_neg = 0.0;
+    while (ifs.good()) {
+        n_words+=1.0;
+        getline(ifs,line);
+        getline(ifs2,line2);
+        if (line.find(" 0 -") == string::npos) {
+            n_words_pos += 1.0;
+            string aux = line.substr(line.find(":")+1, line.find(" - probSol:")-line.find(":")-1);
+            string aux2 = line2.substr(line2.find(":")+1, line2.find(" - probSol:")-line2.find(":")-1);
+
+            if (!aux.empty()) {
+                cout << "logPI: " << -log10(stod(aux)) << " - logPcfg: " <<  -log10(stod(aux2)) << endl;
+                loglike -= log10(stod(aux));
+                loglike2 -= log10(stod(aux2));
+
+            }
+        } else {
+            n_words_neg += 1.0;
+            string aux = line.substr(line.find(":")+1, line.find(" - probSol:")-line.find(":")-1);
+            string aux2 = line2.substr(line2.find(":")+1, line2.find(" - probSol:")-line2.find(":")-1);
+            if ( !aux2.empty()) {
+                cout << "logPI: " << -log10(stod(aux)) << " - logPcfg: " <<  -log10(stod(aux2)) << endl;
+                negloglike -= log10(stod(aux));
+                negloglike2 -= log10(stod(aux2));
+            }
         }
+
+
     }
-    myfile.close();
+    cout << "logPi: " << loglike+negloglike2<< " logPiPos: " << loglike*//*//*(n_words_pos-1)*//* <<" - logpcfg: " << loglike2*//*//*(2428-n_words_neg)*//* <<  " - negloglike: " << negloglike*//*//*(2428-n_words_neg)*//* << " - negloglike2: " << negloglike2*//*//*(2428-n_words_neg)*//* << " n_words: " << n_words-1 << " n_words_pos: " << n_words_pos-1 << " n_words_neg: " << n_words_neg<<endl;
+    return 0;*/
+    /*for (int i = 51; i <= 53; i++) {
+        terms.clear();
+        words.clear();
+        load_spice_file(".spice.train", terms, words, i, max_word_lenght);
+        std::random_shuffle ( words.begin(), words.end());
+        ofstream myfile, myfile2;
+        myfile.open (to_string(i)+".dyck.spice.train");
+        myfile << words.size();
+        myfile << " " << terms.size() << endl;
+        for (auto w: words) {
+            if (w.size() <= 30) {
+                myfile << w.size() ;
+                for (auto s: w)
+                    myfile  << " " << s.name;
+                myfile << endl;
+            }
+        }
+        myfile.close();
+
+        myfile2.open (to_string(i-50)+"-dyck.pcfg-dyck-5-10.yld");
+        for (auto w: words) {
+            if (w.size() <= 30) {
+                for (auto s: w)
+                    myfile2  << s.name << " ";
+                myfile2 << endl;
+            }
+        }
+        myfile2.close();
+    }
     exit(0);*/
     //words.erase(words.begin()+5000, words.end());
     cout << words.size() << " words" << endl;
@@ -245,19 +334,40 @@ int main(int argc, char** argv) {
     double avg_log10sol = 0.0;
     double exp_avg_logs = 0.0;
 
-    training_method = 1;
+    //training_method = 1;
     for (int i = 0; i < 1; i ++) {
         cout << "it: " << i+1 << ": ";
 
 
 
         //std::random_shuffle ( words.begin(), words.end());
+
+
         vector<vector<Symbol::Symbol>> test_words;
         vector<vector<Symbol::Symbol>> train_words;
-        //test_words.insert(test_words.end(), words.begin(), words.begin()+words.size()/10);
-        //train_words.insert(train_words.end(), words.begin()+words.size()/10,  words.end());
+        //Dyck_6_8
+        train_words.insert(train_words.end(), words.begin(),  words.begin()+19303);
+        test_words.insert(test_words.end(), words.begin()+19303, words.end());
+
+        //Dyck_5_8
+        /*train_words.insert(train_words.end(), words.begin(),  words.begin()+9431);
+        test_words.insert(test_words.end(), words.begin()+9431, words.end());*/
+
+        //Dyck_4_8
+        /*train_words.insert(train_words.end(), words.begin(),  words.begin()+3941);
+        test_words.insert(test_words.end(), words.begin()+3941, words.end());*/
+
+        //Dyck_3_8
+        /*train_words.insert(train_words.end(), words.begin(),  words.begin()+1291);
+        test_words.insert(test_words.end(), words.begin()+1291, words.end());*/
+
+        /*test_words.insert(test_words.end(), words.begin(), words.begin()+words.size()/10);
+        train_words.insert(train_words.end(), words.begin()+words.size()/10,  words.end());*/
+
         //train_words = words; //to train with all words
-        if (max_word_lenght == 10) {
+        //test_words = words;
+
+        /*if (max_word_lenght == 10) {
             train_words.insert(train_words.end(), words.begin(),  words.begin()+8751);
             test_words.insert(test_words.end(), words.begin()+8751, words.end());
         } else if (max_word_lenght == 20) {
@@ -270,7 +380,7 @@ int main(int argc, char** argv) {
             test_words.insert(test_words.end(), words.begin() +13201, words.end());
         } else {
             train_words = words;
-        }
+        }*/
         Grammar::Grammar g = Grammar::Grammar(terms, 3, train_words, g.pcsg, make_pair(0, 0));
 
         /*load_grammar(g, "music_grammar_full_beatles"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
@@ -318,9 +428,10 @@ int main(int argc, char** argv) {
             g.train(g.pcfg_pumping_inference, iterations, alpha, p_ratio, time_limit);
         else if (training_method == 2)
             g.train(g.pcsg_metropolis_hastings, iterations, alpha, p_ratio, time_limit);
-        //g.print_grammar();
-        //save_grammar(g, "cfdg_grammar_full_dyck"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
-
+        cout << "training complete" << endl;
+        g.print_grammar();
+        /*save_grammar(g, "pcfg_grammar_billboard_"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
+        exit(1);*/
         long double log2s = 0.0;
         long double log10s = 0.0;
         long double loges = 0.0;
@@ -336,10 +447,13 @@ int main(int argc, char** argv) {
             else
                 pcx = g.find_word_probabilities(test_words[i2]);
 
-            //cout << "word "<< i2 << " prob: "<< pcx <<" - probSol:  " << sol_pal[i2] << endl;
+            cout << "word "<< i2+1 << " prob: "<< pcx <<" - probSol:  " << sol_pal[i2] << endl;
             //pcx = 0.0;
-            if (pcx == 0.0)
-                pcx = 1/ (1.0 * train_words.size() * (1.0 * pow(terms.size()+1, test_words[i2].size())));
+            if (pcx == 0.0) {
+                //PCX igual a aleatorio ou pior que aleatorio
+                //pcx = 1/ (1.0 * train_words.size() * (1.0 * pow(terms.size()+1, test_words[i2].size())));
+                pcx = 1/ (1.0 *(1.0 * pow(terms.size()+1, test_words[i2].size())));
+            }
             /*if (pcx == 0.0)
                 pcx =  DBL_MIN;*/
 
@@ -851,7 +965,7 @@ vector<vector<Symbol::Symbol>> generate_dyck_n_embedding_language(int n, int max
     rhs.first.clear();
     rhs.first.push_back(Symbol::Symbol("", -1, true, false));
     g.rules[0].right.push_back(rhs);
-    g.print_grammar();
+    //g.print_grammar();
     words = g.generate_max_size_words_from_rules(max_length);
     cout << words.size() << " " << terms.size() << endl;
     for (auto w: words)
