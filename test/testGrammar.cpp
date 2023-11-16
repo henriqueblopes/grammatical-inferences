@@ -2,7 +2,8 @@
 // Created by henrique on 02/11/2020.
 //
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 #include <gInfer/Grammar.h>
 
 using namespace std;

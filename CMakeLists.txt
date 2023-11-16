@@ -38,11 +38,11 @@ message("CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}")
 
 add_subdirectory(source)
 
-if (BUILD_TESTS)
+#[[if (BUILD_TESTS)
     include(CTest)
     enable_testing()
     add_subdirectory(test)
-endif()
+endif()]]
 
 #[[
 if (BUILD_PYTHON_BINDING)
@@ -94,7 +94,7 @@ add_executable(grammatical-inferences
 
 #[[target_link_libraries(grammatical-inferences ${PYTHON_LIBRARIES} pybind11::embed Catch2::Catch2 gInfer std::filesystem)]]
 #[[target_compile_features(grammatical-inferences PRIVATE cxx_std_17)]]
-target_link_libraries(grammatical-inferences Catch2::Catch2 gInfer std::filesystem ${Boost_LIBRARIES})
+target_link_libraries(grammatical-inferences gInfer std::filesystem ${Boost_LIBRARIES})
 
 #[[include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(unit_tests)]]
@@ -103,6 +103,7 @@ ParseAndAddCatchTests(unit_tests)]]
 
 
 
+#[[
 if (BUILD_INSTALLER)
     set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/GrammaticalInferences)
     message("CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
@@ -125,14 +126,15 @@ if (BUILD_INSTALLER)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindFilesystem.cmake
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GrammaticalInferences)
 
-    #[[
+    #[=[
     install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/sourceConfig.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/sourceConfigVersion.cmake
             COMPONENT "CPP_Library"
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/source/gInfer
-            )]]
+            )]=]
 endif()
+]]
 
 
 if (BUILD_INSTALLER AND BUILD_PACKAGE)

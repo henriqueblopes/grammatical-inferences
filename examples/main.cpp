@@ -428,6 +428,8 @@ int main(int argc, char** argv) {
             g.train(g.pcfg_pumping_inference, iterations, alpha, p_ratio, time_limit);
         else if (training_method == 2)
             g.train(g.pcsg_metropolis_hastings, iterations, alpha, p_ratio, time_limit);
+        else if (training_method == 3)
+            load_grammar(g, "pcfg_grammar_billboard_"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
         cout << "training complete" << endl;
         g.print_grammar();
         /*save_grammar(g, "pcfg_grammar_billboard_"+ to_string(alpha) + "_" + to_string(p_ratio)+ "_" + to_string(index_p_file) +".txt");
