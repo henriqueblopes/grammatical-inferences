@@ -49,10 +49,12 @@ public:
     void read_words_beatles(bool is_entire_music);
     void read_words_brown();
     void read_words_conll2003();
+    void read_words_brown_2();
     void convert_file_to_word (const fs::path& path, unsigned long minSize);
     void convert_file_to_word_beatles (const fs::path& path, unsigned long minSize, string tone);
     static void transpose_to(const string& actual_tone, const string& target_tone, vector<Symbol::Symbol> & word);
     vector<Symbol::Symbol> generate_terminals(std::unordered_map<string, int> counted_chords);
+    vector<Symbol::Symbol> generate_terminals_and_limit_string(int max_length);
     void print_word_sizes();
     void select_training_words(int n_shares_or_amount, bool by_share);
     void count_chords();

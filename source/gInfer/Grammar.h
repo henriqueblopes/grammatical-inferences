@@ -53,7 +53,7 @@ public:
                 ar & parse_trees_vec;
                 ar & start;
                 ar & n_terminals;
-                ar & n_terminals;
+                ar & n_non_terminals;
                 ar & context_amount;
                 ar & context_size;
                 ar & actual_production;
@@ -74,6 +74,7 @@ public:
     std::pair<double,double> perplexity_kl(const std::vector<std::vector<Symbol::Symbol>>& test_data);
     void prob_sequitur();
     void convert_to_cnf();
+    void convert_to_cnf_full();
     void remove_unused_rules();
     void remove_unused_rule_zero_righties(std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> &right);
     void group_equal_rhs(std::vector<std::pair<std::vector<Symbol::Symbol>, std::pair<double, double>>> & right);
@@ -127,7 +128,7 @@ public:
     void pumping_alergia(double alpha, std::vector<Symbol::Symbol> & pumped_nts);
     void eliminate_covered_pumpings(std::unordered_map<std::string, std::vector<int>> &map_pump_to_word, std::unordered_map<std::string, int> &map);
     void find_pumping_rule(Symbol::Symbol nt1, Symbol::Symbol nt2);
-    std::vector<Rule::Rule> find_pumping_rule_by_auto_similarity(Symbol::Symbol nt, std::set<int> &not_search_nts, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> compatible_lists, double p_ratio);
+    std::vector<std::vector<Rule::Rule>> find_pumping_rule_by_auto_similarity(Symbol::Symbol nt, std::set<int> &not_search_nts, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> compatible_lists, double p_ratio);
     std::vector<std::vector<Rule::Rule>> find_pumping_rule_by_auto_similarity_2(Symbol::Symbol nt, std::set<int> &not_search_nts, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> compatible_lists, double p_ratio);
     bool check_auto_similarity(std::vector<Symbol::Symbol> path_to_accept, Symbol::Symbol start);
     bool exist_empty_rule(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>> right);
@@ -150,6 +151,7 @@ public:
     void recursive_build_parse_tree_indexes(std::vector<Rule::Rule> & rs, int & max_height, std::vector<Symbol::Symbol> & z, std::vector<std::pair<int,int>> parse_tree_indexes, std::vector<std::vector<std::pair<int,int>>> & parse_trees);
     bool check_reacheable_multiple_pumpings(Symbol::Symbol nt, std::vector<std::pair<int, int>> parse_tree_indexes, std::vector<Rule::Rule> &rs);
     std::vector<Symbol::Symbol> generate_string(int max_size);
+    double probabilistic_cky(std::vector<Symbol::Symbol> word);
 
 
 

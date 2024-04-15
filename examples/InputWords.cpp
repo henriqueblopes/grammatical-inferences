@@ -668,3 +668,87 @@ void InputWords::read_words_conll2003() {
     }
     cout << "Dataset size: " << input_words.size() << endl;
 }
+void InputWords::read_words_brown_2() {
+    fs::path p = fs::current_path().parent_path();
+    cout << "Starting read Conll2003" << endl;
+    fs::path p1 = (p /= "resources/brown/brown_files");
+
+    for (auto di: fs::directory_iterator (p1)) {
+        std::ifstream ifs (di.path(), std::ifstream::in);
+        string s_path = di.path();
+        if (s_path.compare("/home/henrique/CLionProjects/grammatical-inferences/resources/brown/brown_files/ca19") == 0)
+            cout << "";
+
+        string s;
+        int n = 1;
+        while (ifs.good()) {
+            if (this->input_words.size() == 42555)
+                cout << "";
+            vector<Symbol::Symbol> word;
+            size_t bar = 0;
+            bool finish_word = false;
+            while (!s.empty()) {
+                bar = 0;
+                string symbol;
+                bar = s.find('/', bar);
+                size_t next_bar = s.find(' ', bar+1);
+
+                symbol = s.substr(bar, next_bar-bar);
+                symbol = symbol.substr(1, symbol.size()-1);
+
+
+                word.emplace_back(Symbol::Symbol(symbol, 0, true, false));
+
+
+
+
+
+                if (next_bar == string::npos) {
+                    if (symbol.compare(".") == 0 || symbol.compare("!") == 0 || symbol.compare(":") == 0 || symbol.compare(";") == 0) {
+                        finish_word = true;
+                        break;
+                    }
+                } else if (symbol.compare(".") == 0) {
+                    input_words.emplace_back(word);
+                    word.clear();
+                }
+                s = s.substr(next_bar + 1, s.size() - 1);
+
+
+            }
+            if (finish_word) {
+                input_words.emplace_back(word);
+                word.clear();
+            }
+            getline(ifs,s);
+            if (s.compare("\t") == 0)
+                s = "";
+        }
+        cout << "Dataset size: " << input_words.size() << endl;
+    }
+}
+vector<Symbol::Symbol> InputWords::generate_terminals_and_limit_string(int max_length) {
+    vector<Symbol::Symbol> terminals;
+    vector<vector<Symbol::Symbol>> limit_words;
+    for (auto &w : input_words ) {
+        if (w.size() <= max_length) {
+            limit_words.push_back(w);
+            for (auto & s: w) {
+                bool exist_s = false;
+                for (auto s2: terminals) {
+                    if (s2.name.compare(s.name) == 0) {
+                        s = s2;
+                        exist_s = true;
+                        break;
+                    }
+                }
+                if (!exist_s) {
+                    s = Symbol::Symbol(s.name, terminals.size(), true, false);
+                    terminals.push_back(s);
+                }
+            }
+        }
+    }
+    input_words = limit_words;
+    return terminals;
+}
