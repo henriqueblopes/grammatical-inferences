@@ -152,6 +152,7 @@ public:
     bool check_reacheable_multiple_pumpings(Symbol::Symbol nt, std::vector<std::pair<int, int>> parse_tree_indexes, std::vector<Rule::Rule> &rs);
     std::vector<Symbol::Symbol> generate_string(int max_size);
     double probabilistic_cky(std::vector<Symbol::Symbol> word);
+    void normalize_probs();
 
 
 
@@ -239,7 +240,7 @@ private:
     double stochastic_pumping_fold(const Symbol::Symbol& a, const Symbol::Symbol& b, std::vector<Symbol::Symbol> & pumped_nts);
     void remove_unused_nt();
     void recursive_insert_unused(std::vector<Symbol::Symbol> &unused, const Symbol::Symbol& nt);
-    void normalize_probs();
+
     void sample_regular_rules(std::vector<std::pair<std::vector<Symbol::Symbol>,std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>>> &vr, const std::vector<Symbol::Symbol>& w);
     void recursive_add_terminal_to_nt(Symbol::Symbol nt, size_t n, int &nIds);
     void add_n_gram_rule_frequency(const Symbol::Symbol& lhs, const Symbol::Symbol& next_symbol);
@@ -263,6 +264,7 @@ public:
     void generate_nt_for_t ();
     bool rhs_generates_path(std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>>  rhs,  Rule::Rule rule, std::vector<Symbol::Symbol> path);
     bool fpta_pumping_compatible_tree_det_2(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> & vector_rules, std::vector<Symbol::Symbol> & vector_symbol, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> &height_list );
+    bool no_path_to_gen(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, std::vector<Rule::Rule> & vector_rules, std::vector<Symbol::Symbol> & vector_symbol, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> &height_list );
 };
 }
 

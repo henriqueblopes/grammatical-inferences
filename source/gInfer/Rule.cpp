@@ -21,7 +21,7 @@ void Rule::Rule::print_rule() {
     double totalP = 0.0;
     for (itVector = right.begin(); itVector != right.end(); itVector++) {
         totalP += (*itVector).second.first;
-        if ((*itVector).second.first > 0.0001) {
+        if ((*itVector).second.first > 0.000000000000000000000000000092663491) {
             std::cout << "P: " << (*itVector).second.first << " - ";//  << " a: " << (*itVector).second.second << " ";
             for(itRule = (*itVector).first.begin(); itRule != (*itVector).first.end(); itRule++)
                 std::cout <<  (*itRule).name << " ";

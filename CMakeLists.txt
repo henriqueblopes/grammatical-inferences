@@ -56,15 +56,17 @@ if (BUILD_PYTHON_BINDING)
     #[=[add_subdirectory(bindings)]=]
 endif()
 ]]
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 OLD)
+endif()
 
 find_package(Boost 1.70.0 COMPONENTS system filesystem serialization REQUIRED)
+IF (Boost_FOUND)
+    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+    ADD_DEFINITIONS( "-DHAS_BOOST" )
+ENDIF()
 find_package(Filesystem REQUIRED)
 
-
-#[[
-include_directories(${Boost_INCLUDE_DIRS}
-        )
-]]
 
 
 

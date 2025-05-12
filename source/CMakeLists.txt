@@ -7,7 +7,10 @@ add_library(gInfer STATIC
         gInfer/Rule.cpp
         gInfer/Symbol.h
         gInfer/Symbol.cpp
-        )
+        gInfer/RuleH.h
+        gInfer/RuleH.cpp
+        gInfer/GrammarH.h
+)
 
 set_target_properties(gInfer PROPERTIES VERSION ${PROJECT_VERSION})
 

@@ -8060,21 +8060,24 @@ std::vector<Symbol::Symbol> Grammar::Grammar::generate_string(int max_size) {
     std::mt19937 mt(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
     std::vector<Symbol::Symbol> string;
+    std::vector<Symbol::Symbol> string_without_lambda;
     std::stack<Symbol::Symbol> stack_symbol;
     stack_symbol.push(rules[0].left[0]);
     while (!stack_symbol.empty()) {
         Symbol::Symbol aux = stack_symbol.top();
         stack_symbol.pop();
         if (aux.terminal) {
-            if (!aux.name.empty())
+            if (!aux.name.empty()) {
+                string_without_lambda.push_back(aux);
                 string.push_back(aux);
+            }
         } else {
-            cout << rules[aux.id].left[0].name << " -> ";
+            //cout << rules[aux.id].left[0].name << " -> ";
             if (string.size() >=max_size && aux.name.find("!#$") != string::npos) {
                 int last = rules[aux.id].right.size()-1;
                 for (int i = rules[aux.id].right[last].first.size() -1; i >=0; i--) {
                     stack_symbol.push(rules[aux.id].right[last].first[i]);
-                    cout << rules[aux.id].right[last].first[i].name;
+                    //cout << rules[aux.id].right[last].first[i].name;
                 }
             }
             else {
@@ -8084,7 +8087,7 @@ std::vector<Symbol::Symbol> Grammar::Grammar::generate_string(int max_size) {
                     if (p < sum_prob+ rhs.second.first) {
                         for (int i = rhs.first.size() -1; i >=0; i--) {
                             stack_symbol.push(rhs.first[i]);
-                            cout << rhs.first[i].name;
+                            //cout << rhs.first[i].name;
                         }
                         break;
                     } else {
@@ -8092,7 +8095,7 @@ std::vector<Symbol::Symbol> Grammar::Grammar::generate_string(int max_size) {
                     }
                 }
             }
-            cout << endl;
+            //cout << endl;
         }
     }
     return string;
@@ -8100,6 +8103,7 @@ std::vector<Symbol::Symbol> Grammar::Grammar::generate_string(int max_size) {
 void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_ratio, double time_limite) {
     //TODO fazer o concat gerar bombeamento caso ele não exista. Obs: Acho que não precisa.
     std::chrono::duration<double> iterationTime = std::chrono::steady_clock::now() -  std::chrono::steady_clock::now();
+    std::chrono::duration<double> partialTime = std::chrono::steady_clock::now() -  std::chrono::steady_clock::now();
     auto startIt = std::chrono::steady_clock::now();
     non_terminals.clear();
     rules.clear();
@@ -8122,11 +8126,18 @@ void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_
     return;*/
     set<int> not_search_nts;
     std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> compatible_lists = build_height_lists();
+    auto startPartial = std::chrono::steady_clock::now();
     build_concatenation_lists(not_search_nts, compatible_lists);
     not_search_nts.clear();
     vector<Rule::Rule> pumped_rules;
     vector<Rule::Rule> pumping_rules;
     vector<Symbol::Symbol> pumped_nts;
+    vector<Symbol::Symbol> pumping_nts;
+    iterationTime = std::chrono::steady_clock::now() - startIt;
+    partialTime = std::chrono::steady_clock::now() - startPartial;
+    cout << "Time Only Concatenation Lists: " << std::chrono::duration_cast<std::chrono::milliseconds>(partialTime).count() << endl;
+    cout << "Time Until Concatenation Lists: " << std::chrono::duration_cast<std::chrono::milliseconds>(iterationTime).count() << endl;
+    startPartial = std::chrono::steady_clock::now();
     int count_nt  = 0;
 
     for (auto nt: non_terminals) {
@@ -8138,7 +8149,20 @@ void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_
             for (int i = 0; i < new_rules.size();i++) {
             /*new_rules[0].right[0].second.first = 0.0;
             new_rules[0].right[1].second.first = 0.0;*/
-                if (new_rules[i][0].freq() > 0.0) {
+                std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rhs_no_p = new_rules[i][0].right[ new_rules[i][0].right.size()-1];
+                for (int j = 0; j < new_rules[i][0].right.size()-1; j++) {
+                    bool is_w = true;
+                    for (auto w: new_rules[i][0].right[j].first) {
+                        if (w.name.find("!#$") != string::npos)
+                            is_w = false;
+
+                    }
+                    if (is_w) {
+                        swap(new_rules[i][0].right[ new_rules[i][0].right.size()-1], new_rules[i][0].right[j]);
+                    }
+                }
+
+                if (new_rules[i][0].freq() > 0.0 && new_rules[i][0].right[new_rules[i][0].right.size()-1].second.first > 0.0) {
 
                     //pump_and_reduce_w(new_rules[0]);
                     for (auto & rhs: new_rules[i][0].right)
@@ -8149,10 +8173,11 @@ void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_
                     new_rules[i][1].right[0].first[0].id = n_non_terminals; //cout << " P-Rule accepted";
                     new_rules[i][1].right[0].first[0].name += "." + to_string(i);
                     n_non_terminals++;
-                    non_terminals.push_back(new_rules[i][1].right[0].first[0]);
+                    pumping_nts.push_back(new_rules[i][1].right[0].first[0]);
                     pumping_rules.push_back(new_rules[i][0]);
                     pumped_rules.push_back(new_rules[i][1]);
                     pumped_nts.push_back(new_rules[i][1].left[0]);
+                    //TODO o W não vai pra ultima regra. Talvez seja problema na hora de inserir a regra de concatenação
                 }
             }
         }
@@ -8162,24 +8187,39 @@ void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_
             break;
         }
     }
+    non_terminals.insert(non_terminals.end(), pumping_nts.begin(), pumping_nts.end());
     for (auto r: pumped_rules) {
+
+            rules[r.left[0].id].right.insert(rules[r.left[0].id].right.end(), r.right.begin(), r.right.end());
         /*if (!verify_nt_in_subtree_if_any_pumped_not_equal(r.left[0], pumped_nts)) {
             rules[r.left[0].id].right = r.right;
 
         } else {*/
-        rules[r.left[0].id].right.insert(rules[r.left[0].id].right.end(), r.right.begin(), r.right.end());
+
         //}
     }
 
     std::vector<std::vector<Symbol::Symbol>> paths_to_nt_comp;
     set<int> is_pumping;
+    partialTime = std::chrono::steady_clock::now() - startPartial;
+    iterationTime = std::chrono::steady_clock::now() - startIt;
+    cout << "Time Until Pumping Rules: " << std::chrono::duration_cast<std::chrono::milliseconds>(iterationTime).count() << endl;
+    cout << "Time Only Pumping Rules: " << std::chrono::duration_cast<std::chrono::milliseconds>(partialTime).count() << endl;
+    print_grammar();
+    auto startConcatRules = std::chrono::steady_clock::now();
     cout << "Creating Concat Rules..." << endl;
+    startPartial = std::chrono::steady_clock::now();
     int crn = 0;
+    int id_debug = 372;
     for (auto nt: compatible_lists) {
+        if (nt.first == id_debug)
+            cout <<"";
         if ((crn+1) % (compatible_lists.size()/10) == 0 )
             cout << "   Concat Rules at " << (100.0*(crn)/(compatible_lists.size()*1.0)) << "%" << endl;
         if (!nt.second.first.empty()) {
             for (auto nt_comp : nt.second.first) {
+                if (nt_comp.first.id == 813)
+                    cout << "";
                 std::vector<Symbol::Symbol> path;
                 path.push_back(nt_comp.first);
                 while (path[path.size()-1].id != nt.first) {
@@ -8200,12 +8240,19 @@ void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_
                 }
                 reverse(path.begin(), path.end());
                 paths_to_nt_comp.push_back(path);
+                auto rhs_last = rules[nt_comp.first.id].right[rules[nt_comp.first.id].right.size()-1];
                 double freq = rules[nt_comp.first.id].freq();
-                rules[nt_comp.first.id].right.clear();
+                auto right =rules[nt_comp.first.id].right;
+                //rules[nt_comp.first.id].right.clear();
                 std::pair<std::vector<Symbol::Symbol>,std::pair<double, double>> rhs;
                 rhs.first.push_back(non_terminals[nt.first]); rhs.second.first = freq;
                 //rules[nt_comp.first.id].right.push_back(rhs);
                 rules[nt_comp.first.id].right = rules[nt.first].right;
+                rules[nt_comp.first.id].right.insert(rules[nt_comp.first.id].right.end(), rules[nt.first].right.begin(), rules[nt.first].right.end());
+                /*if (rules[nt_comp.first.id].right[rules[nt_comp.first.id].right.size()-1].first[0].name.empty())
+                    rules[nt_comp.first.id].right.push_back(rhs_last);
+                else
+                    rules[nt_comp.first.id].right[rules[nt_comp.first.id].right.size()-1].second.first += rhs_last.second.first;*/
                 is_pumping.insert(nt_comp.first.id);
             }
             int pcrn = 0;
@@ -8244,7 +8291,7 @@ void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_
         }
         crn++;
     }
-
+    print_grammar();
     vector<Rule::Rule> aux_rules;
     vector<Symbol::Symbol> aux_nts;
     queue<Symbol::Symbol> nt_queue;
@@ -8264,6 +8311,8 @@ void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_
         }
         nt_queue.pop();
     }
+
+
 
 
     aux_rules.insert(aux_rules.end(), pumping_rules.begin(), pumping_rules.end());
@@ -8299,7 +8348,9 @@ void Grammar::Grammar::super_duper_pumping_inference_det(double alpha, double p_
     generate_nt_for_t();
     normalize_probs();
     iterationTime = std::chrono::steady_clock::now() - startIt;
-    cout << "RunTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(iterationTime).count();
+    partialTime = std::chrono::steady_clock::now() - startPartial;
+    cout << "Concat Rules Only Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(partialTime).count() << endl;
+    cout << "RunTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(iterationTime).count() << endl;
     //print_grammar();
 }
 bool Grammar::Grammar::fpta_pumping_compatible_tree_det(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, vector<Rule::Rule> &vector_rules, vector<Symbol::Symbol> &vector_symbol, std::map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> &height_list) {
@@ -8526,7 +8577,7 @@ std::vector<std::vector<Rule::Rule>> Grammar::Grammar::find_pumping_rule_by_auto
                         double total_yielded_words_p = 0;
                         double total_words_p = 0;
                         set<int> nts_that_pumps;
-                        for  (int p_i = 2;  w.size()+z.size()+p_i*(v.size()+x.size()) < compatible_lists[nt.id].second; p_i++) {
+                        for  (int p_i = 2;  w.size()+z.size()+p_i*(v.size()+x.size()) <= compatible_lists[nt.id].second; p_i++) {
                             total_words_p += 1.0;
                             set<int> possible_nts_that_pumps;
                             int word_amount = check_derivation_from_nt_with_v_w_x_z(nt, v, w, x, z, p_i, possible_nts_that_pumps);
@@ -8537,7 +8588,7 @@ std::vector<std::vector<Rule::Rule>> Grammar::Grammar::find_pumping_rule_by_auto
                             }
                         }
                         // TODO parametriza total 2 para algum parametro do método
-                        if (total_yielded_words_p/total_words_p > p_ratio && total_yielded_words_p >= 2) {
+                        if (total_yielded_words_p/total_words_p > p_ratio && total_yielded_words_p >= 1) {
                             // e nts_that_pumps vazio
                             //cout << endl << "          found P-RULE! " << "u " << path_to_accept[path_to_accept.size()-1].name << ", v " << convert_vector_to_string(v) << ", w " << convert_vector_to_string(w) << ", x " << convert_vector_to_string(x) << ", z " << convert_vector_to_string(z) << ", p_use: " << pumpings_use;
                             nts_pumpings[queue_symbol.front().id].push_back(make_tuple(v, w, x, z, nts_that_pumps, queue_symbol.front().id, pumpings_use));
@@ -8590,7 +8641,10 @@ void Grammar::Grammar::build_concatenation_lists(std::set<int> not_search, std::
     int count_both = 0;
     int count_alrg = 0;
     int count_det = 0;
+    int id_debug = 372;
     for (auto nt: non_terminals) {
+        if (nt.id == id_debug)
+            cout <<"";
         if (not_search.find(nt.id) == not_search.end()) {
             int max_height = 0;
             if ((count_nt) % (n_non_terminals/10) == 0 )
@@ -8746,6 +8800,8 @@ bool Grammar::Grammar::fpta_pumping_compatible_tree_det_2(Symbol::Symbol nt1, Sy
             return false;
         if ((*(vector_rules[q_nt1.front().id].right.end() - 1)).second.first != 0 && (*(vector_rules[q_nt2.front().id].right.end() - 1)).second.first == 0)
             return false;
+        /*if ((*(vector_rules[q_nt1.front().id].right.end() - 1)).second.first != 0 && (*(vector_rules[q_nt2.front().id].right.end() - 1)).second.first != 0)
+            return false;*/
         n_nodes += 1.0;
         //cout << "   comp: " << q_nt1.front().name << " and " << q_nt2.front().name;
         if (vector_rules[q_nt1.front().id].right.empty())
@@ -8792,6 +8848,10 @@ bool Grammar::Grammar::fpta_pumping_compatible_tree_det_2(Symbol::Symbol nt1, Sy
         q_nt2.pop();
         //cout << ": Okay!" << endl;
     }
+    if ((*(vector_rules[nt1.id].right.end() - 1)).second.first == 0 && (*(vector_rules[nt2.id].right.end() - 1)).second.first == 0)
+        if (!no_path_to_gen(nt1, nt2, tolerance, vector_rules, vector_symbol, height_list ))
+            return false;
+
 
     if (count  >= 1.0) {
         //cout << nt1.name << " * " << nt2.name << " : " << " count: " << count << " n_nodes: " << n_nodes << " ratio: "<< count/n_nodes << endl;
@@ -8895,6 +8955,7 @@ void Grammar::Grammar::convert_to_cnf_full() {
     normalize_probs();
     //print_grammar();
     // Start - eliminate start symbol from RHSs
+
     /*n_non_terminals++;
     Symbol::Symbol new_s = Symbol::Symbol("#$" + to_string(-1), -1, false, false);
     std::vector<Symbol::Symbol>new_ss;
@@ -8910,7 +8971,7 @@ void Grammar::Grammar::convert_to_cnf_full() {
     //TERMINAL RULES
     vector<Rule::Rule>::iterator itRule;
     vector<Rule::Rule> rulesTerm;
-    /*for (auto t: terminals) {
+    for (auto t: terminals) {
         n_non_terminals++;
         Symbol::Symbol nnt = Symbol::Symbol("#$" + to_string(n_non_terminals-1), n_non_terminals - 1, false, false);
         non_terminals.push_back(nnt);
@@ -8923,7 +8984,7 @@ void Grammar::Grammar::convert_to_cnf_full() {
         Rule::Rule r = Rule::Rule(lTerminal, rhsTerminal);
         rulesTerm.push_back(r);
     }
-    print_grammar();
+    //print_grammar();
 
     //TERM
 
@@ -8942,7 +9003,11 @@ void Grammar::Grammar::convert_to_cnf_full() {
     }
     rules.insert(rules.end(), rulesTerm.begin(), rulesTerm.end());
     rulesTerm.clear();
-    print_grammar();*/
+    normalize_probs();
+    //print_grammar();
+
+
+
     //BIN (testar com linguagens com palavras maiores que 2)
     vector<Rule::Rule> rulesAux;
     rulesAux.insert(rulesAux.begin(), rules.begin(), rules.end());
@@ -9165,4 +9230,23 @@ double Grammar::Grammar::probabilistic_cky(std::vector<Symbol::Symbol> word) {
         //cout << "No valid parse tree found." << endl;
         return 0.0;
     }
+}
+bool Grammar::Grammar::no_path_to_gen(Symbol::Symbol nt1, Symbol::Symbol nt2, double tolerance, vector<Rule::Rule> &vector_rules, vector<Symbol::Symbol> &vector_symbol, map<int, std::pair<std::vector<std::pair<Symbol::Symbol, int>>, int>> &height_list) {
+    queue<Symbol::Symbol> q_nt1;
+    q_nt1.push(nt1);
+    while (q_nt1.front().id != nt2.id) {
+        if ((*(vector_rules[q_nt1.front().id].right.end() - 1)).second.first != 0 ) {
+            return true;
+        }
+        for (auto rhs: vector_rules[q_nt1.front().id].right) {
+            if (rhs.first.size() == 2) {
+                    if (rhs.first[1].name.empty())
+                        cout << "error here" << endl;
+                    q_nt1.push(rhs.first[1]);
+            }
+
+        }
+        q_nt1.pop();
+    }
+    return false;
 }
